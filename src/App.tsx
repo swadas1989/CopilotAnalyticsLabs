@@ -57,10 +57,10 @@ const heroValues = [
 
 const templateOrder = [
   "aio-dashboard",
-  "m365-copilot-personal",
+  "ai-business-value",
   "github-copilot-impact-org",
   "github-copilot-impact-personal",
-  "ai-business-value",
+  "m365-copilot-personal",
   "m365-app-usage",
   "superuser-impact",
 ];
@@ -82,9 +82,7 @@ const templateMeta: Record<
       { value: "—", label: "Watching" },
     ],
   },
-  "m365-copilot-personal": {
-    badges: [{ text: "Most loved by users", tone: "rose" }],
-  },
+  "m365-copilot-personal": {},
 };
 
 const resourceMeta: Record<
