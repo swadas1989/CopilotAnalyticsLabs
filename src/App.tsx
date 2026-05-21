@@ -19,8 +19,7 @@ const VIVA_INSIGHTS_URL = "https://df.analysis.insights.cloud.microsoft/";
 const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
 const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
 const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
-const TEMPLATES_COLLECTION_URL = "https://github.com/microsoft?q=copilot&type=all";
-const SAMPLE_CODE_URL = "https://microsoft.github.io/viva-insights-sample-code/";
+
 const PLAYBOOKS_URL = "https://adoption.microsoft.com/en-us/viva/insights/";
 
 const sectionTabs = [
