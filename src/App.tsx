@@ -75,8 +75,8 @@ const templateMeta: Record<
     featured: true,
     badges: [{ text: "Featured in Labs", tone: "green" }],
     stats: [
-      { value: "12", label: "KPI views" },
-      { value: "7", label: "Cohorts" },
+      { value: "—", label: "Stars" },
+      { value: "—", label: "Downloads" },
       { value: "<10 min", label: "Setup" },
     ],
   },
@@ -893,6 +893,18 @@ function MicrosoftLogoWordmark() {
 function App() {
   const styles = useStyles();
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("templates");
+  const [ghStats, setGhStats] = useState<{ stars: string; forks: string }>({ stars: "—", forks: "—" });
+
+  useEffect(() => {
+    fetch("https://api.github.com/repos/microsoft/AI-in-One-Dashboard")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.stargazers_count != null) {
+          setGhStats({ stars: String(data.stargazers_count), forks: String(data.forks_count) });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const orderedTemplates = useMemo(() => {
     const map = new Map(templates.map((item) => [item.id, item]));
@@ -1070,12 +1082,19 @@ function App() {
                         <>
                           <div className={styles.statsDivider} />
                           <div className={styles.statsRow}>
-                            {meta.stats.map((stat) => (
-                              <div key={stat.label} className={styles.statBlock}>
-                                <span className={styles.statValue}>{stat.value}</span>
-                                <span className={styles.statLabel}>{stat.label}</span>
-                              </div>
-                            ))}
+                            {meta.stats.map((stat) => {
+                              let value = stat.value;
+                              if (item.id === "aio-dashboard") {
+                                if (stat.label === "Stars") value = ghStats.stars;
+                                else if (stat.label === "Downloads") value = ghStats.forks;
+                              }
+                              return (
+                                <div key={stat.label} className={styles.statBlock}>
+                                  <span className={styles.statValue}>{value}</span>
+                                  <span className={styles.statLabel}>{stat.label}</span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </>
                       ) : null}
