@@ -13,7 +13,7 @@ import {
 import { research, resources, templates } from "./data";
 
 const VIVA_INSIGHTS_URL = "https://df.analysis.insights.cloud.microsoft/";
-const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-viva";
+const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
 const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
 const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
 const TEMPLATES_COLLECTION_URL = "https://github.com/microsoft?q=copilot&type=all";
@@ -951,7 +951,7 @@ function App() {
             <span>Viva Insights</span>
           </a>
           <a className={styles.navLink} href={WHATS_COMING_URL} target="_blank" rel="noreferrer">
-            <span>See what's coming to Viva</span>
+            <span>Viva Roadmap</span>
           </a>
           <a
             className={mergeClasses(styles.navLink, styles.navIconOnly)}
