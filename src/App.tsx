@@ -20,7 +20,6 @@ const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?
 const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
 const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
 
-const PLAYBOOKS_URL = "https://adoption.microsoft.com/en-us/viva/insights/";
 
 const sectionTabs = [
   { id: "templates", label: "Templates" },
@@ -1201,9 +1200,6 @@ function App() {
             <p className={styles.eyebrow}>Research and playbooks</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Strategies already in play</h2>
-              <a className={styles.secondaryButton} href={PLAYBOOKS_URL} target="_blank" rel="noreferrer">
-                View all playbooks
-              </a>
             </div>
             <p className={styles.sectionDescription}>
               Adoption playbooks, methodology guides, and research from real enterprise rollouts, so you don't start from scratch.
