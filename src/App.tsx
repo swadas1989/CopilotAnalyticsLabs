@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
   ArrowDownload16Regular,
-  Beaker24Regular,
-  BookOpenGlobe24Regular,
   ChevronDown16Regular,
-  Code24Regular,
+  DataBarVerticalAscending24Regular,
+  DataTrending24Regular,
   DocumentBulletList24Regular,
   Eye16Regular,
+  PersonBoard24Regular,
+  PersonFeedback20Regular,
   Star16Filled,
-  ChatBubblesQuestion24Regular,
 } from "@fluentui/react-icons";
 import { research, resources, templates } from "./data";
 
@@ -30,7 +30,7 @@ const heroValues = [
     title: "Pick a template, ship a dashboard",
     description:
       "Templates with setup steps and data connectors. Go from browsing to dashboard quickly.",
-    Icon: Beaker24Regular,
+    Icon: DataTrending24Regular,
     accent: "linear-gradient(135deg, #FFE1B8 0%, #FFD5E6 100%)",
     color: "#C85A1A",
   },
@@ -38,7 +38,7 @@ const heroValues = [
     title: "Real code, run on your data",
     description:
       "Executable sample code, prompt libraries, and toolkit. Run against your own data. Today.",
-    Icon: Code24Regular,
+    Icon: PersonBoard24Regular,
     accent: "linear-gradient(135deg, #E1E8FF 0%, #F2E5FF 100%)",
     color: "#5E4BD8",
   },
@@ -46,7 +46,7 @@ const heroValues = [
     title: "Research playbooks, proven in field",
     description:
       "Adoption playbooks and research from real enterprise rollouts, build on what works.",
-    Icon: BookOpenGlobe24Regular,
+    Icon: DataBarVerticalAscending24Regular,
     accent: "linear-gradient(135deg, #E8F7E5 0%, #DFF5FF 100%)",
     color: "#2B7A56",
   },
@@ -54,10 +54,10 @@ const heroValues = [
 
 const templateOrder = [
   "aio-dashboard",
-  "ai-business-value",
+  "m365-copilot-personal",
   "github-copilot-impact-org",
   "github-copilot-impact-personal",
-  "m365-copilot-personal",
+  "ai-business-value",
   "m365-app-usage",
   "superuser-impact",
 ];
@@ -66,6 +66,7 @@ const templateMeta: Record<
   string,
   {
     featured?: boolean;
+    tall?: boolean;
     badges?: { text: string; tone: "green" | "rose" }[];
     stats?: { value: string; label: string }[];
   }
@@ -79,7 +80,7 @@ const templateMeta: Record<
       { value: "—", label: "Watching" },
     ],
   },
-  "m365-copilot-personal": {},
+  "m365-copilot-personal": { tall: true, badges: [{ text: "Most loved by users", tone: "rose" }] },
 };
 
 const resourceMeta: Record<
@@ -252,7 +253,7 @@ const useStyles = makeStyles({
     pointerEvents: "none",
     background:
       "radial-gradient(circle at 38% 58%, rgba(255,255,255,0) 24%, rgba(118,79,245,0.16) 25%, rgba(118,79,245,0.16) 26%, rgba(255,255,255,0) 27%), radial-gradient(circle at 48% 62%, rgba(255,255,255,0) 30%, rgba(63,108,233,0.16) 31%, rgba(63,108,233,0.16) 32%, rgba(255,255,255,0) 33%), radial-gradient(circle at 56% 68%, rgba(255,255,255,0) 36%, rgba(32,187,198,0.16) 37%, rgba(32,187,198,0.16) 38%, rgba(255,255,255,0) 39%), radial-gradient(circle at 72% 68%, rgba(255,255,255,0) 34%, rgba(255,170,204,0.16) 35%, rgba(255,170,204,0.16) 36%, rgba(255,255,255,0) 37%)",
-    transform: "rotate(10deg) scaleX(-1)",
+    transform: "rotate(10deg)",
     '@media (max-width: 1200px)': {
       width: "480px",
       left: "-120px",
@@ -337,6 +338,7 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
+    overflow: "hidden",
   },
   valuesGrid: {
     width: "100%",
@@ -399,7 +401,7 @@ const useStyles = makeStyles({
     textDecorationLine: "none",
     ...shorthands.padding("6px", "12px"),
     ...shorthands.borderRadius("4px"),
-    ...shorthands.borderStyle("none"),
+    ...shorthands.border("none"),
     ':hover': {
       backgroundColor: "#294DAE",
     },
@@ -426,8 +428,8 @@ const useStyles = makeStyles({
     position: "sticky",
     top: "48px",
     zIndex: 90,
-    background: "linear-gradient(90deg, rgba(240,231,255,0.6) 0%, rgba(255,255,255,0.95) 40%, rgba(228,243,255,0.6) 100%)",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+    backgroundColor: "#ffffff",
+    boxShadow: "0px 0px 2px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.14)",
     '@media (max-width: 600px)': {
       top: "96px",
     },
@@ -440,7 +442,6 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: "16px",
     ...shorthands.padding("4px", "256px", "0"),
-    backgroundColor: "#ffffff",
     '@media (max-width: 1200px)': {
       ...shorthands.padding("4px", "80px", "0"),
     },
@@ -560,12 +561,15 @@ const useStyles = makeStyles({
   templateGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "24px",
+    gridTemplateRows: "300px 300px 300px",
+    gap: "20px",
     '@media (max-width: 900px)': {
       gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gridTemplateRows: "auto",
     },
     '@media (max-width: 600px)': {
       gridTemplateColumns: "1fr",
+      gridTemplateRows: "auto",
     },
   },
   templateCard: {
@@ -590,6 +594,10 @@ const useStyles = makeStyles({
       gridColumn: "span 1",
       flexDirection: "column",
     },
+  },
+  templateCardTall: {
+    gridRow: "span 2",
+    minHeight: "620px",
   },
   templateCardContent: {
     display: "flex",
@@ -708,7 +716,7 @@ const useStyles = makeStyles({
     backgroundColor: "#ffffff",
     boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("28px"),
+    ...shorthands.padding("24px"),
     boxSizing: "border-box",
     '@media (max-width: 600px)': {
       flexDirection: "column",
@@ -716,9 +724,10 @@ const useStyles = makeStyles({
     },
   },
   codeCardFeatured: {
+    gridRow: "span 2",
     flexDirection: "column",
     alignItems: "flex-start",
-    ...shorthands.padding("28px"),
+    ...shorthands.padding("24px"),
     gap: "16px",
     '@media (max-width: 600px)': {
       height: "auto",
@@ -765,7 +774,7 @@ const useStyles = makeStyles({
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
     gridAutoRows: "1fr",
-    gap: "24px",
+    gap: "16px",
     '@media (max-width: 900px)': {
       gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     },
@@ -774,14 +783,14 @@ const useStyles = makeStyles({
     },
   },
   researchCard: {
-    minHeight: "156px",
+    minHeight: "146px",
     display: "flex",
     flexDirection: "column",
     gap: "16px",
     backgroundColor: "#ffffff",
     boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("24px"),
+    ...shorthands.padding("20px", "16px", "16px", "20px"),
     textDecorationLine: "none",
   },
   researchTitle: {
@@ -894,7 +903,7 @@ function MicrosoftLogoWordmark() {
         <rect x="0" y="8.7" width="7.3" height="7.3" fill="#00A4EF" />
         <rect x="8.7" y="8.7" width="7.3" height="7.3" fill="#FFB900" />
       </svg>
-      <span style={{ fontSize: "14px", fontWeight: 600, color: "#424242", fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif', whiteSpace: "nowrap" }}>
+      <span style={{ fontSize: "14px", fontWeight: 600, color: "#424242", whiteSpace: "nowrap" }}>
         Microsoft
       </span>
     </div>
@@ -974,20 +983,10 @@ function App() {
 
         <div className={styles.navLinks}>
           <a className={styles.navLink} href={VIVA_INSIGHTS_URL} target="_blank" rel="noreferrer">
-            <svg width="16" height="16" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs>
-                <linearGradient id="vivaInsightsGrad1" x1="10%" y1="0%" x2="90%" y2="100%">
-                  <stop offset="0%" stopColor="#18A797"/>
-                  <stop offset="100%" stopColor="#0E7A6B"/>
-                </linearGradient>
-                <linearGradient id="vivaInsightsGrad2" x1="30%" y1="0%" x2="70%" y2="100%">
-                  <stop offset="0%" stopColor="#5EC6B8"/>
-                  <stop offset="100%" stopColor="#18A797"/>
-                </linearGradient>
-              </defs>
-              <path d="M48 4C26.4 4 8.8 18.4 4.8 38c-1.6 7.6-0.8 15.6 2 23.2 4 10.4 12.4 19.2 22.8 24 5.6 2.4 11.6 4 17.6 4.4 0.4 0 0.8 0 1.2 0 6.4 0 12.8-1.6 18.4-4.4 10-5.2 18-13.6 22-24 2.8-7.2 3.6-15.2 2.4-22.8C87.6 18.8 70 4 48 4z" fill="url(#vivaInsightsGrad1)"/>
-              <path d="M48 20c-12 0-22 7.2-26.4 17.6-1.6 4-2 8.4-1.2 12.8 1.2 6 4.8 11.2 10 14.8 3.6 2.4 7.6 3.6 12 4h1.2c4 0 8-1.2 11.6-3.2 5.6-3.6 9.6-9.2 10.8-15.6 0.8-4 0.4-8.4-1.2-12.4C60.4 27.6 54.8 22.4 48 20z" fill="url(#vivaInsightsGrad2)"/>
-              <circle cx="48" cy="48" r="10" fill="#ffffff"/>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z" fill="#0E7A6B"/>
+              <path d="M10 5c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" fill="#18A797"/>
+              <circle cx="10" cy="10" r="2.5" fill="#ffffff"/>
             </svg>
             <span>Viva Insights</span>
           </a>
@@ -999,7 +998,7 @@ function App() {
             href="mailto:copilot@microsoft.com?subject=Copilot%20Analytics%20Labs%20feedback"
             aria-label="Send feedback"
           >
-            <ChatBubblesQuestion24Regular fontSize={16} />
+            <PersonFeedback20Regular fontSize={16} />
           </a>
         </div>
       </nav>
@@ -1071,11 +1070,12 @@ function App() {
             {orderedTemplates.map((item) => {
               const meta = templateMeta[item.id] ?? {};
               const isFeatured = Boolean(meta.featured);
+              const isTall = Boolean(meta.tall);
 
               return (
                 <article
                   key={item.id}
-                  className={mergeClasses(styles.templateCard, isFeatured && styles.templateCardFeatured)}
+                  className={mergeClasses(styles.templateCard, isFeatured && styles.templateCardFeatured, isTall && styles.templateCardTall)}
                 >
                   {!isFeatured && item.image ? (
                     <img className={styles.templateCardImage} src={item.image} alt="" />
