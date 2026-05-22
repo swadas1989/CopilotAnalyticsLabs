@@ -239,26 +239,20 @@ const useStyles = makeStyles({
     minHeight: "520px",
     overflow: "hidden",
     backgroundColor: "#ffffff",
-    backgroundImage:
-      "linear-gradient(174deg, rgba(255,255,255,1) 2%, rgba(255,255,255,0.35) 81%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%), radial-gradient(circle at 82% 45%, rgba(118,79,245,0.28) 0%, rgba(118,79,245,0.12) 18%, rgba(118,79,245,0) 42%), radial-gradient(circle at 92% 66%, rgba(63,108,233,0.2) 0%, rgba(63,108,233,0) 33%), radial-gradient(circle at 100% 72%, rgba(32,187,198,0.18) 0%, rgba(32,187,198,0) 30%), linear-gradient(135deg, #F7F8FE 0%, #EEF4FF 46%, #F7F9FF 100%)",
   },
   heroRibbon: {
     position: "absolute",
-    right: "-80px",
-    bottom: "-24px",
-    width: "640px",
-    height: "360px",
-    opacity: 0.78,
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
     pointerEvents: "none",
-    background:
-      "radial-gradient(circle at 38% 58%, rgba(255,255,255,0) 24%, rgba(118,79,245,0.16) 25%, rgba(118,79,245,0.16) 26%, rgba(255,255,255,0) 27%), radial-gradient(circle at 48% 62%, rgba(255,255,255,0) 30%, rgba(63,108,233,0.16) 31%, rgba(63,108,233,0.16) 32%, rgba(255,255,255,0) 33%), radial-gradient(circle at 56% 68%, rgba(255,255,255,0) 36%, rgba(32,187,198,0.16) 37%, rgba(32,187,198,0.16) 38%, rgba(255,255,255,0) 39%), radial-gradient(circle at 72% 68%, rgba(255,255,255,0) 34%, rgba(255,170,204,0.16) 35%, rgba(255,170,204,0.16) 36%, rgba(255,255,255,0) 37%)",
-    transform: "rotate(-10deg)",
-    '@media (max-width: 1200px)': {
-      width: "480px",
-      right: "-120px",
-    },
+    backgroundImage: `url(${import.meta.env.BASE_URL}images/hero-bg.svg)`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
     '@media (max-width: 600px)': {
-      display: "none",
+      opacity: 0.5,
     },
   },
   heroContent: {
