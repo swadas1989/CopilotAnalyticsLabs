@@ -847,7 +847,7 @@ const useStyles = makeStyles({
   footer: {
     backgroundColor: "#ffffff",
     boxShadow: "0 -1px 0 rgba(0,0,0,0.08)",
-    ...shorthands.padding("24px", "56px"),
+    ...shorthands.padding("24px", "256px"),
     '@media (max-width: 1200px)': {
       ...shorthands.padding("24px", "80px"),
     },
@@ -856,7 +856,9 @@ const useStyles = makeStyles({
     },
   },
   footerContent: {
-    maxWidth: "100%",
+    maxWidth: "928px",
+    marginLeft: "auto",
+    marginRight: "auto",
     display: "flex",
     flexDirection: "column",
     gap: "12px",
