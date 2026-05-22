@@ -984,11 +984,7 @@ function App() {
 
         <div className={styles.navLinks}>
           <a className={styles.navLink} href={VIVA_INSIGHTS_URL} target="_blank" rel="noreferrer">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z" fill="#0E7A6B"/>
-              <path d="M10 5c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" fill="#18A797"/>
-              <circle cx="10" cy="10" r="2.5" fill="#ffffff"/>
-            </svg>
+            <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
             <span>Viva Insights</span>
           </a>
           <a className={styles.navLink} href={WHATS_COMING_URL} target="_blank" rel="noreferrer">
