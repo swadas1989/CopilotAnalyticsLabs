@@ -8,6 +8,7 @@ import {
   DocumentBulletList24Regular,
   Eye16Regular,
   PersonBoard24Regular,
+  PersonFeedback20Regular,
   Star16Filled,
 } from "@fluentui/react-icons";
 import { research, resources, templates } from "./data";
@@ -913,6 +914,7 @@ function App() {
   const styles = useStyles();
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("templates");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
+  const [showContactDialog, setShowContactDialog] = useState(false);
 
   useEffect(() => {
     fetch("https://api.github.com/repos/microsoft/AI-in-One-Dashboard")
@@ -991,8 +993,74 @@ function App() {
           <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
             <span>Feedback</span>
           </a>
+          <button
+            className={mergeClasses(styles.navLink, styles.navIconOnly)}
+            onClick={() => setShowContactDialog(true)}
+            aria-label="Contact us"
+            style={{ border: "none", background: "none", cursor: "pointer" }}
+          >
+            <PersonFeedback20Regular fontSize={16} />
+          </button>
         </div>
       </nav>
+
+      {showContactDialog && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowContactDialog(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "12px",
+              padding: "32px",
+              maxWidth: "420px",
+              width: "90%",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+              textAlign: "center",
+              fontFamily: '"Segoe UI", system-ui, sans-serif',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PersonFeedback20Regular style={{ fontSize: "32px", color: "#6264A7", marginBottom: "12px" }} />
+            <h3 style={{ margin: "0 0 12px", fontSize: "18px", fontWeight: 600, color: "#242424" }}>
+              Contact Us
+            </h3>
+            <p style={{ margin: "0 0 20px", fontSize: "14px", lineHeight: "20px", color: "#616161" }}>
+              For further questions and doubts — Please drop a mail to{" "}
+              <a href="mailto:copilotanalyticslabs@microsoft.com" style={{ color: "#0078D4", textDecoration: "none" }}>
+                copilotanalyticslabs@microsoft.com
+              </a>
+            </p>
+            <button
+              onClick={() => setShowContactDialog(false)}
+              style={{
+                padding: "8px 24px",
+                fontSize: "14px",
+                fontWeight: 600,
+                color: "#ffffff",
+                backgroundColor: "#0078D4",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <header className={styles.hero}>
         <div className={styles.heroRibbon} />
