@@ -177,7 +177,7 @@ const useStyles = makeStyles({
       flexDirection: "column",
       alignItems: "stretch",
       ...shorthands.padding("8px", "16px"),
-      gap: "8px",
+      gap: "4px",
     },
   },
   brand: {
@@ -242,6 +242,9 @@ const useStyles = makeStyles({
     minHeight: "520px",
     overflow: "hidden",
     backgroundColor: "#ffffff",
+    '@media (max-width: 600px)': {
+      minHeight: "auto",
+    },
   },
   heroRibbon: {
     position: "absolute",
@@ -297,8 +300,8 @@ const useStyles = makeStyles({
     color: "#0E1726",
     whiteSpace: "nowrap",
     '@media (max-width: 600px)': {
-      fontSize: "32px",
-      lineHeight: "40px",
+      fontSize: "26px",
+      lineHeight: "34px",
       whiteSpace: "normal",
     },
   },
@@ -309,6 +312,8 @@ const useStyles = makeStyles({
     lineHeight: "22px",
     color: "#424242",
     '@media (max-width: 600px)': {
+      fontSize: "14px",
+      lineHeight: "20px",
       whiteSpace: "normal",
     },
   },
@@ -368,6 +373,11 @@ const useStyles = makeStyles({
     justifyContent: "center",
     ...shorthands.borderRadius("20px"),
     boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.5)",
+    '@media (max-width: 600px)': {
+      width: "48px",
+      height: "48px",
+      ...shorthands.borderRadius("14px"),
+    },
   },
   valueTitle: {
     margin: 0,
@@ -379,6 +389,10 @@ const useStyles = makeStyles({
     '@media (max-width: 1024px)': {
       whiteSpace: "normal",
     },
+    '@media (max-width: 600px)': {
+      fontSize: "14px",
+      lineHeight: "20px",
+    },
   },
   valueDescription: {
     margin: 0,
@@ -389,6 +403,11 @@ const useStyles = makeStyles({
     WebkitLineClamp: "3",
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
+    '@media (max-width: 600px)': {
+      WebkitLineClamp: "4",
+      fontSize: "13px",
+      lineHeight: "18px",
+    },
   },
   primaryButton: {
     display: "inline-flex",
@@ -408,6 +427,10 @@ const useStyles = makeStyles({
     ':hover': {
       backgroundColor: "#294DAE",
     },
+    '@media (max-width: 600px)': {
+      minHeight: "44px",
+      ...shorthands.padding("10px", "16px"),
+    },
   },
   secondaryButton: {
     display: "inline-flex",
@@ -425,6 +448,10 @@ const useStyles = makeStyles({
     ...shorthands.border("1px", "solid", "#D1D1D1"),
     ':hover': {
       backgroundColor: "#F7F7F7",
+    },
+    '@media (max-width: 600px)': {
+      minHeight: "44px",
+      ...shorthands.padding("10px", "16px"),
     },
   },
   tabsShell: {
@@ -517,6 +544,9 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: "48px",
+    '@media (max-width: 600px)': {
+      gap: "32px",
+    },
   },
   sectionTitleArea: {
     display: "flex",
@@ -565,6 +595,10 @@ const useStyles = makeStyles({
     lineHeight: "22px",
     color: "#242424",
     maxWidth: "760px",
+    '@media (max-width: 600px)': {
+      fontSize: "14px",
+      lineHeight: "20px",
+    },
   },
   templateGrid: {
     display: "grid",
@@ -587,6 +621,11 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
+    '@media (max-width: 600px)': {
+      minHeight: "auto",
+      ...shorthands.padding("16px"),
+      gap: "16px",
+    },
   },
   templateCardFeatured: {
     gridColumn: "span 2",
@@ -723,6 +762,8 @@ const useStyles = makeStyles({
     '@media (max-width: 600px)': {
       flexDirection: "column",
       alignItems: "flex-start",
+      ...shorthands.padding("16px"),
+      gap: "12px",
     },
   },
   codeCardFeatured: {
@@ -743,10 +784,18 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     ...shorthands.borderRadius("14px"),
+    '@media (max-width: 600px)': {
+      width: "80px",
+      height: "80px",
+    },
   },
   codeArtFeatured: {
     width: "128px",
     height: "128px",
+    '@media (max-width: 600px)': {
+      width: "96px",
+      height: "96px",
+    },
   },
   codeCardBody: {
     display: "flex",
@@ -794,6 +843,11 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("20px", "16px", "16px", "20px"),
     textDecorationLine: "none",
+    '@media (max-width: 600px)': {
+      minHeight: "auto",
+      ...shorthands.padding("16px"),
+      gap: "12px",
+    },
   },
   researchTitle: {
     margin: 0,
