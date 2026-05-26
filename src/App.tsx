@@ -12,6 +12,7 @@ import {
   Star16Filled,
 } from "@fluentui/react-icons";
 import { research, resources, templates } from "./data";
+import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 
 const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
 const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
@@ -921,6 +922,10 @@ function App() {
   const [showContactDialog, setShowContactDialog] = useState(false);
 
   useEffect(() => {
+    logPageView();
+  }, []);
+
+  useEffect(() => {
     fetch("https://api.github.com/repos/microsoft/AI-in-One-Dashboard")
       .then((res) => res.json())
       .then((data) => {
@@ -957,6 +962,7 @@ function App() {
 
         if (visible?.target.id) {
           setActiveTab(visible.target.id as (typeof sectionTabs)[number]["id"]);
+          logClick(TelemetryEvents.SectionView, { section: visible.target.id });
         }
       },
       {
@@ -977,6 +983,7 @@ function App() {
 
   const scrollToSection = (sectionId: (typeof sectionTabs)[number]["id"]) => {
     setActiveTab(sectionId);
+    logClick(TelemetryEvents.TabClick, { tab: sectionId });
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -1093,7 +1100,7 @@ function App() {
                 ))}
               </div>
 
-              <button className={styles.primaryButton} type="button" onClick={() => scrollToSection("templates")}>
+              <button className={styles.primaryButton} type="button" onClick={() => { logClick(TelemetryEvents.HeroExploreClick); scrollToSection("templates"); }}>
                 Explore labs
                 <ChevronDown16Regular fontSize={14} />
               </button>
@@ -1197,7 +1204,7 @@ function App() {
                       ) : null}
 
                       <div>
-                        <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer">
+                        <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}>
                           View template
                         </a>
                       </div>
@@ -1271,7 +1278,7 @@ function App() {
                     </div>
 
                     <div>
-                      <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer">
+                      <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.CodeViewClick, { resource: item.id })}>
                         View code
                       </a>
                     </div>
@@ -1322,7 +1329,7 @@ function App() {
                   <h3 className={styles.researchTitle}>{item.title}</h3>
                   <p className={styles.researchDescription}>{item.description}</p>
                 </div>
-                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: "auto" }}>
+                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
                   View report
                 </a>
               </article>

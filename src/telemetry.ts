@@ -57,6 +57,13 @@ export const TelemetryEvents = {
   NavLinkClick: "CopilotAnalyticsLabs.NavLinkClick",
   ContactUsOpen: "CopilotAnalyticsLabs.ContactUsOpen",
   VivaInsightsClick: "CopilotAnalyticsLabs.VivaInsightsClick",
+  // Funnel events
+  TabClick: "CopilotAnalyticsLabs.TabClick",
+  SectionView: "CopilotAnalyticsLabs.SectionView",
+  HeroExploreClick: "CopilotAnalyticsLabs.HeroExploreClick",
+  TemplateViewClick: "CopilotAnalyticsLabs.TemplateViewClick",
+  CodeViewClick: "CopilotAnalyticsLabs.CodeViewClick",
+  ResearchViewClick: "CopilotAnalyticsLabs.ResearchViewClick",
 } as const;
 
 /* ─── Public API ─── */
