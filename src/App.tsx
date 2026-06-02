@@ -883,7 +883,7 @@ const useStyles = makeStyles({
     backgroundColor: "#F4EAFD",
   },
   tagRose: {
-    color: "#BE4A63",
+    color: "#b4465e",
     backgroundColor: "#FDECEF",
   },
   tagTeal: {
