@@ -152,6 +152,7 @@ export const resources: ResourceItem[] = [
     url: "https://github.com/microsoft/pax",
     icon: DocumentBulletList24Regular,
     category: "Code",
+    image: `${base}images/code-portable-audit-exporter.png`,
   },
 ];
 
