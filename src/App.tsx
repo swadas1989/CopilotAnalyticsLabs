@@ -1427,7 +1427,7 @@ function App() {
                       ) : null}
 
                       <div>
-                        <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}>
+                        <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" aria-label={`View template: ${item.title}`} onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}>
                           View template
                         </a>
                       </div>
@@ -1501,7 +1501,7 @@ function App() {
                     </div>
 
                     <div>
-                      <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.CodeViewClick, { resource: item.id })}>
+                      <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" aria-label={`View code: ${item.title}`} onClick={() => logClick(TelemetryEvents.CodeViewClick, { resource: item.id })}>
                         View code
                       </a>
                     </div>
@@ -1552,7 +1552,7 @@ function App() {
                   <h3 className={styles.researchTitle}>{item.title}</h3>
                   <p className={styles.researchDescription}>{item.description}</p>
                 </div>
-                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
+                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" aria-label={`View report: ${item.title}`} style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
                   View report
                 </a>
               </article>
