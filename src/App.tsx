@@ -887,19 +887,19 @@ const useStyles = makeStyles({
     backgroundColor: "#FDECEF",
   },
   tagTeal: {
-    color: "#2A7D86",
+    color: "#1F6B73",
     backgroundColor: "#E8F8FA",
   },
   tagAmber: {
-    color: "#A86A1E",
+    color: "#8F5A18",
     backgroundColor: "#FFF2DE",
   },
   tagBlue: {
-    color: "#2F69E8",
+    color: "#2A5AC8",
     backgroundColor: "#EAF2FF",
   },
   tagOrange: {
-    color: "#D56A16",
+    color: "#A84B0F",
     backgroundColor: "#FFF0E2",
   },
   tagSlate: {
