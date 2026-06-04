@@ -150,7 +150,7 @@ export const resources: ResourceItem[] = [
     title: "Portable Audit Exporter",
     description:
       "Export and analyze Microsoft 365 audit logs with a portable, ready-to-run toolkit for compliance and usage insights.",
-    url: "https://github.com/microsoft/pax",
+    url: "https://microsoft.github.io/PAX-Cookbook/",
     icon: DocumentBulletList24Regular,
     category: "Code",
     image: addEditShareIcon,
