@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
   ChevronDown16Regular,
-  DataBarVerticalAscending24Regular,
-  DataTrending24Regular,
   DocumentBulletList24Regular,
   Eye16Regular,
-  PersonBoard24Regular,
   PersonFeedback20Regular,
   Star16Filled,
 } from "@fluentui/react-icons";
+import heroIconDataTrending from "./assets/hero-icon-data-trending.svg";
+import heroIconPersonData from "./assets/hero-icon-person-data.svg";
+import heroIconDataBar from "./assets/hero-icon-data-bar.svg";
+import sampleCodeBg from "./assets/sample-code-bg.svg";
+import heroBg from "./assets/bg-group.svg";
 import { research, resources, templates } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 
@@ -31,25 +33,22 @@ const heroValues = [
     title: "Pick a template, build a dashboard",
     description:
       "Templates with guided setup and data connectors to help you go from discovery to a working dashboard quickly.",
-    Icon: DataTrending24Regular,
-    accent: "linear-gradient(135deg, #FFE1B8 0%, #FFD5E6 100%)",
-    color: "#C85A1A",
+    icon: heroIconDataTrending,
+    alt: "",
   },
   {
     title: "Real code, ready for your data",
     description:
       "Sample code, prompt libraries, and a toolkit that are ready to run in your environment, with your data.",
-    Icon: PersonBoard24Regular,
-    accent: "linear-gradient(135deg, #E1E8FF 0%, #F2E5FF 100%)",
-    color: "#5E4BD8",
+    icon: heroIconPersonData,
+    alt: "",
   },
   {
     title: "Proven playbooks, built on real deployments",
     description:
       "Adoption playbooks and research based on enterprise rollouts, so you can build on proven patterns.",
-    Icon: DataBarVerticalAscending24Regular,
-    accent: "linear-gradient(135deg, #E8F7E5 0%, #DFF5FF 100%)",
-    color: "#2B7A56",
+    icon: heroIconDataBar,
+    alt: "",
   },
 ];
 
@@ -218,7 +217,7 @@ const useStyles = makeStyles({
       ...shorthands.padding("0"),
       justifyContent: "flex-start",
       overflowX: "auto",
-      gap: "12px",
+      gap: "16px",
       minHeight: "36px",
     },
   },
@@ -260,12 +259,12 @@ const useStyles = makeStyles({
     width: "100%",
     height: "100%",
     pointerEvents: "none",
-    backgroundImage: `url(${import.meta.env.BASE_URL}images/hero-bg.svg)`,
+    backgroundImage: `url("${heroBg}")`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     '@media (max-width: 600px)': {
-      opacity: 0.5,
+      opacity: 0.7,
     },
   },
   heroContent: {
@@ -330,11 +329,11 @@ const useStyles = makeStyles({
     justifyContent: "center",
     ...shorthands.borderRadius("24px"),
     backgroundColor: "rgba(210, 225, 255, 0.5)",
-    ...shorthands.padding("10px"),
+    ...shorthands.padding("16px"),
     boxSizing: "border-box",
     '@media (max-width: 600px)': {
       ...shorthands.borderRadius("16px"),
-      ...shorthands.padding("8px"),
+      ...shorthands.padding("10px"),
     },
   },
   valuesPanel: {
@@ -344,7 +343,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     alignItems: "center",
     gap: "24px",
-    backgroundColor: "rgba(255,255,255,0.72)",
+    backgroundColor: "rgba(255,255,255,0.7)",
     backdropFilter: "blur(10px)",
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
@@ -378,15 +377,11 @@ const useStyles = makeStyles({
   valueIcon: {
     width: "64px",
     height: "64px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    ...shorthands.borderRadius("20px"),
-    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.5)",
+    objectFit: "contain",
+    display: "block",
     '@media (max-width: 600px)': {
-      width: "48px",
-      height: "48px",
-      ...shorthands.borderRadius("14px"),
+      width: "56px",
+      height: "56px",
     },
   },
   valueTitle: {
@@ -466,7 +461,9 @@ const useStyles = makeStyles({
     top: "48px",
     zIndex: 90,
     backgroundColor: "#ffffff",
-    boxShadow: "0px 0px 2px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.14)",
+    backgroundImage:
+      "linear-gradient(96.15deg, rgba(118, 79, 245, 0.1) 12.38%, rgba(63, 108, 233, 0.1) 39.4%, rgba(32, 187, 198, 0.1) 96.13%)",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
     '@media (max-width: 600px)': {
       top: "96px",
     },
@@ -514,21 +511,23 @@ const useStyles = makeStyles({
     ':after': {
       content: '""',
       position: "absolute",
-      left: "0",
-      right: "0",
+      left: "12px",
+      right: "12px",
       bottom: "0",
       height: "3px",
-      ...shorthands.borderRadius("999px"),
-      background: "linear-gradient(137deg, #764FF5 13%, #3F6CE9 43%, #20BBC6 100%)",
+      ...shorthands.borderRadius("9999px"),
+      backgroundColor: "#335CCC",
     },
   },
   section: {
     ...shorthands.padding("64px", "256px"),
+    scrollMarginTop: "96px",
     '@media (max-width: 1200px)': {
       ...shorthands.padding("64px", "80px"),
     },
     '@media (max-width: 600px)': {
       ...shorthands.padding("36px", "16px"),
+      scrollMarginTop: "144px",
     },
   },
   sectionTemplateBg: {
@@ -536,12 +535,14 @@ const useStyles = makeStyles({
       "linear-gradient(113deg, rgba(240,231,255,0.7) 0%, rgba(255,255,255,1) 40%, rgba(228,243,255,0.9) 100%)",
   },
   sectionCodeBg: {
-    background:
-      "linear-gradient(113deg, rgba(248,230,255,0.7) 0%, rgba(255,255,255,1) 48%, rgba(255,245,214,0.85) 100%)",
+    backgroundColor: "#FFFFFF",
+    backgroundSize: "100% 100%",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
   sectionResearchBg: {
     background:
-      "linear-gradient(180deg, rgba(255,252,244,1) 0%, rgba(250,247,237,1) 100%)",
+      "linear-gradient(90deg, #F0F0E9 0%, #FFFDF0 100%)",
   },
   sectionContent: {
     width: "100%",
@@ -568,11 +569,14 @@ const useStyles = makeStyles({
     fontWeight: 600,
     letterSpacing: "0.02em",
     textTransform: "uppercase",
-    backgroundImage: "linear-gradient(137deg, #764FF5 13%, #3F6CE9 43%, #20BBC6 100%)",
+    backgroundImage: "linear-gradient(96.15deg, #764FF5 12.38%, #3F6CE9 39.4%, #20BBC6 96.13%)",
     color: "transparent",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
+  },
+  eyebrowWarm: {
+    backgroundImage: "linear-gradient(96.15deg, #E76633 -1.08%, #9D68E3 14.88%, #20BBC6 96.13%)",
   },
   sectionHeadingRow: {
     display: "flex",
@@ -698,8 +702,8 @@ const useStyles = makeStyles({
     fontSize: "14px",
     lineHeight: "20px",
     fontWeight: 400,
-    ...shorthands.padding("4px", "6px"),
-    ...shorthands.borderRadius("100px"),
+    ...shorthands.padding("6px", "12px"),
+    ...shorthands.borderRadius("9999px"),
   },
   badgeGreen: {
     color: "#0E700E",
@@ -1176,10 +1180,32 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  const smoothScrollTo = (target: HTMLElement) => {
+    const start = window.scrollY;
+    const headerOffset = 96;
+    const end = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    const distance = end - start;
+    const duration = Math.min(800, Math.max(400, Math.abs(distance) * 0.5));
+    let startTime: number | null = null;
+
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, start + distance * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
   const scrollToSection = (sectionId: (typeof sectionTabs)[number]["id"]) => {
     setActiveTab(sectionId);
     logClick(TelemetryEvents.TabClick, { tab: sectionId });
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = document.getElementById(sectionId);
+    if (el) smoothScrollTo(el);
   };
 
   return (
@@ -1319,11 +1345,9 @@ function App() {
           <div className={styles.valuesShell}>
             <div className={styles.valuesPanel}>
               <div className={styles.valuesGrid}>
-                {heroValues.map(({ title, description, Icon, accent, color }) => (
+                {heroValues.map(({ title, description, icon, alt }) => (
                   <div key={title} className={styles.valueCard}>
-                    <div className={styles.valueIcon} style={{ background: accent, color }}>
-                      <Icon fontSize={28} />
-                    </div>
+                    <img src={icon} alt={alt} className={styles.valueIcon} aria-hidden="true" />
                     <h2 className={styles.valueTitle}>{title}</h2>
                     <p className={styles.valueDescription}>{description}</p>
                   </div>
@@ -1380,7 +1404,7 @@ function App() {
                   className={mergeClasses(styles.templateCard, isFeatured && styles.templateCardFeatured)}
                 >
                   {!isFeatured && item.image ? (
-                    <img className={styles.templateCardImage} src={item.image} alt="" />
+                    <img className={styles.templateCardImage} src={item.image} alt="" loading="lazy" decoding="async" />
                   ) : null}
 
                   <div className={styles.templateCardContent}>
@@ -1444,6 +1468,8 @@ function App() {
                       className={mergeClasses(styles.templateCardImage, styles.templateCardImageFeatured)}
                       src={item.image}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : null}
                 </article>
@@ -1453,10 +1479,10 @@ function App() {
         </div>
       </section>
 
-      <section id="sample-code" className={mergeClasses(styles.section, styles.sectionCodeBg)}>
+      <section id="sample-code" className={mergeClasses(styles.section, styles.sectionCodeBg)} style={{ backgroundImage: `url("${sampleCodeBg}")` }}>
         <div className={styles.sectionContent}>
           <div className={styles.sectionTitleArea}>
-            <p className={styles.eyebrow}>Sample code</p>
+            <p className={mergeClasses(styles.eyebrow, styles.eyebrowWarm)}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
             </div>
@@ -1477,7 +1503,7 @@ function App() {
                     className={mergeClasses(styles.codeArt, isFeatured && styles.codeArtFeatured)}
                   >
                     {item.image ? (
-                      <img src={item.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      <img src={item.image} alt="" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                     ) : (
                       <Icon />
                     )}
@@ -1521,7 +1547,7 @@ function App() {
       <section id="research" className={mergeClasses(styles.section, styles.sectionResearchBg)}>
         <div className={styles.sectionContent}>
           <div className={styles.sectionTitleArea}>
-            <p className={styles.eyebrow}>Research and playbooks</p>
+            <p className={mergeClasses(styles.eyebrow, styles.eyebrowWarm)}>Research and playbooks</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Strategies already in play</h2>
             </div>
