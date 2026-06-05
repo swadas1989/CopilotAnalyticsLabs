@@ -1583,8 +1583,8 @@ function App() {
                   <h3 className={styles.researchTitle}>{item.title}</h3>
                   <p className={styles.researchDescription}>{item.description}</p>
                 </div>
-                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" aria-label={`View report: ${item.title}`} style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
-                  View report
+                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" aria-label={`${item.ctaLabel ?? "View report"}: ${item.title}`} style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
+                  {item.ctaLabel ?? "View report"}
                 </a>
               </article>
             ))}

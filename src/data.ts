@@ -33,6 +33,7 @@ export interface ResearchItem {
   description: string;
   url: string;
   icon: React.ComponentType;
+  ctaLabel?: string;
 }
 
 const base = import.meta.env.BASE_URL;
@@ -85,9 +86,9 @@ export const templates: TemplateItem[] = [
   },
   {
     id: "superuser-impact",
-    title: "SuperUser Impact Report",
+    title: "Super User Impact Report",
     description:
-      "Analyze the work and productivity impact of superusers across your organization with detailed pattern analysis.",
+      "Analyze the work and productivity impact of super users across your organization with detailed pattern analysis.",
     url: "https://github.com/microsoft/superuserimpact#superuser-impact-report",
     icon: PeopleStar24Regular,
     image: `${base}images/card-superuser-impact.png`,
@@ -99,7 +100,7 @@ export const resources: ResourceItem[] = [
     id: "viva-insights-essentials",
     title: "Viva Insights Analysis - Essentials",
     description:
-      "Get started with R & Python utility scripts — exploratory data analysis, standard visualisations (bar charts, trend lines, network diagrams), and custom KPI generation from Viva Insights data.",
+      "Get started with R & Python utility scripts — exploratory data analysis, standard visualizations (bar charts, trend lines, network diagrams), and custom KPI generation from Viva Insights data.",
     url: "https://microsoft.github.io/viva-insights-sample-code/essentials/",
     icon: DocumentBulletList24Regular,
     category: "Code",
@@ -186,9 +187,10 @@ export const research: ResearchItem[] = [
     id: "copilot-advanced-analytics",
     title: "Advanced Analysis Examples with Copilot Analytics",
     description:
-      "A recipe book of analysis and visualisation examples for measuring Copilot adoption and impact — built for analytics leaders and data scientists.",
+      "A recipe book of analysis and visualization examples for measuring Copilot adoption and impact — built for analytics leaders and data scientists.",
     url: "https://aka.ms/CopilotAdvancedAnalytics",
     icon: DocumentBulletList24Regular,
+    ctaLabel: "Download report",
   },
   {
     id: "getting-started-custom-analysis",
@@ -197,6 +199,7 @@ export const research: ResearchItem[] = [
       "A tactical playbook for custom analysis — from planning your measurement programme and setting up Viva Insights to running queries and building an analysis playbook.",
     url: "https://adoption.microsoft.com/files/copilot/GettingStartedWithCustomAnalysisInCopilotAnalytics.pptx",
     icon: DocumentBulletList24Regular,
+    ctaLabel: "Download report",
   },
   {
     id: "when-ai-met-the-meeting",
