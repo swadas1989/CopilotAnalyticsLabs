@@ -32,21 +32,21 @@ const heroValues = [
   {
     title: "Pick a template, build a dashboard",
     description:
-      "Templates with guided setup and data connectors to help you go from discovery to a working dashboard quickly.",
+      "Templates, guided setup, and connectors to quickly turn ideas into dashboards.",
     icon: heroIconDataTrending,
     alt: "",
   },
   {
-    title: "Real code, ready for your data",
+    title: "Real code, ready for data",
     description:
-      "Sample code, prompt libraries, and a toolkit that are ready to run in your environment, with your data.",
+      "Ready-to-run sample code, prompts, and a toolkit for your environment.",
     icon: heroIconPersonData,
     alt: "",
   },
   {
-    title: "Proven playbooks, built on real deployments",
+    title: "Proven playbooks from real deployments",
     description:
-      "Adoption playbooks and research based on enterprise rollouts, so you can build on proven patterns.",
+      "Adoption playbooks and research based on enterprise rollouts.",
     icon: heroIconDataBar,
     alt: "",
   },
@@ -124,7 +124,7 @@ const researchOrder = [
   "adoption-playbook",
   "getting-started-custom-analysis",
   "work-trend-index-2026",
-  "agent-assisted-hours",
+  "new-future-of-work",
   "copilot-advanced-analytics",
   "when-ai-met-the-meeting",
 ];
@@ -142,9 +142,9 @@ const researchTags: Record<string, { text: string; tone: string }[]> = {
     { text: "Research", tone: "teal" },
     { text: "Industry wide", tone: "amber" },
   ],
-  "agent-assisted-hours": [
-    { text: "Impact", tone: "blue" },
-    { text: "Agents", tone: "orange" },
+  "new-future-of-work": [
+    { text: "Research", tone: "teal" },
+    { text: "Industry wide", tone: "amber" },
   ],
   "copilot-advanced-analytics": [
     { text: "Impact", tone: "blue" },

@@ -147,7 +147,7 @@ export const resources: ResourceItem[] = [
   },
   {
     id: "portable-audit-exporter",
-    title: "Portable Audit Exporter",
+    title: "Portable Audit eXporter (PAX)",
     description:
       "Export and analyze Microsoft 365 audit logs with a portable, ready-to-run toolkit for compliance and usage insights.",
     url: "https://microsoft.github.io/PAX-Cookbook/",
@@ -167,11 +167,11 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
   },
   {
-    id: "agent-assisted-hours",
-    title: "Agent Assisted Hours Calculation",
+    id: "new-future-of-work",
+    title: "The New Future of Work",
     description:
-      "Learn how to calculate conversational agent impact using Copilot Studio agents within Viva Insights.",
-    url: "https://learn.microsoft.com/en-us/viva/insights/advanced/analyst/templates/copilot-studio-agents#conversational-agent-impact",
+      "A research hub from Microsoft — controlled studies, real-world signals, and researcher perspectives on how AI is changing work.",
+    url: "https://microsoft.github.io/nfw-reader/",
     icon: DocumentBulletList24Regular,
   },
   {
