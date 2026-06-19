@@ -122,7 +122,7 @@ const resourceMeta: Record<
 
 const researchOrder = [
   "adoption-playbook",
-  "getting-started-custom-analysis",
+  "causal-impact-copilot-word",
   "work-trend-index-2026",
   "new-future-of-work",
   "copilot-advanced-analytics",
@@ -134,9 +134,9 @@ const researchTags: Record<string, { text: string; tone: string }[]> = {
     { text: "Adoption", tone: "green" },
     { text: "Org wide", tone: "purple" },
   ],
-  "getting-started-custom-analysis": [
-    { text: "Methodology", tone: "rose" },
-    { text: "Org wide", tone: "purple" },
+  "causal-impact-copilot-word": [
+    { text: "Research", tone: "teal" },
+    { text: "Industry wide", tone: "amber" },
   ],
   "work-trend-index-2026": [
     { text: "Research", tone: "teal" },

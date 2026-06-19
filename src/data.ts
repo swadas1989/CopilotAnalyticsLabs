@@ -193,13 +193,12 @@ export const research: ResearchItem[] = [
     ctaLabel: "Download report",
   },
   {
-    id: "getting-started-custom-analysis",
-    title: "Getting Started with Custom Analysis in Copilot Analytics",
+    id: "causal-impact-copilot-word",
+    title: "How Copilot Changed the Pace of Work in Word",
     description:
-      "A tactical playbook for custom analysis — from planning your measurement programme and setting up Viva Insights to running queries and building an analysis playbook.",
-    url: "https://adoption.microsoft.com/files/copilot/GettingStartedWithCustomAnalysisInCopilotAnalytics.pptx",
+      "A study of 72,000+ Word users reveals how sustained Copilot adoption changed the pace of work — and introduces a new method to measure AI impact as products and people evolve together.",
+    url: "https://microsoft.github.io/nfw-reader/posts/causal-impact-copilot",
     icon: DocumentBulletList24Regular,
-    ctaLabel: "Download report",
   },
   {
     id: "when-ai-met-the-meeting",
