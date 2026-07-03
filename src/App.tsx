@@ -66,9 +66,9 @@ const heroValues = [
 
 const templateOrder = [
   "aio-dashboard",
-  "ai-business-value",
+  "cowork-value-estimator",
   "github-copilot-impact-org",
-  "github-copilot-impact-personal",
+  "ai-business-value",
   "m365-copilot-personal",
   "m365-app-usage",
   "superuser-impact",
@@ -89,6 +89,9 @@ const templateMeta: Record<
       { value: "—", label: "Stars" },
       { value: "—", label: "Watching" },
     ],
+  },
+  "cowork-value-estimator": {
+    badges: [{ text: "Featured", tone: "green" }],
   },
   "m365-copilot-personal": {},
 };
