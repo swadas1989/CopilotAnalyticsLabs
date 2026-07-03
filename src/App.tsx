@@ -133,7 +133,7 @@ const researchOrder = [
   "adoption-playbook",
   "getting-started-custom-analysis",
   "work-trend-index-2026",
-  "agent-assisted-hours",
+  "cowork-value-estimator",
   "copilot-advanced-analytics",
 ];
 
@@ -150,9 +150,9 @@ const researchTags: Record<string, { text: string; tone: string }[]> = {
     { text: "Research", tone: "teal" },
     { text: "Industry wide", tone: "amber" },
   ],
-  "agent-assisted-hours": [
-    { text: "Impact", tone: "blue" },
-    { text: "Agents", tone: "orange" },
+  "cowork-value-estimator": [
+    { text: "Methodology", tone: "rose" },
+    { text: "Cowork", tone: "teal" },
   ],
   "copilot-advanced-analytics": [
     { text: "Impact", tone: "blue" },

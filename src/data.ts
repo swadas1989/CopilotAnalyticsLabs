@@ -166,11 +166,11 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
   },
   {
-    id: "agent-assisted-hours",
-    title: "Agent Assisted Hours Calculation",
+    id: "cowork-value-estimator",
+    title: "Cowork Value Estimator Methodology",
     description:
-      "Learn how to calculate conversational agent impact using Copilot Studio agents within Viva Insights.",
-    url: "https://learn.microsoft.com/en-us/viva/insights/advanced/analyst/templates/copilot-studio-agents#conversational-agent-impact",
+      "Explore the methodology behind the Cowork Value Estimator for measuring collaboration impact.",
+    url: "/CopilotAnalyticsLabs/Cowork_Methodology.pdf",
     icon: DocumentBulletList24Regular,
   },
   {
