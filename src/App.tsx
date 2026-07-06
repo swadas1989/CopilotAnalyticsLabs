@@ -1,16 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
-  ChevronDown16Regular,
+  ArrowRight16Regular,
+  ChevronLeft20Regular,
+  ChevronRight20Regular,
+  CompassNorthwest24Regular,
   DataBarVerticalAscending24Regular,
   DataTrending24Regular,
-  Dismiss24Regular,
   DocumentBulletList24Regular,
   Eye16Regular,
-  PersonBoard24Regular,
+  HatGraduation24Regular,
   PersonFeedback20Regular,
   Sparkle24Regular,
   Star16Filled,
+  Toolbox24Regular,
 } from "@fluentui/react-icons";
 import { research, resources, templates } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
@@ -23,44 +26,105 @@ const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
 
 
 const sectionTabs = [
+  { id: "whats-new", label: "What's new" },
   { id: "templates", label: "Templates" },
-  { id: "sample-code", label: "Sample Code" },
-  { id: "research", label: "Research" },
-  { id: "product-roadmap", label: "Product Roadmap" },
+  { id: "sample-code", label: "Sample code" },
+  { id: "research", label: "Research & Playbooks" },
+  { id: "product-roadmap", label: "Roadmap" },
 ] as const;
+
+const featuredItems: {
+  id: string;
+  kind: string;
+  tone: "green" | "teal" | "purple" | "amber";
+  title: string;
+  description: string;
+  url: string;
+  date: string;
+}[] = [
+  {
+    id: "f-aio",
+    kind: "Template",
+    tone: "green",
+    title: "AI in One Dashboard",
+    description:
+      "Comprehensive Copilot and Agent analytics covering adoption, usage, impact, and ROI — all in a single Power BI dashboard.",
+    url: "https://github.com/microsoft/AI-in-One-Dashboard#-dashboard-preview",
+    date: "2 days ago",
+  },
+  {
+    id: "f-wti",
+    kind: "Research",
+    tone: "teal",
+    title: "Work Trend Index Report 2026",
+    description:
+      "The latest annual Work Trend Index — data-driven insights on how AI is reshaping work, productivity, and organizations.",
+    url: "https://assets-c4akfrf5b4d3f4b7.z01.azurefd.net/assets/2026/05/2026_Work_Trend_Index_Annual_Report_050526-7_69fc5b1c4e265.pdf",
+    date: "5 days ago",
+  },
+  {
+    id: "f-adoption",
+    kind: "Playbook",
+    tone: "purple",
+    title: "Customer Adoption Playbook",
+    description:
+      "Adoption guide with best practices for rolling out analytics across your organization.",
+    url: "https://adoption.microsoft.com/en-us/viva/insights/",
+    date: "1 week ago",
+  },
+  {
+    id: "f-frontier",
+    kind: "Sample code",
+    tone: "amber",
+    title: "Frontier Analytics",
+    description:
+      "AI-assisted, export-first toolkit — ready-to-paste prompts for coding agents and sample specs for ROI dashboards.",
+    url: "https://microsoft.github.io/viva-insights-sample-code/frontier-analytics/",
+    date: "1 week ago",
+  },
+  {
+    id: "f-cowork",
+    kind: "Template",
+    tone: "green",
+    title: "Cowork Value Estimator",
+    description:
+      "Your personal Copilot Cowork impact report — research-anchored Time Saved and value mapped to the four Value Pillars.",
+    url: "https://github.com/microsoft/What-I-did-with-Cowork#option-1--let-cowork-install-it-for-you-easiest",
+    date: "2 weeks ago",
+  },
+  {
+    id: "f-copilot",
+    kind: "Sample code",
+    tone: "amber",
+    title: "Copilot Analytics",
+    description:
+      "Copilot-specific scripts — usage volume & breadth analysis, habituality scoring, and adoption trend tracking.",
+    url: "https://microsoft.github.io/viva-insights-sample-code/copilot/",
+    date: "3 weeks ago",
+  },
+];
 
 const heroValues = [
   {
-    title: "Pick a template, build a dashboard",
-    description:
-      "Templates with setup flows and data connectors - go from discovery to a working dashboard quickly.",
-    Icon: DataTrending24Regular,
-    accent: "linear-gradient(135deg, #FFE1B8 0%, #FFD5E6 100%)",
-    color: "#C85A1A",
+    label: "Build",
+    title: "Build with ready-to-use assets",
+    description: "Templates, code, and prompts to plug into your own data.",
+    Icon: Toolbox24Regular,
+    color: "#3F6CE9",
   },
   {
-    title: "Real code, run on your data",
-    description:
-      "Sample code, prompt libraries and toolkit - ready to run on your environment and data.",
-    Icon: PersonBoard24Regular,
-    accent: "linear-gradient(135deg, #E1E8FF 0%, #F2E5FF 100%)",
-    color: "#5E4BD8",
+    label: "Learn",
+    title: "Learn from proven deployments",
+    description: "Playbooks, research, and demos from real customer rollouts.",
+    Icon: HatGraduation24Regular,
+    color: "#C8641E",
   },
   {
-    title: "Proven playbooks, from real deployments",
-    description:
-      "Adoption playbooks and research grounded in enterprise rollouts - build on patterns that work.",
-    Icon: DataBarVerticalAscending24Regular,
-    accent: "linear-gradient(135deg, #E8F7E5 0%, #DFF5FF 100%)",
-    color: "#2B7A56",
-  },
-  {
-    title: "See what's coming next",
-    description:
-      "Product roadmap with upcoming capabilities — agent analytics, ROI measurement, and foundational trust.",
-    Icon: Sparkle24Regular,
-    accent: "linear-gradient(135deg, #E1F5FE 0%, #F3E5F5 100%)",
-    color: "#6A1B9A",
+    label: "Explore",
+    title: "See what's new and next",
+    description: "A preview of latest drops and upcoming capabilities.",
+    Icon: CompassNorthwest24Regular,
+    color: "#7A49BB",
   },
 ];
 
@@ -224,6 +288,39 @@ const roadmapItems: RoadmapItem[] = [
   },
 ];
 
+const filterCategories = [
+  "Featured",
+  "AI impact",
+  "Org-wide",
+  "Individual",
+  "Manager",
+  "Industry",
+] as const;
+
+type FilterCategory = (typeof filterCategories)[number];
+
+const templateCategory: Record<string, FilterCategory> = {
+  "aio-dashboard": "AI impact",
+  "ai-business-value": "AI impact",
+  "github-copilot-impact-org": "Org-wide",
+  "m365-app-usage": "Org-wide",
+  "cowork-value-estimator": "Individual",
+  "m365-copilot-personal": "Individual",
+  "superuser-impact": "Manager",
+};
+
+const codeCategory: Record<string, FilterCategory> = {
+  "viva-insights-essentials": "AI impact",
+  "advanced-analytics": "AI impact",
+  "copilot-analytics": "AI impact",
+  "frontier-analytics": "Org-wide",
+  "network-analysis": "Org-wide",
+};
+
+const VIEW_ALL_TEMPLATES_URL = "https://github.com/microsoft/AI-in-One-Dashboard";
+const VIEW_ALL_CODE_URL = "https://microsoft.github.io/viva-insights-sample-code/";
+const VIEW_ALL_RESEARCH_URL = "https://adoption.microsoft.com/en-us/copilot/";
+
 const useStyles = makeStyles({
   page: {
     minHeight: "100vh",
@@ -312,7 +409,7 @@ const useStyles = makeStyles({
   },
   hero: {
     position: "relative",
-    minHeight: "520px",
+    minHeight: "auto",
     overflow: "hidden",
     backgroundColor: "#ffffff",
     '@media (max-width: 600px)': {
@@ -1158,6 +1255,295 @@ const useStyles = makeStyles({
       textDecorationLine: "underline",
     },
   },
+  heroValuesRow: {
+    width: "100%",
+    maxWidth: "860px",
+    display: "flex",
+    justifyContent: "center",
+    gap: "40px",
+    '@media (max-width: 700px)': {
+      flexDirection: "column",
+      gap: "24px",
+      alignItems: "center",
+    },
+  },
+  heroValueItem: {
+    flex: "1 1 0",
+    minWidth: 0,
+    maxWidth: "260px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "6px",
+    textAlign: "center",
+  },
+  heroValueLabelRow: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  heroValueLabel: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+  },
+  heroValueTitle: {
+    margin: 0,
+    fontSize: "16px",
+    lineHeight: "22px",
+    fontWeight: 600,
+    color: "#0E1726",
+  },
+  heroValueDescription: {
+    margin: 0,
+    fontSize: "13px",
+    lineHeight: "18px",
+    color: "#424242",
+  },
+  viewAllLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    color: "#335CCC",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    textDecorationLine: "none",
+    whiteSpace: "nowrap",
+    ':hover': {
+      textDecorationLine: "underline",
+    },
+  },
+  chipRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+  },
+  chip: {
+    display: "inline-flex",
+    alignItems: "center",
+    fontSize: "13px",
+    lineHeight: "18px",
+    fontWeight: 500,
+    color: "#424242",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    ...shorthands.padding("6px", "14px"),
+    ...shorthands.borderRadius("999px"),
+    ...shorthands.border("1px", "solid", "#E0E0E0"),
+    ':hover': {
+      backgroundColor: "#F5F5F5",
+    },
+  },
+  chipActive: {
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    ...shorthands.border("1px", "solid", "#335CCC"),
+    ':hover': {
+      backgroundColor: "#294DAE",
+    },
+  },
+  emptyState: {
+    ...shorthands.padding("40px", "0"),
+    textAlign: "center",
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#616161",
+  },
+  researchLayout: {
+    display: "grid",
+    gridTemplateColumns: "minmax(260px, 340px) 1fr",
+    gap: "48px",
+    '@media (max-width: 900px)': {
+      gridTemplateColumns: "1fr",
+      gap: "24px",
+    },
+  },
+  researchIntro: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "28px",
+  },
+  researchIntroBlock: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    ...shorthands.borderLeft("2px", "solid", "#E0E0E0"),
+    ...shorthands.padding("0", "0", "0", "16px"),
+  },
+  researchIntroLabel: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 700,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    color: "#0E1726",
+  },
+  researchIntroText: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#616161",
+  },
+  researchList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+  roadmapTabs: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "4px",
+    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+  },
+  roadmapTab: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: "transparent",
+    color: "#424242",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
+    cursor: "pointer",
+    ...shorthands.padding("10px", "14px"),
+    ...shorthands.border("none"),
+    ...shorthands.borderBottom("2px", "solid", "transparent"),
+    marginBottom: "-1px",
+    ':hover': {
+      color: "#0E1726",
+    },
+  },
+  roadmapTabActive: {
+    color: "#0E1726",
+    fontWeight: 600,
+    ...shorthands.borderBottom("2px", "solid", "#335CCC"),
+  },
+  roadmapTabDescription: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#424242",
+    maxWidth: "760px",
+  },
+  roadmapDetailGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "16px",
+    '@media (max-width: 900px)': {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    },
+    '@media (max-width: 600px)': {
+      gridTemplateColumns: "1fr",
+    },
+  },
+  roadmapDetailCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
+    ...shorthands.borderRadius("16px"),
+    ...shorthands.padding("20px"),
+    boxSizing: "border-box",
+  },
+  sectionWhatsNewBg: {
+    background:
+      "linear-gradient(113deg, rgba(255,244,232,0.8) 0%, rgba(255,255,255,1) 45%, rgba(240,231,255,0.7) 100%)",
+  },
+  featuredRow: {
+    display: "flex",
+    gap: "20px",
+    overflowX: "auto",
+    scrollSnapType: "x mandatory",
+    scrollPaddingLeft: "2px",
+    ...shorthands.padding("4px", "2px", "12px"),
+    scrollbarWidth: "none",
+    '::-webkit-scrollbar': {
+      display: "none",
+    },
+  },
+  featuredCard: {
+    flex: "0 0 320px",
+    scrollSnapAlign: "start",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)",
+    ...shorthands.borderRadius("16px"),
+    ...shorthands.padding("20px"),
+    boxSizing: "border-box",
+    '@media (max-width: 600px)': {
+      flex: "0 0 82%",
+    },
+  },
+  featuredTitle: {
+    margin: 0,
+    fontSize: "16px",
+    lineHeight: "22px",
+    fontWeight: 600,
+    color: "#0E1726",
+  },
+  featuredDescription: {
+    margin: 0,
+    fontSize: "13px",
+    lineHeight: "18px",
+    color: "#616161",
+    display: "-webkit-box",
+    WebkitLineClamp: "3",
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+    flex: 1,
+  },
+  featuredFooter: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "4px",
+  },
+  featuredDate: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: "#616161",
+  },
+  featuredArrow: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "32px",
+    height: "32px",
+    color: "#335CCC",
+    backgroundColor: "#EEF2FF",
+    ...shorthands.borderRadius("999px"),
+    ...shorthands.border("none"),
+    textDecorationLine: "none",
+    cursor: "pointer",
+    ':hover': {
+      backgroundColor: "#E0E7FF",
+    },
+  },
+  featuredNav: {
+    display: "flex",
+    gap: "8px",
+  },
+  featuredNavButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "32px",
+    height: "32px",
+    color: "#424242",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    ...shorthands.borderRadius("999px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ':hover': {
+      backgroundColor: "#F5F5F5",
+    },
+  },
 });
 
 function MicrosoftLogoWordmark() {
@@ -1178,10 +1564,12 @@ function MicrosoftLogoWordmark() {
 
 function App() {
   const styles = useStyles();
-  const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("templates");
+  const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
-  const [selectedRoadmapItem, setSelectedRoadmapItem] = useState<RoadmapItem | null>(null);
+  const [templateFilter, setTemplateFilter] = useState<FilterCategory>("Featured");
+  const [codeFilter, setCodeFilter] = useState<FilterCategory>("Featured");
+  const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
 
   useEffect(() => {
     logPageView();
@@ -1211,6 +1599,29 @@ function App() {
     const map = new Map(research.map((item) => [item.id, item]));
     return researchOrder.map((id) => map.get(id)).filter(Boolean) as typeof research;
   }, []);
+
+  const visibleTemplates = useMemo(
+    () =>
+      templateFilter === "Featured"
+        ? orderedTemplates
+        : orderedTemplates.filter((item) => templateCategory[item.id] === templateFilter),
+    [orderedTemplates, templateFilter],
+  );
+
+  const visibleResources = useMemo(
+    () =>
+      codeFilter === "Featured"
+        ? resources
+        : resources.filter((item) => codeCategory[item.id] === codeFilter),
+    [codeFilter],
+  );
+
+  const activeRoadmap = roadmapItems.find((item) => item.id === activeRoadmapTab) ?? roadmapItems[0];
+
+  const featuredRowRef = useRef<HTMLDivElement>(null);
+  const scrollFeatured = (dir: number) => {
+    featuredRowRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1348,25 +1759,17 @@ function App() {
             </p>
           </div>
 
-          <div className={styles.valuesShell}>
-            <div className={styles.valuesPanel}>
-              <div className={styles.valuesGrid}>
-                {heroValues.map(({ title, description, Icon, accent, color }) => (
-                  <div key={title} className={styles.valueCard}>
-                    <div className={styles.valueIcon} style={{ background: accent, color }}>
-                      <Icon fontSize={28} />
-                    </div>
-                    <h2 className={styles.valueTitle}>{title}</h2>
-                    <p className={styles.valueDescription}>{description}</p>
-                  </div>
-                ))}
+          <div className={styles.heroValuesRow}>
+            {heroValues.map(({ label, title, description, Icon, color }) => (
+              <div key={label} className={styles.heroValueItem}>
+                <div className={styles.heroValueLabelRow} style={{ color }}>
+                  <Icon fontSize={20} />
+                  <span className={styles.heroValueLabel}>{label}</span>
+                </div>
+                <h2 className={styles.heroValueTitle}>{title}</h2>
+                <p className={styles.heroValueDescription}>{description}</p>
               </div>
-
-              <button className={styles.primaryButton} type="button" onClick={() => { logClick(TelemetryEvents.HeroExploreClick); scrollToSection("templates"); }}>
-                Explore labs
-                <ChevronDown16Regular fontSize={14} />
-              </button>
-            </div>
+            ))}
           </div>
         </div>
       </header>
@@ -1389,20 +1792,99 @@ function App() {
         <div className={styles.tabsRail} />
       </div>
 
+      <section id="whats-new" className={mergeClasses(styles.section, styles.sectionWhatsNewBg)}>
+        <div className={styles.sectionContent}>
+          <div className={styles.sectionTitleArea}>
+            <p className={styles.eyebrow}>Featured</p>
+            <div className={styles.sectionHeadingRow}>
+              <h2 className={styles.sectionHeading}>See what's new and popular in labs</h2>
+            </div>
+            <p className={styles.sectionDescription}>
+              Newly added resources containing templates, sample code, research, and playbooks.
+            </p>
+          </div>
+
+          <div className={styles.featuredRow} ref={featuredRowRef}>
+            {featuredItems.map((item) => (
+              <article key={item.id} className={styles.featuredCard}>
+                <div className={styles.badgeRow}>
+                  <span
+                    className={mergeClasses(
+                      styles.tag,
+                      item.tone === "green" && styles.tagGreen,
+                      item.tone === "teal" && styles.tagTeal,
+                      item.tone === "purple" && styles.tagPurple,
+                      item.tone === "amber" && styles.tagAmber,
+                    )}
+                  >
+                    {item.kind}
+                  </span>
+                </div>
+                <h3 className={styles.featuredTitle}>{item.title}</h3>
+                <p className={styles.featuredDescription}>{item.description}</p>
+                <div className={styles.featuredFooter}>
+                  <span className={styles.featuredDate}>{item.date}</span>
+                  <a
+                    className={styles.featuredArrow}
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Open ${item.title}`}
+                    onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}
+                  >
+                    <ArrowRight16Regular fontSize={16} />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className={styles.featuredNav}>
+            <button type="button" className={styles.featuredNavButton} aria-label="Scroll previous" onClick={() => scrollFeatured(-1)}>
+              <ChevronLeft20Regular fontSize={18} />
+            </button>
+            <button type="button" className={styles.featuredNavButton} aria-label="Scroll next" onClick={() => scrollFeatured(1)}>
+              <ChevronRight20Regular fontSize={18} />
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section id="templates" className={mergeClasses(styles.section, styles.sectionTemplateBg)}>
         <div className={styles.sectionContent}>
           <div className={styles.sectionTitleArea}>
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
-              <h2 className={styles.sectionHeading}>Pick a template, build a dashboard</h2>
+              <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
+              <a className={styles.viewAllLink} href={VIEW_ALL_TEMPLATES_URL} target="_blank" rel="noreferrer">
+                View all templates
+                <ArrowRight16Regular fontSize={14} />
+              </a>
             </div>
             <p className={styles.sectionDescription}>
               Production-ready templates for dashboards across adoption, usage, impact, and business value, combining Viva Insights with broader organizational signals.
             </p>
           </div>
 
+          <div className={styles.chipRow} role="tablist" aria-label="Filter templates">
+            {filterCategories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={mergeClasses(styles.chip, templateFilter === cat && styles.chipActive)}
+                aria-pressed={templateFilter === cat}
+                onClick={() => setTemplateFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {visibleTemplates.length === 0 ? (
+            <p className={styles.emptyState}>More templates are coming to this category soon.</p>
+          ) : (
           <div className={styles.templateGrid}>
-            {orderedTemplates.map((item) => {
+            {visibleTemplates.map((item) => {
               const meta = templateMeta[item.id] ?? {};
               const isFeatured = Boolean(meta.featured);
 
@@ -1482,6 +1964,7 @@ function App() {
               );
             })}
           </div>
+          )}
         </div>
       </section>
 
@@ -1491,14 +1974,35 @@ function App() {
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
+              <a className={styles.viewAllLink} href={VIEW_ALL_CODE_URL} target="_blank" rel="noreferrer">
+                View all codes
+                <ArrowRight16Regular fontSize={14} />
+              </a>
             </div>
             <p className={styles.sectionDescription}>
               Reusable scripts, prompt libraries, and analytical methods for Python, R, and Power BI - adaptable to your organization's data.
             </p>
           </div>
 
+          <div className={styles.chipRow} role="tablist" aria-label="Filter sample code">
+            {filterCategories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={mergeClasses(styles.chip, codeFilter === cat && styles.chipActive)}
+                aria-pressed={codeFilter === cat}
+                onClick={() => setCodeFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {visibleResources.length === 0 ? (
+            <p className={styles.emptyState}>More sample code is coming to this category soon.</p>
+          ) : (
           <div className={styles.codeGrid}>
-            {resources.map((item) => {
+            {visibleResources.map((item) => {
               const Icon = item.icon ?? DocumentBulletList24Regular;
               const meta = resourceMeta[item.id];
               const isFeatured = Boolean(meta?.featured);
@@ -1547,6 +2051,7 @@ function App() {
               );
             })}
           </div>
+          )}
         </div>
       </section>
 
@@ -1555,15 +2060,35 @@ function App() {
           <div className={styles.sectionTitleArea}>
             <p className={styles.eyebrow}>Research and playbooks</p>
             <div className={styles.sectionHeadingRow}>
-              <h2 className={styles.sectionHeading}>Strategies already in play</h2>
+              <h2 className={styles.sectionHeading}>Examples from around the world</h2>
             </div>
             <p className={styles.sectionDescription}>
               Adoption playbooks, analytical methods, and deployment research inspired by real enterprise Copilot rollouts.
             </p>
           </div>
 
-          <div className={styles.researchGrid}>
-            {orderedResearch.map((item) => (
+          <div className={styles.researchLayout}>
+            <div className={styles.researchIntro}>
+              <div className={styles.researchIntroBlock}>
+                <span className={styles.researchIntroLabel}>Research</span>
+                <p className={styles.researchIntroText}>
+                  Insights from orgs leading AI adoption — methodology guides and research from real enterprise rollouts, so you don't start from scratch.
+                </p>
+                <a className={styles.viewAllLink} href={VIEW_ALL_RESEARCH_URL} target="_blank" rel="noreferrer">
+                  View all research reports
+                  <ArrowRight16Regular fontSize={14} />
+                </a>
+              </div>
+              <div className={styles.researchIntroBlock}>
+                <span className={styles.researchIntroLabel}>Playbooks</span>
+                <p className={styles.researchIntroText}>
+                  Strategies already in play — proven approaches and tactical guides drawn from enterprise Copilot deployments.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.researchList}>
+              {orderedResearch.map((item) => (
               <article key={item.id} className={styles.researchCard}>
                 <div className={styles.badgeRow}>
                   {(researchTags[item.id] ?? []).map((tag) => (
@@ -1594,6 +2119,7 @@ function App() {
                 </a>
               </article>
             ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1610,28 +2136,31 @@ function App() {
             </p>
           </div>
 
-          <div className={styles.roadmapGrid}>
+          <div className={styles.roadmapTabs} role="tablist" aria-label="Roadmap categories">
             {roadmapItems.map((item) => (
-              <article
+              <button
                 key={item.id}
-                className={styles.roadmapCard}
-                onClick={() => item.details && setSelectedRoadmapItem(item)}
-                role={item.details ? "button" : undefined}
-                tabIndex={item.details ? 0 : undefined}
-                onKeyDown={(e) => {
-                  if (item.details && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    setSelectedRoadmapItem(item);
-                  }
-                }}
+                type="button"
+                role="tab"
+                aria-selected={activeRoadmapTab === item.id}
+                className={mergeClasses(styles.roadmapTab, activeRoadmapTab === item.id && styles.roadmapTabActive)}
+                onClick={() => { setActiveRoadmapTab(item.id); logClick(TelemetryEvents.TabClick, { tab: `roadmap-${item.id}` }); }}
               >
+                <item.icon />
+                {item.title}
+              </button>
+            ))}
+          </div>
+
+          <p className={styles.roadmapTabDescription}>{activeRoadmap.description}</p>
+
+          <div className={styles.roadmapDetailGrid}>
+            {(activeRoadmap.details ?? []).map((detail) => (
+              <article key={detail} className={styles.roadmapDetailCard}>
                 <div className={styles.roadmapCardIcon}>
-                  <item.icon />
+                  <activeRoadmap.icon />
                 </div>
-                <div className={styles.templateCardContent} style={{ flex: 1 }}>
-                  <h3 className={styles.roadmapTitle}>{item.title}</h3>
-                  <p className={styles.roadmapDescription}>{item.description}</p>
-                </div>
+                <h3 className={styles.roadmapTitle}>{detail}</h3>
               </article>
             ))}
           </div>
@@ -1646,24 +2175,6 @@ function App() {
           </div>
         </div>
       </section>
-
-      {selectedRoadmapItem && (
-        <div className={styles.roadmapDetailOverlay} onClick={() => setSelectedRoadmapItem(null)}>
-          <div className={styles.roadmapDetailPanel} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.roadmapDetailClose} onClick={() => setSelectedRoadmapItem(null)} aria-label="Close">
-              <Dismiss24Regular />
-            </button>
-            <h3 className={styles.roadmapDetailTitle}>{selectedRoadmapItem.title}</h3>
-            {selectedRoadmapItem.details && (
-              <ul className={styles.roadmapDetailList}>
-                {selectedRoadmapItem.details.map((detail) => (
-                  <li key={detail} className={styles.roadmapDetailListItem}>{detail}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      )}
 
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
