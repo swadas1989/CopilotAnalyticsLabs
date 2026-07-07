@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
   ArrowRight16Regular,
+  Book20Filled,
+  BookTemplate20Filled,
   ChevronDown20Regular,
   ChevronUp20Regular,
   ChevronLeft20Regular,
@@ -12,6 +14,7 @@ import {
   DocumentBulletList24Regular,
   Eye16Regular,
   HatGraduation24Regular,
+  Microscope20Filled,
   PersonFeedback20Regular,
   Sparkle24Regular,
   Star16Filled,
@@ -46,6 +49,16 @@ const featuredToneByKind: Record<FeaturedKind, "green" | "teal" | "purple"> = {
   Template: "green",
   Research: "teal",
   Playbook: "purple",
+};
+
+// Figma chip styling per kind: colored icon circle + matching pill.
+const featuredChipByKind: Record<
+  FeaturedKind,
+  { Icon: typeof BookTemplate20Filled; bg: string; fg: string; iconColor: string }
+> = {
+  Template: { Icon: BookTemplate20Filled, bg: "#F1FAF1", fg: "#0E700E", iconColor: "#0E700E" },
+  Research: { Icon: Microscope20Filled, bg: "#FDF3F4", fg: "#C50F1F", iconColor: "#B10E1C" },
+  Playbook: { Icon: Book20Filled, bg: "#F0F0F0", fg: "#242424", iconColor: "#424242" },
 };
 
 interface FeaturedItem {
@@ -730,6 +743,9 @@ const useStyles = makeStyles({
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
+  },
+  eyebrowFeatured: {
+    backgroundImage: "linear-gradient(96.15deg, #E76633 -1.08%, #9D68E3 14.88%, #20BBC6 96.13%)",
   },
   sectionHeadingRow: {
     display: "flex",
@@ -1660,8 +1676,11 @@ const useStyles = makeStyles({
     boxSizing: "border-box",
   },
   sectionWhatsNewBg: {
+    // Figma "bg": mauve (#F4E3FF) radial glow on the left, yellow/peach (#FFF3D4 @ 0.8) on the right.
     background:
-      "linear-gradient(113deg, rgba(255,244,232,0.8) 0%, rgba(255,255,255,1) 45%, rgba(240,231,255,0.7) 100%)",
+      "radial-gradient(62% 95% at 80% 42%, rgba(255,243,212,0.8) 0%, rgba(255,243,212,0) 58%), " +
+      "radial-gradient(58% 90% at 18% 48%, rgba(244,227,255,0.95) 0%, rgba(244,227,255,0) 58%), " +
+      "#FFFFFF",
   },
   featuredRow: {
     display: "flex",
@@ -1678,34 +1697,59 @@ const useStyles = makeStyles({
     },
   },
   featuredCard: {
-    flex: "0 0 320px",
+    flex: "0 0 336px",
     scrollSnapAlign: "start",
     display: "flex",
     flexDirection: "column",
     gap: "12px",
     backgroundColor: "#ffffff",
-    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)",
+    boxShadow: "0px 2px 4px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("24px"),
     boxSizing: "border-box",
     '@media (max-width: 600px)': {
       flex: "0 0 82%",
     },
   },
+  featuredChips: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  chipIconCircle: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    flexShrink: 0,
+    ...shorthands.borderRadius("18px"),
+  },
+  chipPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    height: "24px",
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
+    ...shorthands.padding("4px", "8px"),
+    ...shorthands.borderRadius("100px"),
+    boxSizing: "border-box",
+  },
   featuredTitle: {
     margin: 0,
     fontSize: "16px",
-    lineHeight: "22px",
+    lineHeight: "24px",
     fontWeight: 600,
-    color: "#0E1726",
+    color: "#000000",
   },
   featuredDescription: {
     margin: 0,
-    fontSize: "13px",
-    lineHeight: "18px",
-    color: "#616161",
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#242424",
     display: "-webkit-box",
-    WebkitLineClamp: "3",
+    WebkitLineClamp: "2",
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
     flex: 1,
@@ -1717,24 +1761,25 @@ const useStyles = makeStyles({
     marginTop: "4px",
   },
   featuredDate: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    color: "#616161",
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#707070",
   },
   featuredArrow: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    color: "#335CCC",
-    backgroundColor: "#EEF2FF",
-    ...shorthands.borderRadius("999px"),
+    width: "24px",
+    height: "24px",
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
     ...shorthands.border("none"),
     textDecorationLine: "none",
     cursor: "pointer",
     ':hover': {
-      backgroundColor: "#E0E7FF",
+      backgroundColor: "#2A4CB0",
     },
   },
   featuredNav: {
@@ -1745,13 +1790,14 @@ const useStyles = makeStyles({
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    color: "#424242",
+    width: "36px",
+    height: "36px",
+    color: "#3F6CE9",
     backgroundColor: "#ffffff",
     cursor: "pointer",
-    ...shorthands.borderRadius("999px"),
-    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
+    ...shorthands.border("none"),
     ':hover': {
       backgroundColor: "#F5F5F5",
     },
@@ -2050,27 +2096,25 @@ function App() {
       <section id="whats-new" className={mergeClasses(styles.section, styles.sectionWhatsNewBg)}>
         <div className={styles.sectionContent}>
           <div className={styles.sectionTitleArea}>
-            <p className={styles.eyebrow}>Featured</p>
+            <p className={mergeClasses(styles.eyebrow, styles.eyebrowFeatured)}>Featured</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>See what's new and popular in labs</h2>
             </div>
             <p className={styles.sectionDescription}>
-              Newly added resources containing templates, sample code, research, and playbooks.
+              Newly added resources containing templates, sample codes, research, playbooks and demos.
             </p>
           </div>
 
           <div className={styles.featuredRow} ref={featuredRowRef}>
-            {featuredItems.map((item) => (
+            {featuredItems.map((item) => {
+              const chip = featuredChipByKind[item.kind];
+              return (
               <article key={item.id} className={styles.featuredCard}>
-                <div className={styles.badgeRow}>
-                  <span
-                    className={mergeClasses(
-                      styles.tag,
-                      item.tone === "green" && styles.tagGreen,
-                      item.tone === "teal" && styles.tagTeal,
-                      item.tone === "purple" && styles.tagPurple,
-                    )}
-                  >
+                <div className={styles.featuredChips}>
+                  <span className={styles.chipIconCircle} style={{ backgroundColor: chip.bg, color: chip.iconColor }}>
+                    <chip.Icon fontSize={14} />
+                  </span>
+                  <span className={styles.chipPill} style={{ backgroundColor: chip.bg, color: chip.fg }}>
                     {item.kind}
                   </span>
                 </div>
@@ -2086,12 +2130,13 @@ function App() {
                     aria-label={`Open ${item.title}`}
                     onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
                   >
-                    <ArrowRight16Regular fontSize={16} />
+                    <ArrowRight16Regular fontSize={14} />
                   </a>
                 </div>
                 <VoteBar cardId={item.sourceId} />
               </article>
-            ))}
+              );
+            })}
           </div>
 
           <div className={styles.featuredNav}>
