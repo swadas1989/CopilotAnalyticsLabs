@@ -419,7 +419,7 @@ const useStyles = makeStyles({
     pointerEvents: "none",
     backgroundImage: `url(${import.meta.env.BASE_URL}images/hero-bg.svg)`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "center top",
     backgroundRepeat: "no-repeat",
     '@media (max-width: 600px)': {
       opacity: 0.5,
@@ -621,6 +621,7 @@ const useStyles = makeStyles({
     position: "sticky",
     top: "48px",
     zIndex: 90,
+    background: "linear-gradient(96.15deg, rgba(118, 79, 245, 0.1) 12.38%, rgba(63, 108, 233, 0.1) 39.4%, rgba(32, 187, 198, 0.1) 96.13%)",
     backgroundColor: "#ffffff",
     boxShadow: "0px 0px 2px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.14)",
     '@media (max-width: 600px)': {
@@ -633,7 +634,7 @@ const useStyles = makeStyles({
   tabsList: {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "9px",
     maxWidth: "928px",
     marginLeft: "auto",
     marginRight: "auto",
@@ -670,12 +671,12 @@ const useStyles = makeStyles({
     ':after': {
       content: '""',
       position: "absolute",
-      left: "0",
-      right: "0",
+      left: "12px",
+      right: "12px",
       bottom: "0",
       height: "3px",
-      ...shorthands.borderRadius("999px"),
-      background: "linear-gradient(137deg, #764FF5 13%, #3F6CE9 43%, #20BBC6 100%)",
+      ...shorthands.borderRadius("9999px"),
+      backgroundColor: "#335CCC",
     },
   },
   section: {
