@@ -11,9 +11,11 @@ import {
   CompassNorthwest24Regular,
   DataBarVerticalAscending24Regular,
   DataTrending24Regular,
+  DismissRegular,
   DocumentBulletList24Regular,
   Eye16Regular,
   HatGraduation24Regular,
+  Info20Regular,
   Microscope20Filled,
   PersonFeedback20Regular,
   Sparkle24Regular,
@@ -334,6 +336,68 @@ const useStyles = makeStyles({
     backgroundColor: "#ffffff",
     color: "#242424",
     fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
+  },
+  disclaimerBar: {
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "8px",
+    minHeight: "48px",
+    ...shorthands.padding("4px", "36px"),
+    backgroundColor: "#F5F5F5",
+    ...shorthands.borderTop("1px", "solid", "#D1D1D1"),
+    '@media (max-width: 600px)': {
+      ...shorthands.padding("8px", "16px"),
+    },
+  },
+  disclaimerIcon: {
+    flexShrink: 0,
+    color: "#616161",
+    fontSize: "20px",
+  },
+  disclaimerTextWrap: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: "4px",
+    flexGrow: 1,
+    flexWrap: "wrap",
+  },
+  disclaimerText: {
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 400,
+    color: "#000000",
+  },
+  disclaimerLink: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 400,
+    color: "#335CCC",
+    textDecorationLine: "underline",
+    whiteSpace: "nowrap",
+    ':hover': {
+      color: "#2A4CB0",
+    },
+  },
+  disclaimerDismiss: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    width: "24px",
+    height: "24px",
+    ...shorthands.padding("2px"),
+    ...shorthands.border("none"),
+    ...shorthands.borderRadius("4px"),
+    backgroundColor: "transparent",
+    color: "#424242",
+    cursor: "pointer",
+    ':hover': {
+      backgroundColor: "#EBEBEB",
+    },
   },
   nav: {
     position: "sticky",
@@ -702,8 +766,12 @@ const useStyles = makeStyles({
     },
   },
   sectionTemplateBg: {
+    // Figma: white base with Viva OverlayShape (blue→purple, 0.12) + Blue_accent (0.16) ambient blobs, heavily blurred.
     background:
-      "linear-gradient(113deg, rgba(240,231,255,0.7) 0%, rgba(255,255,255,1) 40%, rgba(228,243,255,0.9) 100%)",
+      "radial-gradient(1100px 720px at 8% -6%, rgba(74,164,217,0.12) 0%, rgba(30,85,202,0.10) 34%, rgba(93,68,205,0.07) 60%, rgba(255,255,255,0) 82%), " +
+      "radial-gradient(980px 640px at 98% -8%, rgba(103,149,255,0.14) 0%, rgba(19,66,176,0.08) 40%, rgba(82,117,197,0) 70%), " +
+      "linear-gradient(82.58deg, rgba(74,164,217,0.05) 12%, rgba(30,85,202,0.05) 42%, rgba(93,68,205,0.04) 66%, rgba(255,255,255,0) 100%), " +
+      "#FFFFFF",
   },
   sectionCodeBg: {
     background:
@@ -879,12 +947,12 @@ const useStyles = makeStyles({
     backgroundColor: "#F1FAF1",
   },
   badgeRose: {
-    color: "#B33A55",
-    backgroundColor: "#FDEBF1",
+    color: "#C50F1F",
+    backgroundColor: "#FDF3F4",
   },
   badgeBlue: {
-    color: "#0F6CBD",
-    backgroundColor: "#EBF3FC",
+    color: "#335CCC",
+    backgroundColor: "#E5EEFF",
   },
   templateTitle: {
     margin: 0,
@@ -1330,7 +1398,7 @@ const useStyles = makeStyles({
   viewAllLink: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "8px",
     color: "#335CCC",
     fontSize: "14px",
     lineHeight: "20px",
@@ -1338,8 +1406,23 @@ const useStyles = makeStyles({
     textDecorationLine: "none",
     whiteSpace: "nowrap",
     ':hover': {
-      textDecorationLine: "underline",
+      textDecorationLine: "none",
     },
+    ':hover .viewAllArrow': {
+      backgroundColor: "#2A4CB0",
+    },
+  },
+  viewAllArrow: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "23px",
+    height: "23px",
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
+    flexShrink: 0,
   },
   chipRow: {
     display: "flex",
@@ -1349,15 +1432,15 @@ const useStyles = makeStyles({
   chip: {
     display: "inline-flex",
     alignItems: "center",
-    fontSize: "13px",
-    lineHeight: "18px",
-    fontWeight: 500,
-    color: "#424242",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 400,
+    color: "#242424",
     backgroundColor: "#ffffff",
     cursor: "pointer",
-    ...shorthands.padding("6px", "14px"),
-    ...shorthands.borderRadius("999px"),
-    ...shorthands.border("1px", "solid", "#E0E0E0"),
+    ...shorthands.padding("4px", "12px"),
+    ...shorthands.borderRadius("100px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
     ':hover': {
       backgroundColor: "#F5F5F5",
     },
@@ -1825,6 +1908,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
@@ -1928,6 +2012,32 @@ function App() {
 
   return (
     <div className={styles.page}>
+      {showDisclaimer && (
+        <div className={styles.disclaimerBar} role="status">
+          <Info20Regular className={styles.disclaimerIcon} aria-hidden="true" />
+          <div className={styles.disclaimerTextWrap}>
+            <span className={styles.disclaimerText}>
+              The materials on this page are provided as-is, without warranty of any kind, including merchantability or fitness for a particular purpose. Microsoft will not provide any support for these materials.
+            </span>
+            <a
+              className={styles.disclaimerLink}
+              href={FEEDBACK_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Learn more
+            </a>
+          </div>
+          <button
+            type="button"
+            className={styles.disclaimerDismiss}
+            onClick={() => setShowDisclaimer(false)}
+            aria-label="Dismiss disclaimer"
+          >
+            <DismissRegular fontSize={16} />
+          </button>
+        </div>
+      )}
       <nav className={styles.nav}>
         <div className={styles.brand}>
           <MicrosoftLogoWordmark />
@@ -2158,7 +2268,7 @@ function App() {
               <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
               <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
                 View all templates
-                <ArrowRight16Regular fontSize={14} />
+                <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
               </a>
             </div>
             <p className={styles.sectionDescription}>
@@ -2277,7 +2387,7 @@ function App() {
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
               <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
                 View all codes
-                <ArrowRight16Regular fontSize={14} />
+                <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
               </a>
             </div>
             <p className={styles.sectionDescription}>
