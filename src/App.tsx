@@ -15,8 +15,10 @@ import {
   Star16Filled,
   Toolbox24Regular,
 } from "@fluentui/react-icons";
-import { research, resources, templates } from "./data";
+import { research, resources, templates, templateImpactFilters } from "./data";
+import type { TemplateImpactFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
+import { VoteBar } from "./VoteBar";
 
 const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
 const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
@@ -33,76 +35,72 @@ const sectionTabs = [
   { id: "product-roadmap", label: "Roadmap" },
 ] as const;
 
-const featuredItems: {
+// Maximum number of "What's new" cards to show per type.
+const MAX_FEATURED_PER_KIND = 3;
+
+type FeaturedKind = "Template" | "Research" | "Playbook";
+
+const featuredToneByKind: Record<FeaturedKind, "green" | "teal" | "purple"> = {
+  Template: "green",
+  Research: "teal",
+  Playbook: "purple",
+};
+
+interface FeaturedItem {
   id: string;
-  kind: string;
-  tone: "green" | "teal" | "purple" | "amber";
+  sourceId: string;
+  kind: FeaturedKind;
+  tone: "green" | "teal" | "purple";
   title: string;
   description: string;
   url: string;
-  date: string;
-}[] = [
-  {
-    id: "f-aio",
-    kind: "Template",
-    tone: "green",
-    title: "AI in One Dashboard",
-    description:
-      "Comprehensive Copilot and Agent analytics covering adoption, usage, impact, and ROI — all in a single Power BI dashboard.",
-    url: "https://github.com/microsoft/AI-in-One-Dashboard#-dashboard-preview",
-    date: "2 days ago",
-  },
-  {
-    id: "f-wti",
-    kind: "Research",
-    tone: "teal",
-    title: "Work Trend Index Report 2026",
-    description:
-      "The latest annual Work Trend Index — data-driven insights on how AI is reshaping work, productivity, and organizations.",
-    url: "https://assets-c4akfrf5b4d3f4b7.z01.azurefd.net/assets/2026/05/2026_Work_Trend_Index_Annual_Report_050526-7_69fc5b1c4e265.pdf",
-    date: "5 days ago",
-  },
-  {
-    id: "f-adoption",
-    kind: "Playbook",
-    tone: "purple",
-    title: "Customer Adoption Playbook",
-    description:
-      "Adoption guide with best practices for rolling out analytics across your organization.",
-    url: "https://adoption.microsoft.com/en-us/viva/insights/",
-    date: "1 week ago",
-  },
-  {
-    id: "f-frontier",
-    kind: "Sample code",
-    tone: "amber",
-    title: "Frontier Analytics",
-    description:
-      "AI-assisted, export-first toolkit — ready-to-paste prompts for coding agents and sample specs for ROI dashboards.",
-    url: "https://microsoft.github.io/viva-insights-sample-code/frontier-analytics/",
-    date: "1 week ago",
-  },
-  {
-    id: "f-cowork",
-    kind: "Template",
-    tone: "green",
-    title: "Cowork Value Estimator",
-    description:
-      "Your personal Copilot Cowork impact report — research-anchored Time Saved and value mapped to the four Value Pillars.",
-    url: "https://github.com/microsoft/What-I-did-with-Cowork#option-1--let-cowork-install-it-for-you-easiest",
-    date: "2 weeks ago",
-  },
-  {
-    id: "f-copilot",
-    kind: "Sample code",
-    tone: "amber",
-    title: "Copilot Analytics",
-    description:
-      "Copilot-specific scripts — usage volume & breadth analysis, habituality scoring, and adoption trend tracking.",
-    url: "https://microsoft.github.io/viva-insights-sample-code/copilot/",
-    date: "3 weeks ago",
-  },
-];
+  addedOn?: string;
+}
+
+// Turns an ISO date into a friendly relative string (e.g. "2 days ago").
+function formatRelativeDate(iso?: string): string {
+  if (!iso) return "";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const diffDays = Math.max(0, Math.floor((Date.now() - then) / 86_400_000));
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  const weeks = Math.floor(diffDays / 7);
+  if (diffDays < 30) return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+  const months = Math.floor(diffDays / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
+// Most recently added items grouped by type, newest first, capped per type.
+function buildFeaturedItems(): FeaturedItem[] {
+  const byDateDesc = (a: { addedOn?: string }, b: { addedOn?: string }) =>
+    (b.addedOn ?? "").localeCompare(a.addedOn ?? "");
+
+  const groups: { kind: FeaturedKind; items: { id: string; title: string; description: string; url: string; addedOn?: string }[] }[] = [
+    { kind: "Template", items: templates },
+    { kind: "Research", items: research.filter((item) => item.kind === "Research") },
+    { kind: "Playbook", items: research.filter((item) => item.kind === "Playbook") },
+  ];
+
+  return groups
+    .flatMap(({ kind, items }) =>
+      [...items]
+        .sort(byDateDesc)
+        .slice(0, MAX_FEATURED_PER_KIND)
+        .map<FeaturedItem>((item) => ({
+          id: `${kind}-${item.id}`,
+          sourceId: item.id,
+          kind,
+          tone: featuredToneByKind[kind],
+          title: item.title,
+          description: item.description,
+          url: item.url,
+          addedOn: item.addedOn,
+        })),
+    )
+    .sort(byDateDesc);
+}
 
 const heroValues = [
   {
@@ -111,6 +109,7 @@ const heroValues = [
     description: "Templates, code, and prompts to plug into your own data.",
     Icon: Toolbox24Regular,
     color: "#3F6CE9",
+    gradient: "linear-gradient(96.15deg, #764FF5 12.38%, #3F6CE9 39.4%, #20BBC6 96.13%)",
   },
   {
     label: "Learn",
@@ -118,6 +117,7 @@ const heroValues = [
     description: "Playbooks, research, and demos from real customer rollouts.",
     Icon: HatGraduation24Regular,
     color: "#C8641E",
+    gradient: "linear-gradient(94.04deg, #FFB900 -54.86%, #F4364B 94.97%)",
   },
   {
     label: "Explore",
@@ -125,6 +125,7 @@ const heroValues = [
     description: "A preview of latest drops and upcoming capabilities.",
     Icon: CompassNorthwest24Regular,
     color: "#7A49BB",
+    gradient: "linear-gradient(90.37deg, #FFB3BA -94.19%, #8560C5 99.51%)",
   },
 ];
 
@@ -299,16 +300,6 @@ const filterCategories = [
 
 type FilterCategory = (typeof filterCategories)[number];
 
-const templateCategory: Record<string, FilterCategory> = {
-  "aio-dashboard": "AI impact",
-  "ai-business-value": "AI impact",
-  "github-copilot-impact-org": "Org-wide",
-  "m365-app-usage": "Org-wide",
-  "cowork-value-estimator": "Individual",
-  "m365-copilot-personal": "Individual",
-  "superuser-impact": "Manager",
-};
-
 const codeCategory: Record<string, FilterCategory> = {
   "viva-insights-essentials": "AI impact",
   "advanced-analytics": "AI impact",
@@ -317,13 +308,18 @@ const codeCategory: Record<string, FilterCategory> = {
   "network-analysis": "Org-wide",
 };
 
-const VIEW_ALL_TEMPLATES_URL = "https://github.com/microsoft/AI-in-One-Dashboard";
 const VIEW_ALL_CODE_URL = "https://microsoft.github.io/viva-insights-sample-code/";
 const VIEW_ALL_RESEARCH_URL = "https://adoption.microsoft.com/en-us/copilot/";
 
 const useStyles = makeStyles({
   page: {
     minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
+    maxWidth: "1440px",
+    ...shorthands.margin("0", "auto"),
     backgroundColor: "#ffffff",
     color: "#242424",
     fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
@@ -435,17 +431,17 @@ const useStyles = makeStyles({
     position: "relative",
     zIndex: 1,
     width: "100%",
-    maxWidth: "928px",
+    maxWidth: "812px",
     marginLeft: "auto",
     marginRight: "auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "32px",
-    ...shorthands.padding("64px", "0", "56px"),
+    gap: "40px",
+    ...shorthands.padding("48px", "0", "56px"),
     '@media (max-width: 1200px)': {
       maxWidth: "100%",
-      ...shorthands.padding("64px", "80px", "56px"),
+      ...shorthands.padding("48px", "80px", "56px"),
     },
     '@media (max-width: 600px)': {
       ...shorthands.padding("40px", "16px", "36px"),
@@ -457,16 +453,15 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "8px",
+    gap: "4px",
     textAlign: "center",
   },
   heroTitle: {
     margin: 0,
-    maxWidth: "760px",
+    maxWidth: "730px",
     fontSize: "40px",
     lineHeight: "56px",
     fontWeight: 600,
-    letterSpacing: "-0.02em",
     color: "#0E1726",
     whiteSpace: "nowrap",
     '@media (max-width: 600px)': {
@@ -477,7 +472,7 @@ const useStyles = makeStyles({
   },
   heroSubtitle: {
     margin: 0,
-    maxWidth: "760px",
+    maxWidth: "610px",
     fontSize: "16px",
     lineHeight: "22px",
     color: "#424242",
@@ -1257,10 +1252,10 @@ const useStyles = makeStyles({
   },
   heroValuesRow: {
     width: "100%",
-    maxWidth: "860px",
+    maxWidth: "812px",
     display: "flex",
     justifyContent: "center",
-    gap: "40px",
+    gap: "24px",
     '@media (max-width: 700px)': {
       flexDirection: "column",
       gap: "24px",
@@ -1270,11 +1265,11 @@ const useStyles = makeStyles({
   heroValueItem: {
     flex: "1 1 0",
     minWidth: 0,
-    maxWidth: "260px",
+    maxWidth: "254.67px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "6px",
+    gap: "8px",
     textAlign: "center",
   },
   heroValueLabelRow: {
@@ -1282,25 +1277,40 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: "8px",
   },
+  heroIconBuild: {
+    '& path': {
+      fill: "url(#heroGradBuild)",
+    },
+  },
+  heroIconLearn: {
+    '& path': {
+      fill: "url(#heroGradLearn)",
+    },
+  },
+  heroIconExplore: {
+    '& path': {
+      fill: "url(#heroGradExplore)",
+    },
+  },
   heroValueLabel: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 700,
-    letterSpacing: "0.08em",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
   },
   heroValueTitle: {
     margin: 0,
-    fontSize: "16px",
-    lineHeight: "22px",
+    fontSize: "14px",
+    lineHeight: "20px",
     fontWeight: 600,
-    color: "#0E1726",
+    color: "#000000",
   },
   heroValueDescription: {
     margin: 0,
-    fontSize: "13px",
-    lineHeight: "18px",
-    color: "#424242",
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: "#242424",
   },
   viewAllLink: {
     display: "inline-flex",
@@ -1458,8 +1468,10 @@ const useStyles = makeStyles({
     gap: "20px",
     overflowX: "auto",
     scrollSnapType: "x mandatory",
-    scrollPaddingLeft: "2px",
-    ...shorthands.padding("4px", "2px", "12px"),
+    scrollPaddingInline: "2px",
+    // Vertical padding keeps card shadows from being clipped by the scroll overflow;
+    // trailing inline padding lets the final card scroll fully into view.
+    ...shorthands.padding("16px", "24px", "20px", "2px"),
     scrollbarWidth: "none",
     '::-webkit-scrollbar': {
       display: "none",
@@ -1546,7 +1558,7 @@ const useStyles = makeStyles({
   },
 });
 
-function MicrosoftLogoWordmark() {
+export function MicrosoftLogoWordmark() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1567,7 +1579,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
-  const [templateFilter, setTemplateFilter] = useState<FilterCategory>("Featured");
+  const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<FilterCategory>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
 
@@ -1604,7 +1616,7 @@ function App() {
     () =>
       templateFilter === "Featured"
         ? orderedTemplates
-        : orderedTemplates.filter((item) => templateCategory[item.id] === templateFilter),
+        : orderedTemplates.filter((item) => item.impact.includes(templateFilter)),
     [orderedTemplates, templateFilter],
   );
 
@@ -1617,6 +1629,8 @@ function App() {
   );
 
   const activeRoadmap = roadmapItems.find((item) => item.id === activeRoadmapTab) ?? roadmapItems[0];
+
+  const featuredItems = useMemo(() => buildFeaturedItems(), []);
 
   const featuredRowRef = useRef<HTMLDivElement>(null);
   const scrollFeatured = (dir: number) => {
@@ -1760,16 +1774,51 @@ function App() {
           </div>
 
           <div className={styles.heroValuesRow}>
-            {heroValues.map(({ label, title, description, Icon, color }) => (
-              <div key={label} className={styles.heroValueItem}>
-                <div className={styles.heroValueLabelRow} style={{ color }}>
-                  <Icon fontSize={20} />
-                  <span className={styles.heroValueLabel}>{label}</span>
+            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="heroGradBuild" x1="0" y1="0" x2="1" y2="0.1">
+                  <stop offset="0.1238" stopColor="#764FF5" />
+                  <stop offset="0.394" stopColor="#3F6CE9" />
+                  <stop offset="0.9613" stopColor="#20BBC6" />
+                </linearGradient>
+                <linearGradient id="heroGradLearn" x1="0" y1="0" x2="1" y2="0.05">
+                  <stop offset="0" stopColor="#FFB900" />
+                  <stop offset="1" stopColor="#F4364B" />
+                </linearGradient>
+                <linearGradient id="heroGradExplore" x1="0" y1="0" x2="1" y2="0.05">
+                  <stop offset="0" stopColor="#FFB3BA" />
+                  <stop offset="1" stopColor="#8560C5" />
+                </linearGradient>
+              </defs>
+            </svg>
+            {heroValues.map(({ label, title, description, Icon, gradient }) => {
+              const iconGradientClass = {
+                Build: styles.heroIconBuild,
+                Learn: styles.heroIconLearn,
+                Explore: styles.heroIconExplore,
+              }[label];
+              return (
+                <div key={label} className={styles.heroValueItem}>
+                  <div className={styles.heroValueLabelRow}>
+                    <Icon fontSize={20} className={iconGradientClass} />
+                    <span
+                      className={styles.heroValueLabel}
+                      style={{
+                        backgroundImage: gradient,
+                        WebkitBackgroundClip: "text",
+                        backgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        color: "transparent",
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                  <h2 className={styles.heroValueTitle}>{title}</h2>
+                  <p className={styles.heroValueDescription}>{description}</p>
                 </div>
-                <h2 className={styles.heroValueTitle}>{title}</h2>
-                <p className={styles.heroValueDescription}>{description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </header>
@@ -1814,7 +1863,6 @@ function App() {
                       item.tone === "green" && styles.tagGreen,
                       item.tone === "teal" && styles.tagTeal,
                       item.tone === "purple" && styles.tagPurple,
-                      item.tone === "amber" && styles.tagAmber,
                     )}
                   >
                     {item.kind}
@@ -1823,18 +1871,19 @@ function App() {
                 <h3 className={styles.featuredTitle}>{item.title}</h3>
                 <p className={styles.featuredDescription}>{item.description}</p>
                 <div className={styles.featuredFooter}>
-                  <span className={styles.featuredDate}>{item.date}</span>
+                  <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
                   <a
                     className={styles.featuredArrow}
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Open ${item.title}`}
-                    onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}
+                    onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
                   >
                     <ArrowRight16Regular fontSize={16} />
                   </a>
                 </div>
+                <VoteBar cardId={item.sourceId} />
               </article>
             ))}
           </div>
@@ -1856,7 +1905,7 @@ function App() {
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
-              <a className={styles.viewAllLink} href={VIEW_ALL_TEMPLATES_URL} target="_blank" rel="noreferrer">
+              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
                 View all templates
                 <ArrowRight16Regular fontSize={14} />
               </a>
@@ -1867,7 +1916,7 @@ function App() {
           </div>
 
           <div className={styles.chipRow} role="tablist" aria-label="Filter templates">
-            {filterCategories.map((cat) => (
+            {templateImpactFilters.map((cat) => (
               <button
                 key={cat}
                 type="button"
@@ -1950,6 +1999,7 @@ function App() {
                           View template
                         </a>
                       </div>
+                      <VoteBar cardId={item.id} />
                     </div>
                   </div>
 
@@ -2046,6 +2096,7 @@ function App() {
                         View code
                       </a>
                     </div>
+                    <VoteBar cardId={item.id} />
                   </div>
                 </article>
               );
@@ -2117,6 +2168,7 @@ function App() {
                 <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
                   View report
                 </a>
+                <VoteBar cardId={item.id} />
               </article>
             ))}
             </div>

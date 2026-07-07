@@ -15,6 +15,14 @@ export interface TemplateItem {
   url: string;
   icon: React.ComponentType;
   image?: string;
+  /** ISO date (YYYY-MM-DD) the item was added. Drives the "What's new" section. */
+  addedOn?: string;
+  /** Product family, used by the dedicated Template Library page "Type" filter. */
+  type: "Copilot" | "Business" | "GitHub";
+  /** Impact scope tags, used by the Template Library "Impact" filters. */
+  impact: ("AI Impact" | "Org wide" | "Individual" | "Team")[];
+  /** Thematic sections the template belongs to on the Template Library page. */
+  collections: ("AI Business Value" | "Microsoft 365")[];
 }
 
 export interface ResourceItem {
@@ -33,6 +41,10 @@ export interface ResearchItem {
   description: string;
   url: string;
   icon: React.ComponentType;
+  /** Whether this item is a research report or an adoption/methodology playbook. */
+  kind: "Research" | "Playbook";
+  /** ISO date (YYYY-MM-DD) the item was added. Drives the "What's new" section. */
+  addedOn?: string;
 }
 
 const base = import.meta.env.BASE_URL;
@@ -46,6 +58,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/microsoft/AI-in-One-Dashboard#-dashboard-preview",
     icon: BoardSplit24Regular,
     image: `${base}images/card-aio-featured.png`,
+    addedOn: "2026-07-05",
+    type: "Copilot",
+    impact: ["AI Impact", "Org wide"],
+    collections: ["AI Business Value"],
   },
   {
     id: "github-copilot-impact-org",
@@ -55,6 +71,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/microsoft/GitHubCopilotImpact#-github-copilot-impact",
     icon: DataTrending24Regular,
     image: `${base}images/card-github-copilot-org.png`,
+    addedOn: "2026-06-15",
+    type: "GitHub",
+    impact: ["AI Impact", "Org wide"],
+    collections: ["AI Business Value"],
   },
   {
     id: "cowork-value-estimator",
@@ -64,6 +84,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/microsoft/What-I-did-with-Cowork#option-1--let-cowork-install-it-for-you-easiest",
     icon: Sparkle24Regular,
     image: `${base}images/card-ai-business-value.png`,
+    addedOn: "2026-06-23",
+    type: "Copilot",
+    impact: ["AI Impact", "Individual"],
+    collections: ["AI Business Value"],
   },
   {
     id: "ai-business-value",
@@ -73,6 +97,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/Keithland89/AI-Business-Value-Dashboard#-ai-business-value-dashboard",
     icon: Sparkle24Regular,
     image: `${base}images/card-github-copilot-personal.png`,
+    addedOn: "2026-05-20",
+    type: "Business",
+    impact: ["AI Impact", "Org wide"],
+    collections: ["AI Business Value"],
   },
   {
     id: "m365-copilot-personal",
@@ -82,6 +110,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/sbrandl1005/copilot-personal-dashboard#whats-in-this-report",
     icon: PersonBoard24Regular,
     image: `${base}images/card-m365-copilot-personal.png`,
+    addedOn: "2026-05-10",
+    type: "Copilot",
+    impact: ["Individual"],
+    collections: ["Microsoft 365"],
   },
   {
     id: "m365-app-usage",
@@ -91,6 +123,10 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/microsoft/M365UsageAnalytics#m365-usage-dashboard",
     icon: AppGeneric24Regular,
     image: `${base}images/card-m365-app-usage.png`,
+    addedOn: "2026-04-15",
+    type: "Business",
+    impact: ["Org wide"],
+    collections: ["Microsoft 365"],
   },
   {
     id: "superuser-impact",
@@ -100,8 +136,32 @@ export const templates: TemplateItem[] = [
     url: "https://github.com/microsoft/superuserimpact#superuser-impact-report",
     icon: PeopleStar24Regular,
     image: `${base}images/card-superuser-impact.png`,
+    addedOn: "2026-03-30",
+    type: "Business",
+    impact: ["Team", "Org wide"],
+    collections: ["AI Business Value"],
   },
 ];
+
+// Impact filter tags for the home "Template Library" section ("Featured" shows all).
+export const templateImpactFilters = ["Featured", "AI Impact", "Org wide", "Individual", "Team"] as const;
+export type TemplateImpactFilter = (typeof templateImpactFilters)[number];
+
+// "Type" filter tags for the dedicated Template Library page ("All" shows all).
+export const templateTypeFilters = ["All", "Copilot", "Business", "GitHub"] as const;
+export type TemplateTypeFilter = (typeof templateTypeFilters)[number];
+
+// "Impact" filter tags for the dedicated Template Library page. "team wide" is the
+// display label for the canonical "Team" impact tag; "All" shows all.
+export const templatePageImpactFilters = ["All", "AI Impact", "Org wide", "team wide", "Individual"] as const;
+export type TemplatePageImpactFilter = (typeof templatePageImpactFilters)[number];
+
+// Maps a page "Impact" filter label to the canonical impact tag stored on templates.
+export function pageImpactToTag(filter: TemplatePageImpactFilter): TemplateItem["impact"][number] | null {
+  if (filter === "All") return null;
+  if (filter === "team wide") return "Team";
+  return filter;
+}
 
 export const resources: ResourceItem[] = [
   {
@@ -164,6 +224,8 @@ export const research: ResearchItem[] = [
       "Microsoft Viva Insights adoption guide with best practices for rolling out analytics across your organization.",
     url: "https://adoption.microsoft.com/en-us/viva/insights/",
     icon: DocumentBulletList24Regular,
+    kind: "Playbook",
+    addedOn: "2026-06-30",
   },
   {
     id: "cowork-value-estimator",
@@ -172,6 +234,8 @@ export const research: ResearchItem[] = [
       "Explore the methodology behind the Cowork Value Estimator for measuring collaboration impact.",
     url: "/CopilotAnalyticsLabs/Cowork_Methodology.pdf",
     icon: DocumentBulletList24Regular,
+    kind: "Research",
+    addedOn: "2026-05-15",
   },
   {
     id: "work-trend-index-2026",
@@ -180,6 +244,8 @@ export const research: ResearchItem[] = [
       "The latest annual Work Trend Index report — data-driven insights on how AI is reshaping work, productivity, and the future of organizations.",
     url: "https://assets-c4akfrf5b4d3f4b7.z01.azurefd.net/assets/2026/05/2026_Work_Trend_Index_Annual_Report_050526-7_69fc5b1c4e265.pdf",
     icon: DocumentBulletList24Regular,
+    kind: "Research",
+    addedOn: "2026-07-02",
   },
   {
     id: "copilot-advanced-analytics",
@@ -188,6 +254,8 @@ export const research: ResearchItem[] = [
       "A recipe book of analysis and visualisation examples for measuring Copilot adoption and impact — built for analytics leaders and data scientists.",
     url: "https://aka.ms/CopilotAdvancedAnalytics",
     icon: DocumentBulletList24Regular,
+    kind: "Research",
+    addedOn: "2026-06-20",
   },
   {
     id: "getting-started-custom-analysis",
@@ -196,5 +264,7 @@ export const research: ResearchItem[] = [
       "A tactical playbook for custom analysis — from planning your measurement programme and setting up Viva Insights to running queries and building an analysis playbook.",
     url: "https://adoption.microsoft.com/files/copilot/GettingStartedWithCustomAnalysisInCopilotAnalytics.pptx",
     icon: DocumentBulletList24Regular,
+    kind: "Playbook",
+    addedOn: "2026-06-10",
   },
 ];
