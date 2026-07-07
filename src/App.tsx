@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
   ArrowRight16Regular,
+  ChevronDown20Regular,
+  ChevronUp20Regular,
   ChevronLeft20Regular,
   ChevronRight20Regular,
   CompassNorthwest24Regular,
@@ -15,8 +17,8 @@ import {
   Star16Filled,
   Toolbox24Regular,
 } from "@fluentui/react-icons";
-import { research, resources, templates, templateImpactFilters } from "./data";
-import type { TemplateImpactFilter } from "./data";
+import { research, resources, templates, templateImpactFilters, codeHomeTechFilters } from "./data";
+import type { TemplateImpactFilter, CodeHomeTechFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 import { VoteBar } from "./VoteBar";
 
@@ -228,6 +230,23 @@ const researchTags: Record<string, { text: string; tone: string }[]> = {
   ],
 };
 
+const researchPanels = [
+  {
+    kind: "Research" as const,
+    title: "Research",
+    body:
+      "Adoption playbooks, methodology guides, and research from real enterprise rollouts, so you don't start from scratch.",
+    linkLabel: "View all research reports",
+  },
+  {
+    kind: "Playbook" as const,
+    title: "Playbooks",
+    body:
+      "Proven approaches and tactical guides drawn from real enterprise Copilot deployments.",
+    linkLabel: "View all playbooks",
+  },
+];
+
 interface RoadmapItem {
   id: string;
   title: string;
@@ -289,27 +308,6 @@ const roadmapItems: RoadmapItem[] = [
   },
 ];
 
-const filterCategories = [
-  "Featured",
-  "AI impact",
-  "Org-wide",
-  "Individual",
-  "Manager",
-  "Industry",
-] as const;
-
-type FilterCategory = (typeof filterCategories)[number];
-
-const codeCategory: Record<string, FilterCategory> = {
-  "viva-insights-essentials": "AI impact",
-  "advanced-analytics": "AI impact",
-  "copilot-analytics": "AI impact",
-  "frontier-analytics": "Org-wide",
-  "network-analysis": "Org-wide",
-};
-
-const VIEW_ALL_CODE_URL = "https://microsoft.github.io/viva-insights-sample-code/";
-const VIEW_ALL_RESEARCH_URL = "https://adoption.microsoft.com/en-us/copilot/";
 
 const useStyles = makeStyles({
   page: {
@@ -699,7 +697,7 @@ const useStyles = makeStyles({
   },
   sectionResearchBg: {
     background:
-      "linear-gradient(180deg, rgba(255,252,244,1) 0%, rgba(250,247,237,1) 100%)",
+      "linear-gradient(96.15deg, rgba(118,79,245,0.04) 12.38%, rgba(63,108,233,0.04) 39.4%, rgba(32,187,198,0.04) 96.13%)",
   },
   sectionContent: {
     width: "100%",
@@ -1402,6 +1400,207 @@ const useStyles = makeStyles({
     flexDirection: "column",
     gap: "16px",
   },
+  // --- Figma "Research & playbooks" two-pane layout ---
+  researchTwoPane: {
+    display: "flex",
+    alignItems: "stretch",
+    width: "100%",
+    maxWidth: "928px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    '@media (max-width: 900px)': {
+      flexDirection: "column",
+    },
+  },
+  researchLeftPane: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "40px",
+    width: "420px",
+    flexShrink: 0,
+    ...shorthands.padding("8px", "0"),
+    '@media (max-width: 900px)': {
+      width: "100%",
+    },
+  },
+  researchHeadingBlock: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  researchEyebrowGradient: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    background: "linear-gradient(96.16deg, #E76633 -1.08%, #9D68E3 14.88%, #20BBC6 96.17%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  },
+  researchMainHeading: {
+    margin: 0,
+    fontSize: "32px",
+    lineHeight: "40px",
+    fontWeight: 600,
+    color: "#0E1726",
+  },
+  researchAccordions: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  researchAccordion: {
+    display: "flex",
+    flexDirection: "column",
+    ...shorthands.borderTop("1px", "solid", "#E0E0E0"),
+    ':last-child': {
+      ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+    },
+  },
+  researchAccordionHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    ...shorthands.padding("20px", "16px"),
+    ...shorthands.border("none"),
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    width: "100%",
+    textAlign: "left",
+    fontFamily: '"Segoe UI", system-ui, sans-serif',
+    ':hover': {
+      backgroundColor: "rgba(0,0,0,0.02)",
+    },
+  },
+  researchAccordionTitle: {
+    fontSize: "16px",
+    lineHeight: "24px",
+    fontWeight: 600,
+    color: "#242424",
+  },
+  researchAccordionChevron: {
+    display: "inline-flex",
+    color: "#242424",
+    flexShrink: 0,
+  },
+  researchAccordionBody: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    ...shorthands.padding("0", "16px", "20px", "16px"),
+  },
+  researchAccordionCopyRow: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "12px",
+  },
+  researchAccordionAccent: {
+    width: "3px",
+    flexShrink: 0,
+    alignSelf: "stretch",
+    backgroundColor: "#335CCC",
+    ...shorthands.borderRadius("2px"),
+  },
+  researchAccordionBodyText: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#424242",
+  },
+  researchAccordionLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    alignSelf: "flex-start",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    color: "#335CCC",
+    textDecorationLine: "none",
+    ':hover': {
+      textDecorationLine: "underline",
+    },
+  },
+  researchRightPane: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+    minWidth: 0,
+    backgroundColor: "#FFFFFF",
+    ...shorthands.padding("8px", "48px"),
+    ...shorthands.borderRadius("12px"),
+    boxShadow: "0 0 2px rgba(0,0,0,0.10), 0 6px 20px rgba(0,0,0,0.05)",
+    '@media (max-width: 900px)': {
+      ...shorthands.padding("8px", "24px"),
+    },
+  },
+  researchItem: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "11px",
+    ...shorthands.padding("24px", "0"),
+    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+    ':last-child': {
+      ...shorthands.borderBottom("none"),
+    },
+  },
+  researchItemHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "16px",
+  },
+  researchItemChips: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: "8px",
+  },
+  researchItemChip: {
+    display: "inline-flex",
+    alignItems: "center",
+    fontSize: "10px",
+    lineHeight: "14px",
+    fontWeight: 400,
+    ...shorthands.padding("4px", "8px"),
+    ...shorthands.borderRadius("100px"),
+  },
+  researchItemCopy: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  researchItemTitleRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "8px",
+    textDecorationLine: "none",
+    ':hover .research-item-title': {
+      textDecorationLine: "underline",
+    },
+  },
+  researchItemTitle: {
+    margin: 0,
+    fontSize: "16px",
+    lineHeight: "24px",
+    fontWeight: 600,
+    color: "#000000",
+  },
+  researchItemArrow: {
+    display: "inline-flex",
+    color: "#335CCC",
+    flexShrink: 0,
+  },
+  researchItemSubtext: {
+    margin: 0,
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: "#616161",
+  },
   roadmapTabs: {
     display: "flex",
     flexWrap: "wrap",
@@ -1580,8 +1779,9 @@ function App() {
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
-  const [codeFilter, setCodeFilter] = useState<FilterCategory>("Featured");
+  const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
+  const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook">("Research");
 
   useEffect(() => {
     logPageView();
@@ -1612,6 +1812,11 @@ function App() {
     return researchOrder.map((id) => map.get(id)).filter(Boolean) as typeof research;
   }, []);
 
+  const visibleResearchItems = useMemo(
+    () => orderedResearch.filter((item) => item.kind === openResearchPanel),
+    [orderedResearch, openResearchPanel],
+  );
+
   const visibleTemplates = useMemo(
     () =>
       templateFilter === "Featured"
@@ -1624,7 +1829,7 @@ function App() {
     () =>
       codeFilter === "Featured"
         ? resources
-        : resources.filter((item) => codeCategory[item.id] === codeFilter),
+        : resources.filter((item) => item.tech.includes(codeFilter)),
     [codeFilter],
   );
 
@@ -2024,7 +2229,7 @@ function App() {
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
-              <a className={styles.viewAllLink} href={VIEW_ALL_CODE_URL} target="_blank" rel="noreferrer">
+              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
                 View all codes
                 <ArrowRight16Regular fontSize={14} />
               </a>
@@ -2035,7 +2240,7 @@ function App() {
           </div>
 
           <div className={styles.chipRow} role="tablist" aria-label="Filter sample code">
-            {filterCategories.map((cat) => (
+            {codeHomeTechFilters.map((cat) => (
               <button
                 key={cat}
                 type="button"
@@ -2108,69 +2313,96 @@ function App() {
 
       <section id="research" className={mergeClasses(styles.section, styles.sectionResearchBg)}>
         <div className={styles.sectionContent}>
-          <div className={styles.sectionTitleArea}>
-            <p className={styles.eyebrow}>Research and playbooks</p>
-            <div className={styles.sectionHeadingRow}>
-              <h2 className={styles.sectionHeading}>Examples from around the world</h2>
-            </div>
-            <p className={styles.sectionDescription}>
-              Adoption playbooks, analytical methods, and deployment research inspired by real enterprise Copilot rollouts.
-            </p>
-          </div>
-
-          <div className={styles.researchLayout}>
-            <div className={styles.researchIntro}>
-              <div className={styles.researchIntroBlock}>
-                <span className={styles.researchIntroLabel}>Research</span>
-                <p className={styles.researchIntroText}>
-                  Insights from orgs leading AI adoption — methodology guides and research from real enterprise rollouts, so you don't start from scratch.
-                </p>
-                <a className={styles.viewAllLink} href={VIEW_ALL_RESEARCH_URL} target="_blank" rel="noreferrer">
-                  View all research reports
-                  <ArrowRight16Regular fontSize={14} />
-                </a>
+          <div className={styles.researchTwoPane}>
+            <div className={styles.researchLeftPane}>
+              <div className={styles.researchHeadingBlock}>
+                <p className={styles.researchEyebrowGradient}>RESEARCH &amp; PLAYBOOKS</p>
+                <h2 className={styles.researchMainHeading}>Examples from around the world</h2>
               </div>
-              <div className={styles.researchIntroBlock}>
-                <span className={styles.researchIntroLabel}>Playbooks</span>
-                <p className={styles.researchIntroText}>
-                  Strategies already in play — proven approaches and tactical guides drawn from enterprise Copilot deployments.
-                </p>
+
+              <div className={styles.researchAccordions}>
+                {researchPanels.map((panel) => {
+                  const isOpen = openResearchPanel === panel.kind;
+                  return (
+                    <div key={panel.kind} className={styles.researchAccordion}>
+                      <button
+                        type="button"
+                        className={styles.researchAccordionHeader}
+                        aria-expanded={isOpen}
+                        onClick={() => setOpenResearchPanel(panel.kind)}
+                      >
+                        <span className={styles.researchAccordionTitle}>{panel.title}</span>
+                        <span className={styles.researchAccordionChevron}>
+                          {isOpen ? <ChevronUp20Regular fontSize={16} /> : <ChevronDown20Regular fontSize={16} />}
+                        </span>
+                      </button>
+                      {isOpen ? (
+                        <div className={styles.researchAccordionBody}>
+                          <div className={styles.researchAccordionCopyRow}>
+                            <span className={styles.researchAccordionAccent} aria-hidden="true" />
+                            <p className={styles.researchAccordionBodyText}>{panel.body}</p>
+                          </div>
+                          <a
+                            className={styles.researchAccordionLink}
+                            href={`${import.meta.env.BASE_URL}#/research`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` })}
+                          >
+                            {panel.linkLabel}
+                            <ArrowRight16Regular fontSize={14} />
+                          </a>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            <div className={styles.researchList}>
-              {orderedResearch.map((item) => (
-              <article key={item.id} className={styles.researchCard}>
-                <div className={styles.badgeRow}>
-                  {(researchTags[item.id] ?? []).map((tag) => (
-                    <span
-                      key={tag.text}
-                      className={mergeClasses(
-                        styles.tag,
-                        tag.tone === "green" && styles.tagGreen,
-                        tag.tone === "purple" && styles.tagPurple,
-                        tag.tone === "rose" && styles.tagRose,
-                        tag.tone === "teal" && styles.tagTeal,
-                        tag.tone === "amber" && styles.tagAmber,
-                        tag.tone === "blue" && styles.tagBlue,
-                        tag.tone === "orange" && styles.tagOrange,
-                        tag.tone === "slate" && styles.tagSlate,
-                      )}
+            <div className={styles.researchRightPane}>
+              {visibleResearchItems.map((item) => (
+                <article key={item.id} className={styles.researchItem}>
+                  <div className={styles.researchItemHeader}>
+                    <div className={styles.researchItemChips}>
+                      {(researchTags[item.id] ?? []).map((tag) => (
+                        <span
+                          key={tag.text}
+                          className={mergeClasses(
+                            styles.researchItemChip,
+                            tag.tone === "green" && styles.tagGreen,
+                            tag.tone === "purple" && styles.tagPurple,
+                            tag.tone === "rose" && styles.tagRose,
+                            tag.tone === "teal" && styles.tagTeal,
+                            tag.tone === "amber" && styles.tagAmber,
+                            tag.tone === "blue" && styles.tagBlue,
+                            tag.tone === "orange" && styles.tagOrange,
+                            tag.tone === "slate" && styles.tagSlate,
+                          )}
+                        >
+                          {tag.text}
+                        </span>
+                      ))}
+                    </div>
+                    <VoteBar cardId={item.id} variant="inline" />
+                  </div>
+                  <div className={styles.researchItemCopy}>
+                    <a
+                      className={styles.researchItemTitleRow}
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
                     >
-                      {tag.text}
-                    </span>
-                  ))}
-                </div>
-                <div className={styles.templateCardContent} style={{ flex: 1 }}>
-                  <h3 className={styles.researchTitle}>{item.title}</h3>
-                  <p className={styles.researchDescription}>{item.description}</p>
-                </div>
-                <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: "auto" }} onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}>
-                  View report
-                </a>
-                <VoteBar cardId={item.id} />
-              </article>
-            ))}
+                      <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{item.title}</h3>
+                      <span className={styles.researchItemArrow}>
+                        <ArrowRight16Regular fontSize={16} />
+                      </span>
+                    </a>
+                    <p className={styles.researchItemSubtext}>{item.description}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
