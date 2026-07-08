@@ -4,8 +4,6 @@ import {
   ArrowRight16Regular,
   Book20Filled,
   BookTemplate20Filled,
-  ChevronDown20Regular,
-  ChevronUp20Regular,
   ChevronLeft20Regular,
   ChevronRight20Regular,
   CompassNorthwest24Regular,
@@ -1579,11 +1577,6 @@ const useStyles = makeStyles({
     fontWeight: 600,
     color: "#242424",
   },
-  researchAccordionChevron: {
-    display: "inline-flex",
-    color: "#242424",
-    flexShrink: 0,
-  },
   researchAccordionBody: {
     display: "flex",
     flexDirection: "column",
@@ -1912,7 +1905,7 @@ function App() {
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
-  const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook">("Research");
+  const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook" | null>("Research");
 
   useEffect(() => {
     logPageView();
@@ -2485,12 +2478,9 @@ function App() {
                         type="button"
                         className={styles.researchAccordionHeader}
                         aria-expanded={isOpen}
-                        onClick={() => setOpenResearchPanel(panel.kind)}
+                        onClick={() => setOpenResearchPanel(isOpen ? null : panel.kind)}
                       >
                         <span className={styles.researchAccordionTitle}>{panel.title}</span>
-                        <span className={styles.researchAccordionChevron}>
-                          {isOpen ? <ChevronUp20Regular fontSize={16} /> : <ChevronDown20Regular fontSize={16} />}
-                        </span>
                       </button>
                       {isOpen ? (
                         <div className={styles.researchAccordionBody}>
