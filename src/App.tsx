@@ -1,18 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
-  ChevronDown16Regular,
+  ArrowRight16Regular,
+  Book20Filled,
+  BookOpen20Filled,
+  BookTemplate20Filled,
+  ChevronLeft20Regular,
+  ChevronRight20Regular,
+  Code20Filled,
+  DataBarVerticalAscending24Regular,
+  DataTrending24Regular,
   DocumentBulletList24Regular,
+  DismissRegular,
   Eye16Regular,
+  Info20Regular,
+  Microscope20Filled,
+  MountainLocationTop20Filled,
   PersonFeedback20Regular,
+  Sparkle24Regular,
   Star16Filled,
+  WrenchScrewdriver20Filled,
 } from "@fluentui/react-icons";
-import heroIconDataTrending from "./assets/hero-icon-data-trending.svg";
-import heroIconPersonData from "./assets/hero-icon-person-data.svg";
-import heroIconDataBar from "./assets/hero-icon-data-bar.svg";
 import sampleCodeBg from "./assets/sample-code-bg.svg";
 import heroBg from "./assets/bg-group.svg";
-import { research, resources, templates } from "./data";
+import { research, resources, templates, templateImpactFilters } from "./data";
+import type { TemplateImpactFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 
 const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
@@ -23,32 +35,172 @@ const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
 
 
 const sectionTabs = [
+  { id: "whats-new", label: "What's new" },
   { id: "templates", label: "Templates" },
   { id: "sample-code", label: "Sample Code" },
-  { id: "research", label: "Research" },
+  { id: "research", label: "Research & Playbooks" },
+  { id: "product-roadmap", label: "Roadmap" },
 ] as const;
+
+// Maximum number of "What's new" cards to show per type.
+const MAX_FEATURED_PER_KIND = 3;
+
+type FeaturedKind = "Template" | "Code" | "Research" | "Playbook";
+
+const featuredToneByKind: Record<FeaturedKind, "green" | "blue" | "teal" | "purple"> = {
+  Template: "green",
+  Code: "blue",
+  Research: "teal",
+  Playbook: "purple",
+};
+
+// Figma chip styling per kind: colored icon circle + matching pill.
+const featuredChipByKind: Record<
+  FeaturedKind,
+  { Icon: typeof BookTemplate20Filled; bg: string; fg: string; iconColor: string }
+> = {
+  Template: { Icon: BookTemplate20Filled, bg: "#F1FAF1", fg: "#0E700E", iconColor: "#0E700E" },
+  Code: { Icon: Code20Filled, bg: "#EFF6FC", fg: "#0F6CBD", iconColor: "#0F6CBD" },
+  Research: { Icon: Microscope20Filled, bg: "#FDF3F4", fg: "#C50F1F", iconColor: "#B10E1C" },
+  Playbook: { Icon: Book20Filled, bg: "#F0F0F0", fg: "#242424", iconColor: "#424242" },
+};
+
+interface FeaturedItem {
+  id: string;
+  sourceId: string;
+  kind: FeaturedKind;
+  tone: "green" | "blue" | "teal" | "purple";
+  title: string;
+  description: string;
+  url: string;
+  addedOn?: string;
+}
+
+// Turns an ISO date into a friendly relative string (e.g. "2 days ago").
+function formatRelativeDate(iso?: string): string {
+  if (!iso) return "";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const diffDays = Math.max(0, Math.floor((Date.now() - then) / 86_400_000));
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  const weeks = Math.floor(diffDays / 7);
+  if (diffDays < 30) return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+  const months = Math.floor(diffDays / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
+// Most recently added items grouped by type, newest first, capped per type.
+function buildFeaturedItems(): FeaturedItem[] {
+  const byDateDesc = (a: { addedOn?: string }, b: { addedOn?: string }) =>
+    (b.addedOn ?? "").localeCompare(a.addedOn ?? "");
+
+  const groups: { kind: FeaturedKind; items: { id: string; title: string; description: string; url: string; addedOn?: string }[] }[] = [
+    { kind: "Template", items: templates },
+    { kind: "Code", items: resources },
+    { kind: "Research", items: research.filter((item) => item.kind === "Research") },
+    { kind: "Playbook", items: research.filter((item) => item.kind === "Playbook") },
+  ];
+
+  return groups
+    .flatMap(({ kind, items }) =>
+      [...items]
+        .sort(byDateDesc)
+        .slice(0, MAX_FEATURED_PER_KIND)
+        .map<FeaturedItem>((item) => ({
+          id: `${kind}-${item.id}`,
+          sourceId: item.id,
+          kind,
+          tone: featuredToneByKind[kind],
+          title: item.title,
+          description: item.description,
+          url: item.url,
+          addedOn: item.addedOn,
+        })),
+    )
+    .sort(byDateDesc);
+}
+
+interface RoadmapItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType;
+  details?: string[];
+}
+
+const roadmapItems: RoadmapItem[] = [
+  {
+    id: "agent-analytics",
+    title: "Agent Analytics",
+    description:
+      "Comprehensive analytics for AI agents — dashboards, metrics, lifecycle management, and augmented capacity insights.",
+    icon: DataTrending24Regular,
+    details: [
+      "Agent 365 Dashboard",
+      "Agent metrics in advanced reporting",
+      "Lifecycle, sharing & promotion",
+      "Augmented capacity & AI teammates",
+    ],
+  },
+  {
+    id: "value-and-roi",
+    title: "Value and ROI",
+    description:
+      "Quantify and communicate the business value and return on investment of AI across your organization.",
+    icon: DataBarVerticalAscending24Regular,
+    details: [
+      "Copilot credits & consumption metrics",
+      "Task & intent analytics",
+      "Inferred satisfaction & impact",
+      "Deeper Cowork & Work IQ measurement",
+    ],
+  },
+  {
+    id: "insights-agent",
+    title: "Insights Agent",
+    description:
+      "AI-powered agent that surfaces proactive insights and recommendations from your analytics data.",
+    icon: Sparkle24Regular,
+    details: [
+      "Insights Agent — General Availability",
+      "Intelligent summaries",
+      "Build-your-own custom dashboards",
+    ],
+  },
+  {
+    id: "trust-access-foundation",
+    title: "Trust, Access and Foundation",
+    description:
+      "Foundational capabilities for security, governance, access control, and trust across the analytics platform.",
+    icon: DocumentBulletList24Regular,
+    details: [
+      "Identified user-level export",
+      "Programmatic export via Fabric",
+      "Scoped CDB/ADB partitions, flexible time ranges, tenant metric customization and GM/CXO access fixes",
+    ],
+  },
+];
 
 const heroValues = [
   {
-    title: "Pick a template, build a dashboard",
-    description:
-      "Templates, guided setup, and connectors to quickly turn ideas into dashboards.",
-    icon: heroIconDataTrending,
-    alt: "",
+    label: "Build",
+    Icon: WrenchScrewdriver20Filled,
+    heading: "Build with ready-to-use assets",
+    caption: "Templates, code, and prompts to plug into your own data.",
   },
   {
-    title: "Real code, ready for data",
-    description:
-      "Ready-to-run sample code, prompts, and a toolkit for your environment.",
-    icon: heroIconPersonData,
-    alt: "",
+    label: "Learn",
+    Icon: BookOpen20Filled,
+    heading: "Learn from proven deployments",
+    caption: "Playbooks, research, and demos from real customer rollouts.",
   },
   {
-    title: "Proven playbooks from real deployments",
-    description:
-      "Adoption playbooks and research based on enterprise rollouts.",
-    icon: heroIconDataBar,
-    alt: "",
+    label: "Explore",
+    Icon: MountainLocationTop20Filled,
+    heading: "See what's new and next",
+    caption: "A preview of latest drops and upcoming capabilities.",
   },
 ];
 
@@ -166,6 +318,68 @@ const useStyles = makeStyles({
     backgroundColor: "#ffffff",
     color: "#242424",
     fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
+  },
+  disclaimerBar: {
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "8px",
+    minHeight: "48px",
+    ...shorthands.padding("4px", "36px"),
+    backgroundColor: "#F5F5F5",
+    ...shorthands.borderTop("1px", "solid", "#D1D1D1"),
+    '@media (max-width: 600px)': {
+      ...shorthands.padding("8px", "16px"),
+    },
+  },
+  disclaimerIcon: {
+    flexShrink: 0,
+    color: "#616161",
+    fontSize: "20px",
+  },
+  disclaimerTextWrap: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: "4px",
+    flexGrow: 1,
+    flexWrap: "wrap",
+  },
+  disclaimerText: {
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 400,
+    color: "#000000",
+  },
+  disclaimerLink: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 400,
+    color: "#335CCC",
+    textDecorationLine: "underline",
+    whiteSpace: "nowrap",
+    ':hover': {
+      color: "#2A4CB0",
+    },
+  },
+  disclaimerDismiss: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    width: "24px",
+    height: "24px",
+    ...shorthands.padding("2px"),
+    ...shorthands.border("none"),
+    ...shorthands.borderRadius("4px"),
+    backgroundColor: "transparent",
+    color: "#424242",
+    cursor: "pointer",
+    ':hover': {
+      backgroundColor: "#EBEBEB",
+    },
   },
   nav: {
     position: "sticky",
@@ -342,18 +556,21 @@ const useStyles = makeStyles({
   valuesPanel: {
     width: "100%",
     maxWidth: "896px",
+    minHeight: "256px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
     gap: "24px",
     backgroundColor: "rgba(255,255,255,0.7)",
     backdropFilter: "blur(10px)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("24px"),
+    ...shorthands.padding("40px", "24px"),
     boxSizing: "border-box",
     overflow: "hidden",
     '@media (max-width: 600px)': {
-      ...shorthands.padding("16px"),
+      minHeight: "0",
+      ...shorthands.padding("24px", "16px"),
       gap: "16px",
     },
   },
@@ -377,27 +594,35 @@ const useStyles = makeStyles({
     gap: "8px",
     textAlign: "center",
   },
-  valueIcon: {
-    width: "64px",
-    height: "64px",
-    objectFit: "contain",
-    display: "block",
-    '@media (max-width: 600px)': {
-      width: "56px",
-      height: "56px",
-    },
+  valuePill: {
+    display: "inline-flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "8px",
+    ...shorthands.padding("8px", "16px"),
+    backgroundColor: "#FFFFFF",
+    ...shorthands.borderRadius("24px"),
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.08), 0px 0px 2px rgba(0,0,0,0.10)",
+  },
+  valuePillIcon: {
+    fontSize: "20px",
+    color: "#1764E7",
+    flexShrink: 0,
+  },
+  valuePillLabel: {
+    fontSize: "16px",
+    lineHeight: "22px",
+    fontWeight: 600,
+    color: "#242424",
   },
   valueTitle: {
     margin: 0,
-    fontSize: "16px",
-    lineHeight: "24px",
+    fontSize: "14px",
+    lineHeight: "20px",
     fontWeight: 600,
     color: "#000000",
     whiteSpace: "normal",
-    '@media (max-width: 600px)': {
-      fontSize: "14px",
-      lineHeight: "20px",
-    },
   },
   valueDescription: {
     margin: 0,
@@ -1052,6 +1277,254 @@ const useStyles = makeStyles({
     lineHeight: "20px",
     color: "#424242",
   },
+  eyebrowFeatured: {
+    backgroundImage: "linear-gradient(96.15deg, #E76633 -1.08%, #9D68E3 14.88%, #20BBC6 96.13%)",
+  },
+  roadmapTabs: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "4px",
+    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+  },
+  roadmapTab: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: "transparent",
+    color: "#424242",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
+    cursor: "pointer",
+    ...shorthands.padding("10px", "14px"),
+    ...shorthands.border("none"),
+    ...shorthands.borderBottom("2px", "solid", "transparent"),
+    marginBottom: "-1px",
+    ':hover': {
+      color: "#0E1726",
+    },
+  },
+  roadmapTabActive: {
+    color: "#0E1726",
+    fontWeight: 600,
+    ...shorthands.borderBottom("2px", "solid", "#335CCC"),
+  },
+  roadmapTabDescription: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#424242",
+    maxWidth: "760px",
+  },
+  roadmapDetailGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "16px",
+    '@media (max-width: 900px)': {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    },
+    '@media (max-width: 600px)': {
+      gridTemplateColumns: "1fr",
+    },
+  },
+  roadmapDetailCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
+    ...shorthands.borderRadius("16px"),
+    ...shorthands.padding("20px"),
+    boxSizing: "border-box",
+  },
+  sectionWhatsNewBg: {
+    // Figma "bg": mauve (#F4E3FF) radial glow on the left, yellow/peach (#FFF3D4 @ 0.8) on the right.
+    background:
+      "radial-gradient(62% 95% at 80% 42%, rgba(255,243,212,0.8) 0%, rgba(255,243,212,0) 58%), " +
+      "radial-gradient(58% 90% at 18% 48%, rgba(244,227,255,0.95) 0%, rgba(244,227,255,0) 58%), " +
+      "#FFFFFF",
+  },
+  featuredRow: {
+    display: "flex",
+    gap: "20px",
+    overflowX: "auto",
+    scrollSnapType: "x mandatory",
+    scrollPaddingInline: "2px",
+    ...shorthands.padding("16px", "24px", "20px", "2px"),
+    scrollbarWidth: "none",
+    '::-webkit-scrollbar': {
+      display: "none",
+    },
+  },
+  featuredCard: {
+    flex: "0 0 336px",
+    scrollSnapAlign: "start",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0px 2px 4px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("16px"),
+    ...shorthands.padding("24px"),
+    boxSizing: "border-box",
+    '@media (max-width: 600px)': {
+      flex: "0 0 82%",
+    },
+  },
+  featuredChips: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  chipIconCircle: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    flexShrink: 0,
+    ...shorthands.borderRadius("18px"),
+  },
+  chipPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    height: "24px",
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
+    ...shorthands.padding("4px", "8px"),
+    ...shorthands.borderRadius("100px"),
+    boxSizing: "border-box",
+  },
+  featuredTitle: {
+    margin: 0,
+    fontSize: "16px",
+    lineHeight: "24px",
+    fontWeight: 600,
+    color: "#000000",
+  },
+  featuredDescription: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#242424",
+    display: "-webkit-box",
+    WebkitLineClamp: "2",
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+    flex: 1,
+  },
+  featuredFooter: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "4px",
+  },
+  featuredDate: {
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#707070",
+  },
+  featuredArrow: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
+    ...shorthands.border("none"),
+    textDecorationLine: "none",
+    cursor: "pointer",
+    ':hover': {
+      backgroundColor: "#2A4CB0",
+    },
+  },
+  featuredNav: {
+    display: "flex",
+    gap: "8px",
+  },
+  chipRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+    marginBottom: "24px",
+  },
+  chip: {
+    display: "inline-flex",
+    alignItems: "center",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 400,
+    color: "#242424",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    ...shorthands.padding("4px", "12px"),
+    ...shorthands.borderRadius("100px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ':hover': {
+      backgroundColor: "#F5F5F5",
+    },
+  },
+  chipActive: {
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    ...shorthands.border("1px", "solid", "#335CCC"),
+    ':hover': {
+      backgroundColor: "#294DAE",
+    },
+  },
+  viewAllLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    color: "#335CCC",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    textDecorationLine: "none",
+    whiteSpace: "nowrap",
+    ':hover .viewAllArrow': {
+      backgroundColor: "#2A4CB0",
+    },
+  },
+  viewAllArrow: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "23px",
+    height: "23px",
+    color: "#ffffff",
+    backgroundColor: "#335CCC",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
+    flexShrink: 0,
+  },
+  emptyState: {
+    ...shorthands.padding("40px", "0"),
+    textAlign: "center",
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#616161",
+  },
+  featuredNavButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "36px",
+    height: "36px",
+    color: "#3F6CE9",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    boxShadow: "0px 1px 2px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
+    ...shorthands.borderRadius("18px"),
+    ...shorthands.border("none"),
+    ':hover': {
+      backgroundColor: "#F5F5F5",
+    },
+  },
   footer: {
     backgroundColor: "#ffffff",
     boxShadow: "0 -1px 0 rgba(0,0,0,0.08)",
@@ -1101,7 +1574,7 @@ const useStyles = makeStyles({
   },
 });
 
-function MicrosoftLogoWordmark() {
+export function MicrosoftLogoWordmark() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1119,9 +1592,10 @@ function MicrosoftLogoWordmark() {
 
 function App() {
   const styles = useStyles();
-  const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("templates");
+  const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   useEffect(() => {
     logPageView();
@@ -1147,10 +1621,28 @@ function App() {
     return templateOrder.map((id) => map.get(id)).filter(Boolean) as typeof templates;
   }, []);
 
+  const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
+  const visibleTemplates = useMemo(
+    () =>
+      templateFilter === "Featured"
+        ? orderedTemplates
+        : orderedTemplates.filter((item) => item.impact.includes(templateFilter)),
+    [orderedTemplates, templateFilter],
+  );
+
   const orderedResearch = useMemo(() => {
     const map = new Map(research.map((item) => [item.id, item]));
     return researchOrder.map((id) => map.get(id)).filter(Boolean) as typeof research;
   }, []);
+
+  const featuredItems = useMemo(() => buildFeaturedItems(), []);
+  const featuredRowRef = useRef<HTMLDivElement>(null);
+  const scrollFeatured = (dir: number) => {
+    featuredRowRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
+  };
+
+  const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
+  const activeRoadmap = roadmapItems.find((item) => item.id === activeRoadmapTab) ?? roadmapItems[0];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1213,6 +1705,32 @@ function App() {
 
   return (
     <div className={styles.page}>
+      {showDisclaimer && (
+        <div className={styles.disclaimerBar} role="status">
+          <Info20Regular className={styles.disclaimerIcon} aria-hidden="true" />
+          <div className={styles.disclaimerTextWrap}>
+            <span className={styles.disclaimerText}>
+              The materials on this page are provided as-is, without warranty of any kind, including merchantability or fitness for a particular purpose. Microsoft will not provide any support for these materials.
+            </span>
+            <a
+              className={styles.disclaimerLink}
+              href={TERMS_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Learn more
+            </a>
+          </div>
+          <button
+            type="button"
+            className={styles.disclaimerDismiss}
+            onClick={() => setShowDisclaimer(false)}
+            aria-label="Dismiss disclaimer"
+          >
+            <DismissRegular fontSize={16} />
+          </button>
+        </div>
+      )}
       <nav className={styles.nav}>
         <div className={styles.brand}>
           <MicrosoftLogoWordmark />
@@ -1348,19 +1866,17 @@ function App() {
           <div className={styles.valuesShell}>
             <div className={styles.valuesPanel}>
               <div className={styles.valuesGrid}>
-                {heroValues.map(({ title, description, icon, alt }) => (
-                  <div key={title} className={styles.valueCard}>
-                    <img src={icon} alt={alt} className={styles.valueIcon} aria-hidden="true" />
-                    <h2 className={styles.valueTitle}>{title}</h2>
-                    <p className={styles.valueDescription}>{description}</p>
+                {heroValues.map(({ label, heading, caption, Icon }) => (
+                  <div key={label} className={styles.valueCard}>
+                    <div className={styles.valuePill}>
+                      <Icon className={styles.valuePillIcon} aria-hidden="true" />
+                      <span className={styles.valuePillLabel}>{label}</span>
+                    </div>
+                    <h2 className={styles.valueTitle}>{heading}</h2>
+                    <p className={styles.valueDescription}>{caption}</p>
                   </div>
                 ))}
               </div>
-
-              <button className={styles.primaryButton} type="button" onClick={() => { logClick(TelemetryEvents.HeroExploreClick); scrollToSection("templates"); }}>
-                Explore labs
-                <ChevronDown16Regular fontSize={14} />
-              </button>
             </div>
           </div>
         </div>
@@ -1384,20 +1900,101 @@ function App() {
         <div className={styles.tabsRail} />
       </div>
 
+      <section id="whats-new" className={mergeClasses(styles.section, styles.sectionWhatsNewBg)}>
+        <div className={styles.sectionContent}>
+          <div className={styles.sectionTitleArea}>
+            <p className={mergeClasses(styles.eyebrow, styles.eyebrowFeatured)}>Featured</p>
+            <div className={styles.sectionHeadingRow}>
+              <h2 className={styles.sectionHeading}>See what's new and popular in labs</h2>
+            </div>
+            <p className={styles.sectionDescription}>
+              Newly added resources containing templates, sample codes, research, playbooks and demos.
+            </p>
+          </div>
+
+          <div className={styles.featuredRow} ref={featuredRowRef}>
+            {featuredItems.map((item) => {
+              const chip = featuredChipByKind[item.kind];
+              return (
+                <article key={item.id} className={styles.featuredCard}>
+                  <div className={styles.featuredChips}>
+                    <span className={styles.chipIconCircle} style={{ backgroundColor: chip.bg, color: chip.iconColor }}>
+                      <chip.Icon fontSize={14} />
+                    </span>
+                    <span className={styles.chipPill} style={{ backgroundColor: chip.bg, color: chip.fg }}>
+                      {item.kind}
+                    </span>
+                  </div>
+                  <h3 className={styles.featuredTitle}>{item.title}</h3>
+                  <p className={styles.featuredDescription}>{item.description}</p>
+                  <div className={styles.featuredFooter}>
+                    <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
+                    <a
+                      className={styles.featuredArrow}
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${item.title}`}
+                      onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
+                    >
+                      <ArrowRight16Regular fontSize={14} />
+                    </a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className={styles.featuredNav}>
+            <button type="button" className={styles.featuredNavButton} aria-label="Scroll previous" onClick={() => scrollFeatured(-1)}>
+              <ChevronLeft20Regular fontSize={18} />
+            </button>
+            <button type="button" className={styles.featuredNavButton} aria-label="Scroll next" onClick={() => scrollFeatured(1)}>
+              <ChevronRight20Regular fontSize={18} />
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section id="templates" className={mergeClasses(styles.section, styles.sectionTemplateBg)}>
         <div className={styles.sectionContent}>
           <div className={styles.sectionTitleArea}>
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Pick a template, build a dashboard</h2>
+              <a
+                className={styles.viewAllLink}
+                href={`${import.meta.env.BASE_URL}#/templates`}
+                onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}
+              >
+                View all templates
+                <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
+              </a>
             </div>
             <p className={styles.sectionDescription}>
               Production-ready dashboard templates for adoption, usage, impact, and business value that combine Viva Insights data with broader organizational signals.
             </p>
           </div>
 
+          <div className={styles.chipRow} role="tablist" aria-label="Filter templates">
+            {templateImpactFilters.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={mergeClasses(styles.chip, templateFilter === cat && styles.chipActive)}
+                aria-pressed={templateFilter === cat}
+                onClick={() => setTemplateFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {visibleTemplates.length === 0 ? (
+            <p className={styles.emptyState}>More templates are coming to this category soon.</p>
+          ) : (
           <div className={styles.templateGrid}>
-            {orderedTemplates.map((item) => {
+            {visibleTemplates.map((item) => {
               const meta = templateMeta[item.id] ?? {};
               const isFeatured = Boolean(meta.featured);
 
@@ -1479,6 +2076,7 @@ function App() {
               );
             })}
           </div>
+          )}
         </div>
       </section>
 
@@ -1591,6 +2189,58 @@ function App() {
                 </a>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="product-roadmap" className={mergeClasses(styles.section, styles.sectionRoadmapBg)}>
+        <div className={styles.sectionContent}>
+          <div className={styles.sectionTitleArea}>
+            <p className={styles.eyebrow}>Product roadmap</p>
+            <div className={styles.sectionHeadingRow}>
+              <h2 className={styles.sectionHeading}>What's next for Copilot Analytics</h2>
+            </div>
+            <p className={styles.sectionDescription}>
+              Upcoming capabilities and investments shaping the future of AI-powered analytics.
+            </p>
+          </div>
+
+          <div className={styles.roadmapTabs} role="tablist" aria-label="Roadmap categories">
+            {roadmapItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={activeRoadmapTab === item.id}
+                className={mergeClasses(styles.roadmapTab, activeRoadmapTab === item.id && styles.roadmapTabActive)}
+                onClick={() => { setActiveRoadmapTab(item.id); logClick(TelemetryEvents.TabClick, { tab: `roadmap-${item.id}` }); }}
+              >
+                <item.icon />
+                {item.title}
+              </button>
+            ))}
+          </div>
+
+          <p className={styles.roadmapTabDescription}>{activeRoadmap.description}</p>
+
+          <div className={styles.roadmapDetailGrid}>
+            {(activeRoadmap.details ?? []).map((detail) => (
+              <article key={detail} className={styles.roadmapDetailCard}>
+                <div className={styles.roadmapCardIcon}>
+                  <activeRoadmap.icon />
+                </div>
+                <h3 className={styles.roadmapTitle}>{detail}</h3>
+              </article>
+            ))}
+          </div>
+
+          <div className={styles.roadmapLinks}>
+            <a className={styles.roadmapLink} href={WHATS_COMING_URL} target="_blank" rel="noreferrer">
+              For detailed roadmap — click here ↗
+            </a>
+            <a className={styles.roadmapLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
+              Product roadmap feedback ↗
+            </a>
           </div>
         </div>
       </section>
