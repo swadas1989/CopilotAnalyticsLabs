@@ -16,6 +16,7 @@ import {
   Info20Regular,
   Microscope20Filled,
   MountainLocationTop20Filled,
+  Open16Regular,
   PersonFeedback20Regular,
   Sparkle24Regular,
   Star16Filled,
@@ -42,38 +43,70 @@ const sectionTabs = [
   { id: "product-roadmap", label: "Roadmap" },
 ] as const;
 
-// Maximum number of "What's new" cards to show per type.
-const MAX_FEATURED_PER_KIND = 3;
+// "New" window (in days) per content type. Items added within this many days
+// of today are considered "new" and surface in the "What's new" section.
+const NEW_WINDOW_DAYS: Record<FeaturedKind, number> = {
+  Template: 30,
+  Code: 30,
+  Research: 15,
+  Playbook: 15,
+};
+
+// Always show this item first in the "What's new" carousel (by sourceId).
+const FEATURED_PINNED_FIRST = "cowork-value-estimator";
 
 type FeaturedKind = "Template" | "Code" | "Research" | "Playbook";
 
-const featuredToneByKind: Record<FeaturedKind, "green" | "blue" | "teal" | "purple"> = {
+const featuredToneByKind: Record<FeaturedKind, "green" | "teal" | "purple"> = {
   Template: "green",
-  Code: "blue",
+  Code: "purple",
   Research: "teal",
   Playbook: "purple",
 };
 
-// Figma chip styling per kind: colored icon circle + matching pill.
+// Figma chip styling per kind: colored icon + matching pill + display label.
 const featuredChipByKind: Record<
   FeaturedKind,
-  { Icon: typeof BookTemplate20Filled; bg: string; fg: string; iconColor: string }
+  { Icon: typeof BookTemplate20Filled; label: string; bg: string; fg: string; iconColor: string }
 > = {
-  Template: { Icon: BookTemplate20Filled, bg: "#F1FAF1", fg: "#0E700E", iconColor: "#0E700E" },
-  Code: { Icon: Code20Filled, bg: "#EFF6FC", fg: "#0F6CBD", iconColor: "#0F6CBD" },
-  Research: { Icon: Microscope20Filled, bg: "#FDF3F4", fg: "#C50F1F", iconColor: "#B10E1C" },
-  Playbook: { Icon: Book20Filled, bg: "#F0F0F0", fg: "#242424", iconColor: "#424242" },
+  Template: { Icon: BookTemplate20Filled, label: "Template", bg: "#F1FAF1", fg: "#0E700E", iconColor: "#0E700E" },
+  Code: { Icon: Code20Filled, label: "Sample code", bg: "rgba(198, 177, 222, 0.2)", fg: "#5C2E91", iconColor: "#5C2E91" },
+  Research: { Icon: Microscope20Filled, label: "Research", bg: "#FDF3F4", fg: "#C50F1F", iconColor: "#B10E1C" },
+  Playbook: { Icon: Book20Filled, label: "Playbook", bg: "#F0F0F0", fg: "#242424", iconColor: "#424242" },
+};
+
+// Filter-pill labels + ordering for the "What's new" filter group.
+const featuredKindOrder: FeaturedKind[] = ["Template", "Code", "Research", "Playbook"];
+const featuredPillLabel: Record<FeaturedKind, string> = {
+  Template: "Templates",
+  Code: "Sample codes",
+  Research: "Research",
+  Playbook: "Playbooks",
 };
 
 interface FeaturedItem {
   id: string;
   sourceId: string;
   kind: FeaturedKind;
-  tone: "green" | "blue" | "teal" | "purple";
+  tone: "green" | "teal" | "purple";
   title: string;
   description: string;
   url: string;
   addedOn?: string;
+}
+
+// Whole days elapsed since an ISO date, or null when unknown/invalid.
+function daysSince(iso?: string): number | null {
+  if (!iso) return null;
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return null;
+  return Math.floor((Date.now() - then) / 86_400_000);
+}
+
+// An item is "new" when it was added within its kind's window.
+function isNewForKind(iso: string | undefined, kind: FeaturedKind): boolean {
+  const d = daysSince(iso);
+  return d !== null && d <= NEW_WINDOW_DAYS[kind];
 }
 
 // Turns an ISO date into a friendly relative string (e.g. "2 days ago").
@@ -91,7 +124,8 @@ function formatRelativeDate(iso?: string): string {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
-// Most recently added items grouped by type, newest first, capped per type.
+// New items grouped by type, newest first — only those within each kind's
+// window. The pinned item (if new) is always placed first.
 function buildFeaturedItems(): FeaturedItem[] {
   const byDateDesc = (a: { addedOn?: string }, b: { addedOn?: string }) =>
     (b.addedOn ?? "").localeCompare(a.addedOn ?? "");
@@ -103,11 +137,11 @@ function buildFeaturedItems(): FeaturedItem[] {
     { kind: "Playbook", items: research.filter((item) => item.kind === "Playbook") },
   ];
 
-  return groups
+  const items = groups
     .flatMap(({ kind, items }) =>
       [...items]
+        .filter((item) => isNewForKind(item.addedOn, kind))
         .sort(byDateDesc)
-        .slice(0, MAX_FEATURED_PER_KIND)
         .map<FeaturedItem>((item) => ({
           id: `${kind}-${item.id}`,
           sourceId: item.id,
@@ -120,6 +154,14 @@ function buildFeaturedItems(): FeaturedItem[] {
         })),
     )
     .sort(byDateDesc);
+
+  const pinnedIdx = items.findIndex((item) => item.sourceId === FEATURED_PINNED_FIRST);
+  if (pinnedIdx > 0) {
+    const [pinned] = items.splice(pinnedIdx, 1);
+    items.unshift(pinned);
+  }
+
+  return items;
 }
 
 interface RoadmapItem {
@@ -1374,7 +1416,87 @@ const useStyles = makeStyles({
   featuredChips: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "4px",
+  },
+  featuredTag: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    height: "24px",
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+    ...shorthands.padding("4px", "8px"),
+    ...shorthands.borderRadius("100px"),
+    boxSizing: "border-box",
+  },
+  featuredOpen: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "20px",
+    height: "20px",
+    flexShrink: 0,
+    color: "#335CCC",
+    textDecorationLine: "none",
+    cursor: "pointer",
+    ':hover': {
+      color: "#2A4CB0",
+    },
+  },
+  filterGroup: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: "8px",
+    marginTop: "4px",
+  },
+  filterPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    height: "32px",
+    fontSize: "14px",
+    lineHeight: "20px",
+    color: "#242424",
+    backgroundColor: "#FFFFFF",
+    cursor: "pointer",
+    ...shorthands.padding("4px", "12px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ...shorthands.borderRadius("100px"),
+    ':hover': {
+      backgroundColor: "#F5F5F5",
+    },
+  },
+  filterPillActive: {
+    color: "#FFFFFF",
+    backgroundColor: "#335CCC",
+    ...shorthands.borderColor("#335CCC"),
+    ':hover': {
+      backgroundColor: "#2A4CB0",
+    },
+  },
+  filterPillDot: {
+    width: "4px",
+    height: "4px",
+    flexShrink: 0,
+    backgroundColor: "#335CCC",
+    ...shorthands.borderRadius("50%"),
+  },
+  filterPillDotActive: {
+    backgroundColor: "#FFFFFF",
+  },
+  filterPillCount: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
+    color: "#335CCC",
+  },
+  filterPillCountActive: {
+    color: "#FFFFFF",
   },
   chipIconCircle: {
     display: "inline-flex",
@@ -1636,6 +1758,26 @@ function App() {
   }, []);
 
   const featuredItems = useMemo(() => buildFeaturedItems(), []);
+
+  const featuredCounts = useMemo(() => {
+    const counts = new Map<FeaturedKind, number>();
+    featuredItems.forEach((item) => counts.set(item.kind, (counts.get(item.kind) ?? 0) + 1));
+    return counts;
+  }, [featuredItems]);
+
+  // Only kinds that actually have new content get a filter pill (dynamic pills).
+  const featuredKinds = useMemo(
+    () => featuredKindOrder.filter((kind) => (featuredCounts.get(kind) ?? 0) > 0),
+    [featuredCounts],
+  );
+
+  const [featuredFilter, setFeaturedFilter] = useState<FeaturedKind | "All">("All");
+
+  const visibleFeatured = useMemo(
+    () => (featuredFilter === "All" ? featuredItems : featuredItems.filter((item) => item.kind === featuredFilter)),
+    [featuredItems, featuredFilter],
+  );
+
   const featuredRowRef = useRef<HTMLDivElement>(null);
   const scrollFeatured = (dir: number) => {
     featuredRowRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
@@ -1912,47 +2054,82 @@ function App() {
             </p>
           </div>
 
-          <div className={styles.featuredRow} ref={featuredRowRef}>
-            {featuredItems.map((item) => {
-              const chip = featuredChipByKind[item.kind];
-              return (
-                <article key={item.id} className={styles.featuredCard}>
-                  <div className={styles.featuredChips}>
-                    <span className={styles.chipIconCircle} style={{ backgroundColor: chip.bg, color: chip.iconColor }}>
-                      <chip.Icon fontSize={14} />
+          {featuredKinds.length > 0 && (
+            <div className={styles.filterGroup} role="tablist" aria-label="Filter new content">
+              <button
+                type="button"
+                className={mergeClasses(styles.filterPill, featuredFilter === "All" && styles.filterPillActive)}
+                aria-pressed={featuredFilter === "All"}
+                onClick={() => setFeaturedFilter("All")}
+              >
+                All
+              </button>
+              {featuredKinds.map((kind) => {
+                const active = featuredFilter === kind;
+                return (
+                  <button
+                    key={kind}
+                    type="button"
+                    className={mergeClasses(styles.filterPill, active && styles.filterPillActive)}
+                    aria-pressed={active}
+                    onClick={() => setFeaturedFilter(kind)}
+                  >
+                    {featuredPillLabel[kind]}
+                    <span className={mergeClasses(styles.filterPillDot, active && styles.filterPillDotActive)} />
+                    <span className={mergeClasses(styles.filterPillCount, active && styles.filterPillCountActive)}>
+                      {featuredCounts.get(kind)}
                     </span>
-                    <span className={styles.chipPill} style={{ backgroundColor: chip.bg, color: chip.fg }}>
-                      {item.kind}
-                    </span>
-                  </div>
-                  <h3 className={styles.featuredTitle}>{item.title}</h3>
-                  <p className={styles.featuredDescription}>{item.description}</p>
-                  <div className={styles.featuredFooter}>
-                    <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
-                    <a
-                      className={styles.featuredArrow}
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Open ${item.title}`}
-                      onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
-                    >
-                      <ArrowRight16Regular fontSize={14} />
-                    </a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          <div className={styles.featuredNav}>
-            <button type="button" className={styles.featuredNavButton} aria-label="Scroll previous" onClick={() => scrollFeatured(-1)}>
-              <ChevronLeft20Regular fontSize={18} />
-            </button>
-            <button type="button" className={styles.featuredNavButton} aria-label="Scroll next" onClick={() => scrollFeatured(1)}>
-              <ChevronRight20Regular fontSize={18} />
-            </button>
-          </div>
+          {visibleFeatured.length > 0 ? (
+            <>
+              <div className={styles.featuredRow} ref={featuredRowRef}>
+                {visibleFeatured.map((item) => {
+                  const chip = featuredChipByKind[item.kind];
+                  return (
+                    <article key={item.id} className={styles.featuredCard}>
+                      <div className={styles.featuredChips}>
+                        <span className={styles.featuredTag} style={{ backgroundColor: chip.bg, color: chip.fg }}>
+                          <chip.Icon fontSize={16} style={{ color: chip.iconColor }} />
+                          {chip.label}
+                        </span>
+                        <a
+                          className={styles.featuredOpen}
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`Open ${item.title}`}
+                          onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
+                        >
+                          <Open16Regular fontSize={16} />
+                        </a>
+                      </div>
+                      <h3 className={styles.featuredTitle}>{item.title}</h3>
+                      <p className={styles.featuredDescription}>{item.description}</p>
+                      <div className={styles.featuredFooter}>
+                        <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <div className={styles.featuredNav}>
+                <button type="button" className={styles.featuredNavButton} aria-label="Scroll previous" onClick={() => scrollFeatured(-1)}>
+                  <ChevronLeft20Regular fontSize={18} />
+                </button>
+                <button type="button" className={styles.featuredNavButton} aria-label="Scroll next" onClick={() => scrollFeatured(1)}>
+                  <ChevronRight20Regular fontSize={18} />
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className={styles.featuredDate}>No new resources right now — check back soon.</p>
+          )}
         </div>
       </section>
 
