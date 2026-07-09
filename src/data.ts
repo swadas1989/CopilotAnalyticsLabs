@@ -34,7 +34,25 @@ export interface ResourceItem {
   category: "Code" | "Prompts";
   image?: string;
   addedOn?: string;
+  /** Technology tags, used by the home Sample Code section + page "Technology" filter. */
+  tech: CodeTechTag[];
+  /** Domain tags, used by the dedicated Sample Code page "Domain" filter. */
+  domain: CodeDomainTag[];
+  /** Thematic sections the sample code belongs to on the Sample Code page. */
+  collections: ("Analytics" | "Export")[];
 }
+
+export type CodeTechTag =
+  | "Python"
+  | "R"
+  | "Power BI"
+  | "AI-assisted";
+
+export type CodeDomainTag =
+  | "Adoption & Usage"
+  | "Impact & ROI"
+  | "Copilot & Agents"
+  | "Advanced / ML";
 
 export interface ResearchItem {
   id: string;
@@ -43,9 +61,48 @@ export interface ResearchItem {
   url: string;
   icon: React.ComponentType;
   ctaLabel?: string;
-  kind?: "Research" | "Playbook";
+  /** Whether this item is a research report or an adoption/methodology playbook. */
+  kind: "Research" | "Playbook";
   addedOn?: string;
+  /** Domain tags, used by the dedicated Research & Playbooks page "Domain" filter. */
+  domain: ResearchDomainTag[];
+  /** Content type tags, used by the Research & Playbooks page "Content type" filter. */
+  contentType: ResearchContentTypeTag[];
 }
+
+export type ResearchDomainTag =
+  | "Copilot Adoption"
+  | "Agent Analytics"
+  | "Business Value"
+  | "Productivity"
+  | "AI Transformation";
+
+export type ResearchContentTypeTag =
+  | "Org wide"
+  | "Industry wide"
+  | "Framework"
+  | "Benchmark";
+
+// "Domain" filter tags for the dedicated Research & Playbooks page ("All" shows all).
+export const researchDomainFilters = [
+  "All",
+  "Copilot Adoption",
+  "Agent Analytics",
+  "Business Value",
+  "Productivity",
+  "AI Transformation",
+] as const;
+export type ResearchDomainFilter = (typeof researchDomainFilters)[number];
+
+// "Content type" filter tags for the dedicated Research & Playbooks page ("All" shows all).
+export const researchContentTypeFilters = [
+  "All",
+  "Org wide",
+  "Industry wide",
+  "Framework",
+  "Benchmark",
+] as const;
+export type ResearchContentTypeFilter = (typeof researchContentTypeFilters)[number];
 
 const base = import.meta.env.BASE_URL;
 
@@ -159,6 +216,9 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-essentials.png`,
     addedOn: "2026-05-25",
+    tech: ["Python", "R"],
+    domain: ["Adoption & Usage"],
+    collections: ["Analytics"],
   },
   {
     id: "advanced-analytics",
@@ -170,6 +230,9 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-advanced-analytics.png`,
     addedOn: "2026-06-08",
+    tech: ["Python", "R"],
+    domain: ["Impact & ROI", "Advanced / ML"],
+    collections: ["Analytics"],
   },
   {
     id: "copilot-analytics",
@@ -181,6 +244,9 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-copilot-analytics.png`,
     addedOn: "2026-06-25",
+    tech: ["Python", "R"],
+    domain: ["Adoption & Usage", "Copilot & Agents"],
+    collections: ["Analytics"],
   },
   {
     id: "frontier-analytics",
@@ -192,6 +258,9 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-frontier-analytics.png`,
     addedOn: "2026-07-03",
+    tech: ["Power BI", "AI-assisted"],
+    domain: ["Impact & ROI", "Copilot & Agents", "Advanced / ML"],
+    collections: ["Export"],
   },
   {
     id: "network-analysis",
@@ -203,6 +272,9 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-network-analysis.png`,
     addedOn: "2026-06-12",
+    tech: ["Python", "R", "Power BI"],
+    domain: ["Adoption & Usage", "Impact & ROI"],
+    collections: ["Analytics"],
   },
   {
     id: "portable-audit-exporter",
@@ -214,8 +286,42 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: addEditShareIcon,
     addedOn: "2026-06-30",
+    tech: ["AI-assisted"],
+    domain: ["Adoption & Usage", "Impact & ROI"],
+    collections: ["Export"],
   },
 ];
+
+// Technology tag filters for the home "Sample Code" section. "Featured" (default)
+// shows all; mirrors the Template Library home impact chips.
+export const codeHomeTechFilters = [
+  "Featured",
+  "Python",
+  "R",
+  "Power BI",
+  "AI-assisted",
+] as const;
+export type CodeHomeTechFilter = (typeof codeHomeTechFilters)[number];
+
+// "Technology" filter tags for the dedicated Sample Code page ("All" shows all).
+export const codeTechFilters = [
+  "All",
+  "Python",
+  "R",
+  "Power BI",
+  "AI-assisted",
+] as const;
+export type CodeTechFilter = (typeof codeTechFilters)[number];
+
+// "Domain" filter tags for the dedicated Sample Code page ("All" shows all).
+export const codeDomainFilters = [
+  "All",
+  "Adoption & Usage",
+  "Impact & ROI",
+  "Copilot & Agents",
+  "Advanced / ML",
+] as const;
+export type CodeDomainFilter = (typeof codeDomainFilters)[number];
 
 export const research: ResearchItem[] = [
   {
@@ -225,8 +331,10 @@ export const research: ResearchItem[] = [
       "Explore the methodology behind the Cowork Value Estimator for measuring collaboration impact.",
     url: "/CopilotAnalyticsLabs/Cowork_Methodology.pdf",
     icon: DocumentBulletList24Regular,
-    kind: "Research",
+    kind: "Playbook",
     addedOn: "2026-06-20",
+    domain: ["Business Value", "Productivity", "AI Transformation"],
+    contentType: ["Framework", "Benchmark"],
   },
   {
     id: "new-future-of-work",
@@ -237,6 +345,8 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
     kind: "Research",
     addedOn: "2026-05-15",
+    domain: ["AI Transformation", "Productivity"],
+    contentType: ["Industry wide"],
   },
   {
     id: "work-trend-index-2026",
@@ -247,6 +357,8 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
     kind: "Research",
     addedOn: "2026-05-05",
+    domain: ["AI Transformation", "Productivity"],
+    contentType: ["Industry wide", "Benchmark"],
   },
   {
     id: "copilot-advanced-analytics",
@@ -256,8 +368,10 @@ export const research: ResearchItem[] = [
     url: "https://aka.ms/CopilotAdvancedAnalytics",
     icon: DocumentBulletList24Regular,
     ctaLabel: "Download report",
-    kind: "Research",
+    kind: "Playbook",
     addedOn: "2026-07-02",
+    domain: ["Copilot Adoption", "Agent Analytics", "Business Value"],
+    contentType: ["Org wide", "Framework"],
   },
   {
     id: "causal-impact-copilot-word",
@@ -268,6 +382,8 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
     kind: "Research",
     addedOn: "2026-06-28",
+    domain: ["Business Value", "Productivity"],
+    contentType: ["Industry wide", "Benchmark"],
   },
   {
     id: "when-ai-met-the-meeting",
@@ -278,5 +394,7 @@ export const research: ResearchItem[] = [
     icon: DocumentBulletList24Regular,
     kind: "Research",
     addedOn: "2026-07-06",
+    domain: ["Productivity", "AI Transformation"],
+    contentType: ["Industry wide"],
   },
 ];
