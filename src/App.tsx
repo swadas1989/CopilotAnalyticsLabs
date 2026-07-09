@@ -26,6 +26,7 @@ import heroBg from "./assets/bg-group.svg";
 import { research, resources, templates, templateImpactFilters, codeHomeTechFilters } from "./data";
 import type { TemplateImpactFilter, CodeHomeTechFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
+import { VoteBar } from "./VoteBar";
 
 const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
 const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
@@ -2336,6 +2337,7 @@ function App() {
                       <p className={styles.featuredDescription}>{item.description}</p>
                       <div className={styles.featuredFooter}>
                         <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
+                        <VoteBar cardId={item.sourceId} />
                       </div>
                     </article>
                   );
@@ -2461,6 +2463,7 @@ function App() {
                           View template
                         </a>
                       </div>
+                      <VoteBar cardId={item.id} />
                     </div>
                   </div>
 
@@ -2559,6 +2562,7 @@ function App() {
                         View code
                       </a>
                     </div>
+                    <VoteBar cardId={item.id} />
                   </div>
                 </article>
               );
@@ -2636,6 +2640,7 @@ function App() {
                         </span>
                       ))}
                     </div>
+                    <VoteBar cardId={item.id} variant="inline" />
                   </div>
                   <div className={styles.researchItemCopy}>
                     <a

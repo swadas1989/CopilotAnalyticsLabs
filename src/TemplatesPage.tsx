@@ -10,6 +10,7 @@ import {
 } from "./data";
 import type { TemplateTypeFilter, TemplatePageImpactFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
+import { VoteBar } from "./VoteBar";
 
 const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
 const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
@@ -268,6 +269,9 @@ const useStyles = makeStyles({
       backgroundColor: "#E9F0FF",
     },
   },
+  voteBar: {
+    marginTop: "12px",
+  },
   empty: {
     ...shorthands.padding("48px", "0"),
     textAlign: "center",
@@ -449,6 +453,7 @@ export default function TemplatesPage() {
                             View template
                             <ArrowRight16Regular fontSize={14} />
                           </a>
+                          <VoteBar cardId={item.id} className={styles.voteBar} />
                         </div>
                       </article>
                     ))}
