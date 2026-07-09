@@ -1979,7 +1979,7 @@ function App() {
 
   const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook" | null>("Research");
   const visibleResearchItems = useMemo(
-    () => orderedResearch.filter((item) => item.kind === openResearchPanel),
+    () => orderedResearch.filter((item) => item.kind === openResearchPanel).slice(0, 3),
     [orderedResearch, openResearchPanel],
   );
 
@@ -2489,7 +2489,7 @@ function App() {
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
-              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
+              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
                 View all codes
                 <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
               </a>
@@ -2601,8 +2601,6 @@ function App() {
                           <a
                             className={styles.researchAccordionLink}
                             href={`${import.meta.env.BASE_URL}#/research`}
-                            target="_blank"
-                            rel="noreferrer"
                             onClick={() => logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` })}
                           >
                             {panel.linkLabel}
