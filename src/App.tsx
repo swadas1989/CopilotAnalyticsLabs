@@ -821,14 +821,12 @@ const useStyles = makeStyles({
       "linear-gradient(113deg, rgba(240,231,255,0.7) 0%, rgba(255,255,255,1) 40%, rgba(228,243,255,0.9) 100%)",
   },
   sectionCodeBg: {
-    backgroundColor: "#FFFFFF",
-    backgroundSize: "100% 100%",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
+    background:
+      "linear-gradient(113deg, rgba(248,230,255,0.7) 0%, rgba(255,255,255,1) 48%, rgba(255,245,214,0.85) 100%)",
   },
   sectionResearchBg: {
     background:
-      "linear-gradient(90deg, #F0F0E9 0%, #FFFDF0 100%)",
+      "linear-gradient(96.15deg, rgba(118,79,245,0.04) 12.38%, rgba(63,108,233,0.04) 39.4%, rgba(32,187,198,0.04) 96.13%)",
   },
   sectionContent: {
     width: "100%",
