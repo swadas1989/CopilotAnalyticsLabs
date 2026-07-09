@@ -44,26 +44,16 @@ export interface ResourceItem {
 }
 
 export type CodeTechTag =
-  | "Power BI"
   | "Python"
   | "R"
-  | "SQL"
-  | "Fabric"
-  | "DAX"
-  | "AI Agents"
-  | "Prompting";
+  | "Power BI"
+  | "AI-assisted";
 
 export type CodeDomainTag =
-  | "Adoption"
-  | "Usage"
-  | "Impact"
-  | "Business Value"
-  | "Copilot"
-  | "Agents"
-  | "Viva Insights"
-  | "GitHub Copilot"
-  | "Purview"
-  | "Machine Learning";
+  | "Adoption & Usage"
+  | "Impact & ROI"
+  | "Copilot & Agents"
+  | "Advanced / ML";
 
 export interface ResearchItem {
   id: string;
@@ -243,7 +233,7 @@ export const resources: ResourceItem[] = [
     image: `${base}images/code-essentials.png`,
     addedOn: "2026-04-20",
     tech: ["Python", "R"],
-    domain: ["Viva Insights", "Usage", "Adoption"],
+    domain: ["Adoption & Usage"],
     collections: ["Analytics"],
   },
   {
@@ -256,8 +246,8 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-advanced-analytics.png`,
     addedOn: "2026-05-12",
-    tech: ["Python", "R", "Fabric"],
-    domain: ["Machine Learning", "Impact", "Viva Insights"],
+    tech: ["Python", "R"],
+    domain: ["Impact & ROI", "Advanced / ML"],
     collections: ["Analytics"],
   },
   {
@@ -271,7 +261,7 @@ export const resources: ResourceItem[] = [
     image: `${base}images/code-copilot-analytics.png`,
     addedOn: "2026-07-01",
     tech: ["Python", "R"],
-    domain: ["Copilot", "Usage", "Adoption"],
+    domain: ["Adoption & Usage", "Copilot & Agents"],
     collections: ["Analytics"],
   },
   {
@@ -284,8 +274,8 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-frontier-analytics.png`,
     addedOn: "2026-06-18",
-    tech: ["Prompting", "AI Agents", "SQL", "Power BI"],
-    domain: ["Agents", "Purview", "Business Value", "Copilot", "GitHub Copilot"],
+    tech: ["Power BI", "AI-assisted"],
+    domain: ["Impact & ROI", "Copilot & Agents", "Advanced / ML"],
     collections: ["Export"],
   },
   {
@@ -298,8 +288,8 @@ export const resources: ResourceItem[] = [
     category: "Code",
     image: `${base}images/code-network-analysis.png`,
     addedOn: "2026-06-05",
-    tech: ["Python", "R", "Power BI", "DAX"],
-    domain: ["Usage", "Impact", "Viva Insights"],
+    tech: ["Python", "R", "Power BI"],
+    domain: ["Adoption & Usage", "Impact & ROI"],
     collections: ["Analytics"],
   },
 ];
@@ -308,44 +298,30 @@ export const resources: ResourceItem[] = [
 // shows all; mirrors the Template Library home impact chips.
 export const codeHomeTechFilters = [
   "Featured",
-  "Power BI",
   "Python",
   "R",
-  "SQL",
-  "Fabric",
-  "DAX",
-  "AI Agents",
-  "Prompting",
+  "Power BI",
+  "AI-assisted",
 ] as const;
 export type CodeHomeTechFilter = (typeof codeHomeTechFilters)[number];
 
 // "Technology" filter tags for the dedicated Sample Code page ("All" shows all).
 export const codeTechFilters = [
   "All",
-  "Power BI",
   "Python",
   "R",
-  "SQL",
-  "Fabric",
-  "DAX",
-  "AI Agents",
-  "Prompting",
+  "Power BI",
+  "AI-assisted",
 ] as const;
 export type CodeTechFilter = (typeof codeTechFilters)[number];
 
 // "Domain" filter tags for the dedicated Sample Code page ("All" shows all).
 export const codeDomainFilters = [
   "All",
-  "Adoption",
-  "Usage",
-  "Impact",
-  "Business Value",
-  "Copilot",
-  "Agents",
-  "Viva Insights",
-  "GitHub Copilot",
-  "Purview",
-  "Machine Learning",
+  "Adoption & Usage",
+  "Impact & ROI",
+  "Copilot & Agents",
+  "Advanced / ML",
 ] as const;
 export type CodeDomainFilter = (typeof codeDomainFilters)[number];
 

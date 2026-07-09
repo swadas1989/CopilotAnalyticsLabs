@@ -380,7 +380,7 @@ export default function CodesPage() {
           <h1 className={styles.title}>Browse all sample code</h1>
           <p className={styles.description}>
             Reusable scripts, prompt libraries, and analytical methods for Python, R, Power BI, and more. Filter
-            by domain and technology to find the right starting point.
+            by analysis focus and language to find the right starting point.
           </p>
         </div>
       </header>
@@ -389,8 +389,8 @@ export default function CodesPage() {
         <div className={styles.container}>
           <div className={styles.filters}>
             <div className={styles.filterGroup}>
-              <span className={styles.filterLabel}>Domain</span>
-              <div className={styles.chipRow} role="group" aria-label="Filter by domain">
+              <span className={styles.filterLabel}>Analysis Focus</span>
+              <div className={styles.chipRow} role="group" aria-label="Filter by analysis focus">
                 {codeDomainFilters.map((cat) => (
                   <button
                     key={cat}
@@ -408,8 +408,8 @@ export default function CodesPage() {
             <div className={styles.filterDivider} aria-hidden="true" />
 
             <div className={styles.filterGroup}>
-              <span className={styles.filterLabel}>Technology</span>
-              <div className={styles.chipRow} role="group" aria-label="Filter by technology">
+              <span className={styles.filterLabel}>Language &amp; Tool</span>
+              <div className={styles.chipRow} role="group" aria-label="Filter by language and tool">
                 {codeTechFilters.map((cat) => (
                   <button
                     key={cat}
