@@ -2110,9 +2110,6 @@ function App() {
             <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
             <span>Viva Insights</span>
           </a>
-          <a className={styles.navLink} href={WHATS_COMING_URL} target="_blank" rel="noreferrer">
-            <span>Viva Roadmap</span>
-          </a>
           <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
             <span>Feedback</span>
           </a>
