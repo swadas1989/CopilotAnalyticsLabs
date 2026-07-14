@@ -208,9 +208,9 @@ export function pageImpactToTag(filter: TemplatePageImpactFilter): TemplateItem[
 export const resources: ResourceItem[] = [
   {
     id: "viva-insights-essentials",
-    title: "Viva Insights Analysis - Essentials",
+    title: "Insights Analysis - Essentials",
     description:
-      "Get started with R & Python utility scripts — exploratory data analysis, standard visualizations (bar charts, trend lines, network diagrams), and custom KPI generation from Viva Insights data.",
+      "Get started with R & Python utility scripts — exploratory data analysis, standard visualizations (bar charts, trend lines, network diagrams), and custom KPI generation from Insights data.",
     url: "https://microsoft.github.io/viva-insights-sample-code/essentials/",
     icon: DocumentBulletList24Regular,
     category: "Code",

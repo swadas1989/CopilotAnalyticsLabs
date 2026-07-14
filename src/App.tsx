@@ -79,7 +79,7 @@ const featuredChipByKind: Record<
 const featuredKindOrder: FeaturedKind[] = ["Template", "Code", "Research", "Playbook"];
 const featuredPillLabel: Record<FeaturedKind, string> = {
   Template: "Templates",
-  Code: "Sample codes",
+  Code: "Sample code",
   Research: "Research",
   Playbook: "Playbooks",
 };
@@ -219,8 +219,8 @@ const roadmapItems: RoadmapItem[] = [
     icon: DocumentBulletList24Regular,
     details: [
       "Identified user-level export",
-      "Programmatic export via Fabric",
-      "Scoped CDB/ADB partitions, flexible time ranges, tenant metric customization and GM/CXO access fixes",
+      "Programmatic export enhancements",
+      "Flexible time ranges, tenant metric customization",
     ],
   },
 ];
@@ -2108,7 +2108,7 @@ function App() {
         <div className={styles.navLinks}>
           <a className={styles.navLink} href={VIVA_INSIGHTS_URL} target="_blank" rel="noreferrer">
             <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
-            <span>Viva Insights</span>
+            <span>Insights</span>
           </a>
           <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
             <span>Feedback</span>
@@ -2223,7 +2223,7 @@ function App() {
           <div className={styles.heroHeader}>
             <h1 className={styles.heroTitle}>Frontier analytics for Copilot and agents</h1>
             <p className={styles.heroSubtitle}>
-              Guided templates, sample code, and playbooks grounded in real customer deployments to help you design and deploy analytics beyond what's available in Viva Insights today.
+              Guided templates, sample code, and playbooks grounded in real customer deployments to help you design and deploy analytics beyond what's available in Insights today.
             </p>
           </div>
 
@@ -2372,7 +2372,7 @@ function App() {
               </a>
             </div>
             <p className={styles.sectionDescription}>
-              Production-ready dashboard templates for adoption, usage, impact, and business value that combine Viva Insights data with broader organizational signals.
+              Production-ready dashboard templates for adoption, usage, impact, and business value that combine Insights data with broader organizational signals.
             </p>
           </div>
 
@@ -2488,7 +2488,7 @@ function App() {
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
               <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
-                View all codes
+                View all code samples
                 <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
               </a>
             </div>
