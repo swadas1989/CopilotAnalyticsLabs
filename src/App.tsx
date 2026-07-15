@@ -2700,10 +2700,17 @@ function App() {
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
-              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
+              <button
+                className={styles.templateViewAllLink}
+                onClick={() => {
+                  logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" });
+                  window.location.hash = "#/templates";
+                }}
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
                 View all templates
                 <span className={styles.templateViewAllIcon}><ChevronRight20Filled fontSize={20} /></span>
-              </a>
+              </button>
             </div>
             <p className={mergeClasses(styles.sectionDescription, styles.templateSectionDescription)}>
               Step-by-step templates to build dashboards across adoption, usage, impact, and business value, using data sources beyond Viva.
@@ -2817,10 +2824,17 @@ function App() {
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
-              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
+              <button
+                className={styles.templateViewAllLink}
+                onClick={() => {
+                  logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" });
+                  window.location.hash = "#/codes";
+                }}
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
                 View all codes
                 <ChevronRight20Filled fontSize={20} />
-              </a>
+              </button>
             </div>
             <p className={mergeClasses(styles.sectionDescription, styles.codeSectionDescription)}>
               Runnable scripts, prompt libraries, and analytical methods in Python, R, and Power BI, adapt them to your org's data.
@@ -2924,14 +2938,17 @@ function App() {
                             <span className={styles.researchAccordionAccent} aria-hidden="true" />
                             <p className={styles.researchAccordionBodyText}>{panel.body}</p>
                           </div>
-                          <a
+                          <button
                             className={styles.researchAccordionLink}
-                            href={`${import.meta.env.BASE_URL}#/research`}
-                            onClick={() => logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` })}
+                            onClick={() => {
+                              logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
+                              window.location.hash = "#/research";
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer" }}
                           >
                             {panel.linkLabel}
                             <ArrowRight16Regular fontSize={14} />
-                          </a>
+                          </button>
                         </div>
                       ) : null}
                     </div>
