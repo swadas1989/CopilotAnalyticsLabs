@@ -2527,7 +2527,6 @@ function App() {
                   padding: "0",
                   width: "20px",
                   height: "20px",
-                  title: "Copy email address",
                 }}
                 title="Copy email address"
               >
