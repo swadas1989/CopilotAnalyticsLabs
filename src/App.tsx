@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
-  ArrowRight16Regular,
   Book20Filled,
   BookTemplate20Filled,
   BookCompass20Filled,
