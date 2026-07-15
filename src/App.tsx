@@ -1820,6 +1820,17 @@ const useStyles = makeStyles({
     width: "100%",
     textAlign: "left",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
+    transitionProperty: "background-color",
+    transitionDuration: "150ms",
+    transitionTimingFunction: "ease",
+  },
+  researchAccordionHeaderSelected: {
+    backgroundColor: "#FFFFFF",
+  },
+  researchAccordionHeaderUnselected: {
+    ':hover': {
+      backgroundColor: "rgba(255, 255, 255, 0.35)",
+    },
   },
   researchAccordionAccent: {
     width: "3px",
@@ -1946,7 +1957,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: "8px",
     alignSelf: "flex-start",
-    marginTop: "12px",
+    marginTop: "auto",
     fontSize: "14px",
     lineHeight: "20px",
     fontWeight: 600,
@@ -2936,7 +2947,12 @@ function App() {
                     <button
                       key={panel.kind}
                       type="button"
-                      className={styles.researchAccordionHeader}
+                      className={mergeClasses(
+                        styles.researchAccordionHeader,
+                        isSelected
+                          ? styles.researchAccordionHeaderSelected
+                          : styles.researchAccordionHeaderUnselected,
+                      )}
                       aria-pressed={isSelected}
                       onClick={() => setOpenResearchPanel(panel.kind)}
                     >
