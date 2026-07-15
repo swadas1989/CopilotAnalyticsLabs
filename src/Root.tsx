@@ -14,7 +14,6 @@ export default function Root() {
   useEffect(() => {
     const onHashChange = () => {
       setRoute(getRoute())
-      window.scrollTo({ top: 0 })
     }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
