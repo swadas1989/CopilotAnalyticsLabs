@@ -1772,10 +1772,10 @@ const useStyles = makeStyles({
   researchLeftPane: {
     display: "flex",
     flexDirection: "column",
-    gap: "40px",
-    width: "420px",
-    flexShrink: 0,
-    ...shorthands.padding("8px", "0"),
+    gap: "24px",
+    flex: 1,
+    minWidth: 0,
+    ...shorthands.padding("0", "0"),
     '@media (max-width: 900px)': {
       width: "100%",
     },
@@ -1797,8 +1797,8 @@ const useStyles = makeStyles({
   },
   researchMainHeading: {
     margin: 0,
-    fontSize: "32px",
-    lineHeight: "40px",
+    fontSize: "24px",
+    lineHeight: "32px",
     fontWeight: 600,
     color: "#0E1726",
   },
@@ -1809,17 +1809,14 @@ const useStyles = makeStyles({
   researchAccordion: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.borderTop("1px", "solid", "#E0E0E0"),
-    ':last-child': {
-      ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
-    },
+    gap: "0",
   },
   researchAccordionHeader: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    ...shorthands.padding("20px", "16px"),
+    alignItems: "flex-start",
+    ...shorthands.padding("16px", "0px"),
     ...shorthands.border("none"),
     backgroundColor: "transparent",
     cursor: "pointer",
@@ -1827,7 +1824,7 @@ const useStyles = makeStyles({
     textAlign: "left",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
     ':hover': {
-      backgroundColor: "rgba(0,0,0,0.02)",
+      backgroundColor: "transparent",
     },
   },
   researchAccordionTitle: {
@@ -1835,17 +1832,22 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#242424",
+    paddingLeft: "12px",
   },
   researchAccordionBody: {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
-    ...shorthands.padding("0", "16px", "20px", "16px"),
+    ...shorthands.padding("0", "0", "16px", "12px"),
+    backgroundColor: "#FFFFFF",
+    ...shorthands.borderRadius("8px"),
+    ...shorthands.padding("16px"),
   },
   researchAccordionCopyRow: {
     display: "flex",
     flexDirection: "row",
     gap: "12px",
+    alignItems: "flex-start",
   },
   researchAccordionAccent: {
     width: "3px",
@@ -1853,6 +1855,7 @@ const useStyles = makeStyles({
     alignSelf: "stretch",
     backgroundColor: "#335CCC",
     ...shorthands.borderRadius("2px"),
+    minHeight: "24px",
   },
   researchAccordionBodyText: {
     margin: 0,
@@ -1877,14 +1880,14 @@ const useStyles = makeStyles({
   researchRightPane: {
     display: "flex",
     flexDirection: "column",
-    flexGrow: 1,
+    flex: 1,
     minWidth: 0,
     backgroundColor: "#FFFFFF",
-    ...shorthands.padding("8px", "48px"),
+    ...shorthands.padding("24px", "40px"),
     ...shorthands.borderRadius("12px"),
     boxShadow: "0 0 2px rgba(0,0,0,0.10), 0 6px 20px rgba(0,0,0,0.05)",
     '@media (max-width: 900px)': {
-      ...shorthands.padding("8px", "24px"),
+      ...shorthands.padding("24px", "24px"),
     },
   },
   researchItem: {
@@ -1913,11 +1916,12 @@ const useStyles = makeStyles({
   researchItemChip: {
     display: "inline-flex",
     alignItems: "center",
-    fontSize: "10px",
-    lineHeight: "14px",
-    fontWeight: 400,
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
     ...shorthands.padding("4px", "8px"),
     ...shorthands.borderRadius("100px"),
+    minHeight: "24px",
   },
   researchItemCopy: {
     display: "flex",
@@ -2278,7 +2282,6 @@ function App() {
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
-  const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook" | null>("Research");
 
   useEffect(() => {
     logPageView();
@@ -2315,8 +2318,8 @@ function App() {
   }, []);
 
   const visibleResearchItems = useMemo(
-    () => orderedResearch.filter((item) => item.kind === openResearchPanel),
-    [orderedResearch, openResearchPanel],
+    () => orderedResearch,
+    [orderedResearch],
   );
 
   const visibleTemplates = useMemo(
@@ -2921,36 +2924,34 @@ function App() {
 
               <div className={styles.researchAccordions}>
                 {researchPanels.map((panel) => {
-                  const isOpen = openResearchPanel === panel.kind;
                   return (
                     <div key={panel.kind} className={styles.researchAccordion}>
                       <button
                         type="button"
                         className={styles.researchAccordionHeader}
-                        aria-expanded={isOpen}
-                        onClick={() => setOpenResearchPanel(isOpen ? null : panel.kind)}
+                        aria-expanded={true}
+                        style={{ cursor: "default" }}
                       >
+                        <span className={styles.researchAccordionAccent} aria-hidden="true" />
                         <span className={styles.researchAccordionTitle}>{panel.title}</span>
                       </button>
-                      {isOpen ? (
-                        <div className={styles.researchAccordionBody}>
-                          <div className={styles.researchAccordionCopyRow}>
-                            <span className={styles.researchAccordionAccent} aria-hidden="true" />
-                            <p className={styles.researchAccordionBodyText}>{panel.body}</p>
-                          </div>
-                          <button
-                            className={styles.researchAccordionLink}
-                            onClick={() => {
-                              logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
-                              window.location.hash = "#/research";
-                            }}
-                            style={{ background: "none", border: "none", cursor: "pointer" }}
-                          >
-                            {panel.linkLabel}
-                            <ArrowRight16Regular fontSize={14} />
-                          </button>
+                      <div className={styles.researchAccordionBody}>
+                        <div className={styles.researchAccordionCopyRow}>
+                          <span className={styles.researchAccordionAccent} aria-hidden="true" />
+                          <p className={styles.researchAccordionBodyText}>{panel.body}</p>
                         </div>
-                      ) : null}
+                        <button
+                          className={styles.researchAccordionLink}
+                          onClick={() => {
+                            logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
+                            window.location.hash = "#/research";
+                          }}
+                          style={{ background: "none", border: "none", cursor: "pointer" }}
+                        >
+                          {panel.linkLabel}
+                          <ArrowRight16Regular fontSize={14} />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -2993,7 +2994,7 @@ function App() {
                     >
                       <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{formatCardTitle(item.title)}</h3>
                       <span className={styles.researchItemArrow}>
-                        <ArrowRight16Regular fontSize={16} />
+                        <Open16Filled fontSize={16} />
                       </span>
                     </a>
                     <p className={styles.researchItemSubtext}>{item.description}</p>
