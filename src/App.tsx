@@ -1762,7 +1762,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "stretch",
     width: "100%",
-    maxWidth: "928px",
+    maxWidth: "1008px",
     marginLeft: "auto",
     marginRight: "auto",
     '@media (max-width: 900px)': {
