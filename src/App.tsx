@@ -13,7 +13,6 @@ import {
   DismissRegular,
   DocumentBulletList24Regular,
   Eye16Regular,
-  HatGraduation24Regular,
   Info20Regular,
   Microscope20Filled,
   Open16Regular,
