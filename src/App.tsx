@@ -1797,8 +1797,8 @@ const useStyles = makeStyles({
   },
   researchMainHeading: {
     margin: 0,
-    fontSize: "24px",
-    lineHeight: "32px",
+    fontSize: "20px",
+    lineHeight: "28px",
     fontWeight: 600,
     color: "#0E1726",
   },
