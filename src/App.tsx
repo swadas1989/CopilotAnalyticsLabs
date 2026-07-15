@@ -2703,9 +2703,12 @@ function App() {
               <button
                 className={styles.templateViewAllLink}
                 onClick={() => {
-                  window.scrollTo({ top: 0, behavior: 'auto' });
+                  const html = document.documentElement;
+                  html.style.scrollBehavior = 'auto';
+                  window.scrollTo(0, 0);
                   logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" });
                   window.location.hash = "#/templates";
+                  setTimeout(() => { html.style.scrollBehavior = ''; }, 100);
                 }}
                 style={{ background: "none", border: "none", cursor: "pointer" }}
               >
@@ -2828,9 +2831,12 @@ function App() {
               <button
                 className={styles.templateViewAllLink}
                 onClick={() => {
-                  window.scrollTo({ top: 0, behavior: 'auto' });
+                  const html = document.documentElement;
+                  html.style.scrollBehavior = 'auto';
+                  window.scrollTo(0, 0);
                   logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" });
                   window.location.hash = "#/codes";
+                  setTimeout(() => { html.style.scrollBehavior = ''; }, 100);
                 }}
                 style={{ background: "none", border: "none", cursor: "pointer" }}
               >
@@ -2943,9 +2949,12 @@ function App() {
                           <button
                             className={styles.researchAccordionLink}
                             onClick={() => {
-                              window.scrollTo({ top: 0, behavior: 'auto' });
+                              const html = document.documentElement;
+                              html.style.scrollBehavior = 'auto';
+                              window.scrollTo(0, 0);
                               logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
                               window.location.hash = "#/research";
+                              setTimeout(() => { html.style.scrollBehavior = ''; }, 100);
                             }}
                             style={{ background: "none", border: "none", cursor: "pointer" }}
                           >
