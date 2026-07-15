@@ -19,6 +19,12 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0)
+    })
+  }, [route])
+
   if (route === '/templates') return <TemplatesPage />
   if (route === '/codes') return <CodesPage />
   if (route === '/research') return <ResearchPage />
