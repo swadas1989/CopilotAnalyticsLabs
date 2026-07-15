@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import {
+  ArrowRight16Regular,
   Book20Filled,
   BookTemplate20Filled,
   BookCompass20Filled,
@@ -369,14 +370,16 @@ const researchTags: Record<string, { text: string; tone: string }[]> = {
 const researchPanels = [
   {
     kind: "Research" as const,
-    title: "Research",
+    label: "RESEARCH",
+    subtitle: "Insights from orgs leading AI adoption",
     body:
       "Adoption playbooks, methodology guides, and research from real enterprise rollouts, so you don't start from scratch.",
     linkLabel: "View all research reports",
   },
   {
     kind: "Playbook" as const,
-    title: "Playbooks",
+    label: "PLAYBOOKS",
+    subtitle: "Strategies already in play",
     body:
       "Proven approaches and tactical guides drawn from real enterprise Copilot deployments.",
     linkLabel: "View all playbooks",
@@ -1796,8 +1799,8 @@ const useStyles = makeStyles({
   },
   researchMainHeading: {
     margin: 0,
-    fontSize: "20px",
-    lineHeight: "28px",
+    fontSize: "32px",
+    lineHeight: "40px",
     fontWeight: 600,
     color: "#0E1726",
   },
@@ -1805,47 +1808,18 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
   },
-  researchAccordion: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0",
-    ...shorthands.borderRadius("8px"),
-  },
   researchAccordionHeader: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    alignItems: "stretch",
     gap: "12px",
-    ...shorthands.padding("16px", "0px"),
+    ...shorthands.padding("16px", "0px", "16px", "16px"),
     ...shorthands.border("none"),
     backgroundColor: "transparent",
     cursor: "pointer",
     width: "100%",
     textAlign: "left",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
-    transition: "background-color 0.2s",
-    ':hover': {
-      backgroundColor: "rgba(0,0,0,0.02)",
-    },
-  },
-  researchAccordionTitle: {
-    fontSize: "16px",
-    lineHeight: "24px",
-    fontWeight: 600,
-    color: "#242424",
-  },
-  researchAccordionBody: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-    ...shorthands.padding("12px", "0", "16px", "12px"),
-  },
-  researchAccordionCopyRow: {
-    display: "flex",
-    flexDirection: "row",
-    gap: "12px",
-    alignItems: "flex-start",
   },
   researchAccordionAccent: {
     width: "3px",
@@ -1854,11 +1828,30 @@ const useStyles = makeStyles({
     backgroundColor: "#335CCC",
     ...shorthands.borderRadius("2px"),
   },
+  researchAccordionItemContent: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    minWidth: 0,
+  },
+  researchAccordionTitle: {
+    fontSize: "16px",
+    lineHeight: "24px",
+    fontWeight: 600,
+  },
+  researchAccordionTitleLabel: {
+    fontWeight: 700,
+    color: "#242424",
+  },
+  researchAccordionTitleSubtitle: {
+    fontWeight: 400,
+    color: "#616161",
+  },
   researchAccordionBodyText: {
     margin: 0,
     fontSize: "14px",
     lineHeight: "20px",
-    color: "#424242",
+    color: "#616161",
   },
   researchAccordionLink: {
     display: "inline-flex",
@@ -1879,7 +1872,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
-    minHeight: "443px",
+    minHeight: "475px",
     backgroundColor: "#FFFFFF",
     ...shorthands.padding("24px", "40px"),
     ...shorthands.borderRadius("12px"),
@@ -1890,21 +1883,19 @@ const useStyles = makeStyles({
   },
   researchItem: {
     display: "flex",
-    flexDirection: "column",
-    gap: "11px",
-    ...shorthands.padding("12px", "0"),
-    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
-    ':last-child': {
-      ...shorthands.borderBottom("none"),
-    },
-  },
-  researchItemHeader: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "stretch",
     gap: "16px",
-    marginBottom: "8px",
+    ...shorthands.padding("12px", "0"),
+    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+  },
+  researchItemMain: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    flexGrow: 1,
+    minWidth: 0,
   },
   researchItemChips: {
     display: "flex",
@@ -1922,17 +1913,8 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("100px"),
     minHeight: "24px",
   },
-  researchItemCopy: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  researchItemTitleRow: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "8px",
+  researchItemTitleLink: {
+    display: "block",
     textDecorationLine: "none",
     ':hover .research-item-title': {
       textDecorationLine: "underline",
@@ -1945,10 +1927,34 @@ const useStyles = makeStyles({
     fontWeight: 600,
     color: "#000000",
   },
-  researchItemArrow: {
+  researchItemAside: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    flexShrink: 0,
+    gap: "12px",
+  },
+  researchItemOpen: {
     display: "inline-flex",
     color: "#335CCC",
     flexShrink: 0,
+    textDecorationLine: "none",
+  },
+  researchViewAllLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    alignSelf: "flex-start",
+    marginTop: "12px",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    color: "#335CCC",
+    textDecorationLine: "none",
+    ':hover': {
+      textDecorationLine: "underline",
+    },
   },
   researchItemSubtext: {
     margin: 0,
@@ -2321,6 +2327,7 @@ function App() {
     () => orderedResearch.filter((item) => item.kind === openResearchPanel).slice(0, 3),
     [orderedResearch, openResearchPanel],
   );
+  const activeResearchPanel = researchPanels.find((panel) => panel.kind === openResearchPanel);
 
   const visibleTemplates = useMemo(
     () =>
@@ -2926,24 +2933,24 @@ function App() {
                 {researchPanels.map((panel) => {
                   const isSelected = openResearchPanel === panel.kind;
                   return (
-                    <div key={panel.kind} className={styles.researchAccordion}>
-                      <button
-                        type="button"
-                        className={styles.researchAccordionHeader}
-                        aria-expanded={true}
-                        onClick={() => setOpenResearchPanel(panel.kind)}
-                        style={{ backgroundColor: isSelected ? "#FFFFFF" : "transparent" }}
-                      >
+                    <button
+                      key={panel.kind}
+                      type="button"
+                      className={styles.researchAccordionHeader}
+                      aria-pressed={isSelected}
+                      onClick={() => setOpenResearchPanel(panel.kind)}
+                    >
+                      {isSelected && (
                         <span className={styles.researchAccordionAccent} aria-hidden="true" />
-                        <span className={styles.researchAccordionTitle}>{panel.title}</span>
-                      </button>
-                      <div className={styles.researchAccordionBody}>
-                        <div className={styles.researchAccordionCopyRow}>
-                          <span className={styles.researchAccordionAccent} aria-hidden="true" />
-                          <p className={styles.researchAccordionBodyText}>{panel.body}</p>
-                        </div>
-                      </div>
-                    </div>
+                      )}
+                      <span className={styles.researchAccordionItemContent}>
+                        <span className={styles.researchAccordionTitle}>
+                          <span className={styles.researchAccordionTitleLabel}>{panel.label}</span>
+                          <span className={styles.researchAccordionTitleSubtitle}> / {panel.subtitle}</span>
+                        </span>
+                        <span className={styles.researchAccordionBodyText}>{panel.body}</span>
+                      </span>
+                    </button>
                   );
                 })}
               </div>
@@ -2952,7 +2959,7 @@ function App() {
             <div className={styles.researchRightPane}>
               {visibleResearchItems.map((item) => (
                 <article key={item.id} className={styles.researchItem}>
-                  <div className={styles.researchItemHeader}>
+                  <div className={styles.researchItemMain}>
                     <div className={styles.researchItemChips}>
                       {(researchTags[item.id] ?? []).map((tag) => (
                         <span
@@ -2973,25 +2980,42 @@ function App() {
                         </span>
                       ))}
                     </div>
-                    <VoteBar cardId={item.id} variant="inline" />
-                  </div>
-                  <div className={styles.researchItemCopy}>
                     <a
-                      className={styles.researchItemTitleRow}
+                      className={styles.researchItemTitleLink}
                       href={item.url}
                       target="_blank"
                       rel="noreferrer"
                       onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
                     >
                       <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{formatCardTitle(item.title)}</h3>
-                      <span className={styles.researchItemArrow}>
-                        <Open16Filled fontSize={16} />
-                      </span>
                     </a>
                     <p className={styles.researchItemSubtext}>{item.description}</p>
                   </div>
+                  <div className={styles.researchItemAside}>
+                    <a
+                      className={styles.researchItemOpen}
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${item.title}`}
+                      onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
+                    >
+                      <Open16Filled fontSize={16} />
+                    </a>
+                    <VoteBar cardId={item.id} variant="inline" />
+                  </div>
                 </article>
               ))}
+              {activeResearchPanel && (
+                <a
+                  className={styles.researchViewAllLink}
+                  href="#/research"
+                  onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: `view-all-${openResearchPanel}` })}
+                >
+                  {activeResearchPanel.linkLabel}
+                  <ArrowRight16Regular fontSize={16} />
+                </a>
+              )}
             </div>
           </div>
         </div>
