@@ -2700,7 +2700,7 @@ function App() {
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
-              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
+              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
                 View all templates
                 <span className={styles.templateViewAllIcon}><ChevronRight20Filled fontSize={20} /></span>
               </a>
@@ -2817,7 +2817,7 @@ function App() {
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
-              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
+              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
                 View all codes
                 <ChevronRight20Filled fontSize={20} />
               </a>
@@ -2927,8 +2927,6 @@ function App() {
                           <a
                             className={styles.researchAccordionLink}
                             href={`${import.meta.env.BASE_URL}#/research`}
-                            target="_blank"
-                            rel="noreferrer"
                             onClick={() => logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` })}
                           >
                             {panel.linkLabel}
