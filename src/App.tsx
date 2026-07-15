@@ -1810,6 +1810,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: "0",
+    ...shorthands.borderRadius("8px"),
   },
   researchAccordionHeader: {
     display: "flex",
@@ -1824,6 +1825,7 @@ const useStyles = makeStyles({
     width: "100%",
     textAlign: "left",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
+    transition: "background-color 0.2s",
     ':hover': {
       backgroundColor: "rgba(0,0,0,0.02)",
     },
@@ -1838,7 +1840,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: "16px",
-    ...shorthands.padding("0", "0", "16px", "12px"),
+    ...shorthands.padding("12px", "0", "16px", "12px"),
   },
   researchAccordionCopyRow: {
     display: "flex",
@@ -1900,8 +1902,9 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: "16px",
+    marginBottom: "8px",
   },
   researchItemChips: {
     display: "flex",
@@ -1928,13 +1931,13 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: "8px",
     textDecorationLine: "none",
     ':hover .research-item-title': {
       textDecorationLine: "underline",
     },
-  },
+  },,
   researchItemTitle: {
     margin: 0,
     fontSize: "16px",
@@ -2921,37 +2924,25 @@ function App() {
 
               <div className={styles.researchAccordions}>
                 {researchPanels.map((panel) => {
-                  const isOpen = openResearchPanel === panel.kind;
+                  const isSelected = openResearchPanel === panel.kind;
                   return (
                     <div key={panel.kind} className={styles.researchAccordion}>
                       <button
                         type="button"
                         className={styles.researchAccordionHeader}
-                        aria-expanded={isOpen}
-                        onClick={() => setOpenResearchPanel(isOpen ? null : panel.kind)}
+                        aria-expanded={true}
+                        onClick={() => setOpenResearchPanel(panel.kind)}
+                        style={{ backgroundColor: isSelected ? "#FFFFFF" : "transparent" }}
                       >
                         <span className={styles.researchAccordionAccent} aria-hidden="true" />
                         <span className={styles.researchAccordionTitle}>{panel.title}</span>
                       </button>
-                      {isOpen ? (
-                        <div className={styles.researchAccordionBody}>
-                          <div className={styles.researchAccordionCopyRow}>
-                            <span className={styles.researchAccordionAccent} aria-hidden="true" />
-                            <p className={styles.researchAccordionBodyText}>{panel.body}</p>
-                          </div>
-                          <button
-                            className={styles.researchAccordionLink}
-                            onClick={() => {
-                              logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
-                              window.location.hash = "#/research";
-                            }}
-                            style={{ background: "none", border: "none", cursor: "pointer" }}
-                          >
-                            {panel.linkLabel}
-                            <ArrowRight16Regular fontSize={14} />
-                          </button>
+                      <div className={styles.researchAccordionBody}>
+                        <div className={styles.researchAccordionCopyRow}>
+                          <span className={styles.researchAccordionAccent} aria-hidden="true" />
+                          <p className={styles.researchAccordionBodyText}>{panel.body}</p>
                         </div>
-                      ) : null}
+                      </div>
                     </div>
                   );
                 })}
