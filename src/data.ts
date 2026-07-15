@@ -9,7 +9,7 @@ import {
 } from "@fluentui/react-icons";
 
 export interface TemplateItem {
-    title: "Work trend index report 2026",
+  id: string;
   title: string;
   description: string;
   url: string;
