@@ -13,13 +13,8 @@ export default function Root() {
 
   useEffect(() => {
     const onHashChange = () => {
-      // Disable smooth scroll before scrolling to top
-      const html = document.documentElement
-      html.style.scrollBehavior = 'auto'
       window.scrollTo(0, 0)
       setRoute(getRoute())
-      // Restore smooth scroll after 100ms
-      setTimeout(() => { html.style.scrollBehavior = ''; }, 100)
     }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
