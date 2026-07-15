@@ -1937,7 +1937,7 @@ const useStyles = makeStyles({
     ':hover .research-item-title': {
       textDecorationLine: "underline",
     },
-  },,
+  },
   researchItemTitle: {
     margin: 0,
     fontSize: "16px",
