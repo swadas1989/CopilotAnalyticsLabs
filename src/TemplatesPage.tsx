@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
-import { ArrowLeft16Regular, ArrowRight16Regular } from "@fluentui/react-icons";
+import { ArrowRight16Regular } from "@fluentui/react-icons";
 import { MicrosoftLogoWordmark } from "./App";
 import {
   templates,
@@ -331,11 +331,6 @@ const useStyles = makeStyles({
     },
   },
 });
-
-function goHome() {
-  window.location.hash = "";
-  window.scrollTo({ top: 0 });
-}
 
 export default function TemplatesPage() {
   const styles = useStyles();

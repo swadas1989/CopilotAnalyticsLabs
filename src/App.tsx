@@ -18,7 +18,6 @@ import {
   Info20Regular,
   Microscope20Filled,
   Open16Filled,
-  PersonFeedback20Filled,
   PersonFeedback20Regular,
   PersonFeedback24Filled,
   Sparkle24Regular,
