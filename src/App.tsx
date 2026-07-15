@@ -1814,8 +1814,9 @@ const useStyles = makeStyles({
   researchAccordionHeader: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
+    gap: "12px",
     ...shorthands.padding("16px", "0px"),
     ...shorthands.border("none"),
     backgroundColor: "transparent",
@@ -1824,7 +1825,7 @@ const useStyles = makeStyles({
     textAlign: "left",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
     ':hover': {
-      backgroundColor: "transparent",
+      backgroundColor: "rgba(0,0,0,0.02)",
     },
   },
   researchAccordionTitle: {
@@ -1832,16 +1833,12 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#242424",
-    paddingLeft: "12px",
   },
   researchAccordionBody: {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
     ...shorthands.padding("0", "0", "16px", "12px"),
-    backgroundColor: "#FFFFFF",
-    ...shorthands.borderRadius("8px"),
-    ...shorthands.padding("16px"),
   },
   researchAccordionCopyRow: {
     display: "flex",
@@ -1855,7 +1852,6 @@ const useStyles = makeStyles({
     alignSelf: "stretch",
     backgroundColor: "#335CCC",
     ...shorthands.borderRadius("2px"),
-    minHeight: "24px",
   },
   researchAccordionBodyText: {
     margin: 0,
@@ -2282,6 +2278,7 @@ function App() {
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
+  const [openResearchPanel, setOpenResearchPanel] = useState<"Research" | "Playbook" | null>("Research");
 
   useEffect(() => {
     logPageView();
@@ -2318,8 +2315,8 @@ function App() {
   }, []);
 
   const visibleResearchItems = useMemo(
-    () => orderedResearch,
-    [orderedResearch],
+    () => orderedResearch.filter((item) => item.kind === openResearchPanel).slice(0, 3),
+    [orderedResearch, openResearchPanel],
   );
 
   const visibleTemplates = useMemo(
@@ -2924,34 +2921,37 @@ function App() {
 
               <div className={styles.researchAccordions}>
                 {researchPanels.map((panel) => {
+                  const isOpen = openResearchPanel === panel.kind;
                   return (
                     <div key={panel.kind} className={styles.researchAccordion}>
                       <button
                         type="button"
                         className={styles.researchAccordionHeader}
-                        aria-expanded={true}
-                        style={{ cursor: "default" }}
+                        aria-expanded={isOpen}
+                        onClick={() => setOpenResearchPanel(isOpen ? null : panel.kind)}
                       >
                         <span className={styles.researchAccordionAccent} aria-hidden="true" />
                         <span className={styles.researchAccordionTitle}>{panel.title}</span>
                       </button>
-                      <div className={styles.researchAccordionBody}>
-                        <div className={styles.researchAccordionCopyRow}>
-                          <span className={styles.researchAccordionAccent} aria-hidden="true" />
-                          <p className={styles.researchAccordionBodyText}>{panel.body}</p>
+                      {isOpen ? (
+                        <div className={styles.researchAccordionBody}>
+                          <div className={styles.researchAccordionCopyRow}>
+                            <span className={styles.researchAccordionAccent} aria-hidden="true" />
+                            <p className={styles.researchAccordionBodyText}>{panel.body}</p>
+                          </div>
+                          <button
+                            className={styles.researchAccordionLink}
+                            onClick={() => {
+                              logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
+                              window.location.hash = "#/research";
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer" }}
+                          >
+                            {panel.linkLabel}
+                            <ArrowRight16Regular fontSize={14} />
+                          </button>
                         </div>
-                        <button
-                          className={styles.researchAccordionLink}
-                          onClick={() => {
-                            logClick(TelemetryEvents.TabClick, { tab: `research-${panel.kind.toLowerCase()}-view-all` });
-                            window.location.hash = "#/research";
-                          }}
-                          style={{ background: "none", border: "none", cursor: "pointer" }}
-                        >
-                          {panel.linkLabel}
-                          <ArrowRight16Regular fontSize={14} />
-                        </button>
-                      </div>
+                      ) : null}
                     </div>
                   );
                 })}
