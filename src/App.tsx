@@ -1879,6 +1879,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
+    minHeight: "443px",
     backgroundColor: "#FFFFFF",
     ...shorthands.padding("24px", "40px"),
     ...shorthands.borderRadius("12px"),
