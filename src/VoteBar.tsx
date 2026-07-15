@@ -11,28 +11,26 @@ const useStyles = makeStyles({
   root: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "12px",
     marginTop: "12px",
   },
   button: {
     display: "inline-flex",
     alignItems: "center",
     gap: "4px",
-    ...shorthands.padding("4px", "8px"),
-    ...shorthands.border("1px", "solid", "#e0e0e0"),
-    ...shorthands.borderRadius("14px"),
-    backgroundColor: "#ffffff",
-    color: "#424242",
+    ...shorthands.padding("0"),
+    ...shorthands.border("none"),
+    backgroundColor: "transparent",
+    color: "#242424",
     fontFamily: "inherit",
     fontSize: "12px",
     lineHeight: "16px",
     fontWeight: 600,
     cursor: "pointer",
-    transitionProperty: "background-color, border-color, color",
+    transitionProperty: "color",
     transitionDuration: "120ms",
     ":hover": {
-      backgroundColor: "#f5f5f5",
-      ...shorthands.borderColor("#c7c7c7"),
+      color: "#111827",
     },
     ":focus-visible": {
       outlineWidth: "2px",
@@ -42,13 +40,9 @@ const useStyles = makeStyles({
     },
   },
   up: {
-    ...shorthands.borderColor("#9bd4a6"),
-    backgroundColor: "#eef8f0",
     color: "#0e700e",
   },
   down: {
-    ...shorthands.borderColor("#eab7b7"),
-    backgroundColor: "#fdf0f0",
     color: "#b10e1c",
   },
   count: {
@@ -125,7 +119,7 @@ export function VoteBar({ cardId, className, variant = "pill" }: VoteBarProps) {
           type="button"
           className={mergeClasses(styles.inlineButton, myVote === "down" && styles.inlineDown)}
           aria-pressed={myVote === "down"}
-          aria-label={`Thumbs down. ${counts.down} ${counts.down === 1 ? "vote" : "votes"}`}
+          aria-label="Thumbs down"
           disabled={pending}
           onClick={() => vote("down")}
         >
@@ -134,7 +128,6 @@ export function VoteBar({ cardId, className, variant = "pill" }: VoteBarProps) {
           ) : (
             <ThumbDislike16Regular fontSize={16} />
           )}
-          <span className={styles.count}>{counts.down}</span>
         </button>
       </div>
     );
@@ -157,7 +150,7 @@ export function VoteBar({ cardId, className, variant = "pill" }: VoteBarProps) {
         type="button"
         className={mergeClasses(styles.button, myVote === "down" && styles.down)}
         aria-pressed={myVote === "down"}
-        aria-label={`Thumbs down. ${counts.down} ${counts.down === 1 ? "vote" : "votes"}`}
+        aria-label="Thumbs down"
         disabled={pending}
         onClick={() => vote("down")}
       >
@@ -166,7 +159,6 @@ export function VoteBar({ cardId, className, variant = "pill" }: VoteBarProps) {
         ) : (
           <ThumbDislike16Regular fontSize={16} />
         )}
-        <span className={styles.count}>{counts.down}</span>
       </button>
     </div>
   );

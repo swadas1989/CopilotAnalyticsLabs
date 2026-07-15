@@ -79,6 +79,30 @@ const useStyles = makeStyles({
     marginLeft: "auto",
     marginRight: "auto",
   },
+  breadcrumb: {
+    margin: 0,
+    fontSize: "13px",
+    fontWeight: 600,
+    letterSpacing: "0.04em",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "0",
+  },
+  breadcrumbLink: {
+    color: "#335CCC",
+    textDecoration: "none",
+    cursor: "pointer",
+    ':hover': {
+      textDecoration: "underline",
+    },
+  },
+  breadcrumbCurrent: {
+    color: "#616161",
+  },
+  breadcrumbSeparator: {
+    color: "#616161",
+  },
   eyebrow: {
     margin: 0,
     fontSize: "13px",
@@ -368,15 +392,15 @@ export default function CodesPage() {
           <div className={styles.separator} />
           <span className={styles.brandTitle}>Copilot Analytics Labs</span>
         </div>
-        <button className={styles.backLink} onClick={goHome}>
-          <ArrowLeft16Regular fontSize={16} />
-          Back to Labs
-        </button>
       </nav>
 
       <header className={styles.hero}>
         <div className={styles.container}>
-          <p className={styles.eyebrow}>Sample code</p>
+          <nav className={styles.breadcrumb}>
+            <a className={styles.breadcrumbLink} href={`${import.meta.env.BASE_URL}#/`}>Copilot analytics labs</a>
+            <span className={styles.breadcrumbSeparator}>&gt;</span>
+            <span className={styles.breadcrumbCurrent}>Sample code</span>
+          </nav>
           <h1 className={styles.title}>Browse all sample code</h1>
           <p className={styles.description}>
             Reusable scripts, prompt libraries, and analytical methods for Python, R, Power BI, and more. Filter

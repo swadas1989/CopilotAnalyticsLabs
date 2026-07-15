@@ -6,8 +6,10 @@ import {
   BookTemplate20Filled,
   BookCompass20Filled,
   ChevronLeft20Regular,
+  ChevronRight20Filled,
   ChevronRight20Regular,
   Code20Filled,
+  Copy16Regular,
   DataBarVerticalAscending24Regular,
   DataTrending24Regular,
   DismissRegular,
@@ -16,8 +18,10 @@ import {
   HatGraduation24Regular,
   Info20Regular,
   Microscope20Filled,
-  Open16Regular,
+  Open16Filled,
+  PersonFeedback20Filled,
   PersonFeedback20Regular,
+  PersonFeedback24Filled,
   Sparkle24Regular,
   Star16Filled,
   WrenchScrewdriver20Filled,
@@ -29,7 +33,6 @@ import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 import { VoteBar } from "./VoteBar";
 
 const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
-const WHATS_COMING_URL = "https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva";
 const FEEDBACK_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR0To00bktq1Ilw6hJ9BCmj5UNTg1QzM4UUs1SzNFM08yUFhVTlJDSDlWUC4u";
 const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
 const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
@@ -46,7 +49,7 @@ const sectionTabs = [
 // "New" window (in days) per content type. Items added within this many days
 // of today are considered "new" and surface in the "What's new" section.
 const NEW_WINDOW_DAYS: Record<FeaturedKind, number> = {
-  Template: 30,
+  Template: 22,
   Code: 30,
   Research: 15,
   Playbook: 15,
@@ -121,6 +124,13 @@ function formatRelativeDate(iso?: string): string {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
+function formatCardTitle(value: string): string {
+  const stripped = value.replace(/\b(Microsoft|Viva)\s+/gi, "").trim();
+  if (!stripped) return "";
+  const lower = stripped.toLowerCase();
+  return `${lower.charAt(0).toUpperCase()}${lower.slice(1)}`;
+}
+
 // New items grouped by type, newest first — only those within each kind's window.
 function buildFeaturedItems(): FeaturedItem[] {
   const byDateDesc = (a: { addedOn?: string }, b: { addedOn?: string }) =>
@@ -177,67 +187,154 @@ const templateOrder = [
   "aio-dashboard",
   "cowork-value-estimator",
   "github-copilot-impact-org",
-  "ai-business-value",
   "m365-copilot-personal",
-  "m365-app-usage",
   "superuser-impact",
 ];
+
+const templateFilterLabelHome: Record<TemplateImpactFilter, string> = {
+  Featured: "Featured",
+  "AI Impact": "AI impact",
+  "Org wide": "Org-wide",
+  Individual: "Individual",
+  Team: "Team",
+};
 
 const templateMeta: Record<
   string,
   {
     featured?: boolean;
-    badges?: { text: string; tone: "green" | "rose" }[];
+    badges?: { text: string; tone: "green" | "teal" | "purple" | "orange" | "red" }[];
     stats?: { value: string; label: string }[];
   }
 > = {
   "aio-dashboard": {
     featured: true,
-    badges: [{ text: "Featured", tone: "green" }],
+    badges: [
+      { text: "Featured", tone: "green" },
+      { text: "AI-impact", tone: "teal" },
+      { text: "Org wide", tone: "purple" },
+    ],
     stats: [
-      { value: "—", label: "Stars" },
-      { value: "—", label: "Watching" },
+      { value: "12", label: "KPI views" },
+      { value: "7", label: "Cohorts" },
+      { value: "<10 min", label: "Setup" },
     ],
   },
   "cowork-value-estimator": {
-    badges: [{ text: "Featured", tone: "green" }],
+    badges: [
+      { text: "Featured", tone: "green" },
+      { text: "AI-impact", tone: "teal" },
+      { text: "Individual", tone: "orange" },
+    ],
   },
-  "m365-copilot-personal": {},
+  "github-copilot-impact-org": {
+    badges: [
+      { text: "AI-impact", tone: "teal" },
+      { text: "Org wide", tone: "purple" },
+    ],
+  },
+  "m365-copilot-personal": {
+    badges: [{ text: "Individual", tone: "orange" }],
+  },
+  "superuser-impact": {
+    badges: [{ text: "Team", tone: "red" }],
+  },
 };
+
+const templateHomeCopyOverrides: Record<string, { title?: string; description?: string }> = {
+  "github-copilot-impact-org": {
+    title: "GitHub Copilot Impact (Org Level)",
+  },
+  "m365-copilot-personal": {
+    title: "M365 Copilot Personal Insights",
+    description:
+      "Personal adoption & engagement dashboard tracking your M365 Copilot usage journey and productivity gains.",
+  },
+  "superuser-impact": {
+    title: "Super-user Impact Report",
+    description:
+      "Analyze the work and productivity impact of super-users across your org with detailed pattern analysis.",
+  },
+};
+
+const codeHomeOrder = [
+  "viva-insights-essentials",
+  "advanced-analytics",
+  "network-analysis",
+  "portable-audit-exporter",
+  "frontier-analytics",
+  "copilot-analytics",
+];
 
 const resourceMeta: Record<
   string,
   {
     featured?: boolean;
-    badges?: { text: string; tone: "green" | "blue" }[];
-    accent: string;
-    color: string;
+    wide?: boolean;
+    badges?: { text: string; tone: "green" | "purple" | "red" | "orange" | "teal" }[];
   }
 > = {
   "viva-insights-essentials": {
     featured: true,
+    wide: true,
     badges: [
       { text: "Featured", tone: "green" },
-      { text: "Starter kit", tone: "blue" },
+      { text: "Python", tone: "red" },
+      { text: "R", tone: "orange" },
     ],
-    accent: "linear-gradient(135deg, #FFF2D8 0%, #EAE6FF 100%)",
-    color: "#7A4CE3",
   },
   "advanced-analytics": {
-    accent: "linear-gradient(135deg, #F2EAFF 0%, #FFF3DA 100%)",
-    color: "#7A4CE3",
-  },
-  "copilot-analytics": {
-    accent: "linear-gradient(135deg, #FFF1F7 0%, #EAF8FF 100%)",
-    color: "#E35BA3",
+    badges: [
+      { text: "Python", tone: "red" },
+      { text: "R", tone: "orange" },
+    ],
   },
   "frontier-analytics": {
-    accent: "linear-gradient(135deg, #EAF5FF 0%, #FFF0D6 100%)",
-    color: "#3F6CE9",
+    badges: [
+      { text: "AI-assisted", tone: "teal" },
+      { text: "Power BI", tone: "purple" },
+    ],
+  },
+  "portable-audit-exporter": {
+    wide: true,
+    badges: [{ text: "AI-assisted", tone: "teal" }],
   },
   "network-analysis": {
-    accent: "linear-gradient(135deg, #FFF7DF 0%, #E8F5FF 100%)",
-    color: "#2976A8",
+    badges: [
+      { text: "Power BI", tone: "purple" },
+      { text: "Python", tone: "red" },
+      { text: "R", tone: "orange" },
+    ],
+  },
+  "copilot-analytics": {
+    badges: [
+      { text: "Python", tone: "red" },
+      { text: "R", tone: "orange" },
+    ],
+  },
+};
+
+const codeHomeCopyOverrides: Record<string, { description?: string }> = {
+  "viva-insights-essentials": {
+    description:
+      "Get started with R & Python utility scripts — exploratory data analysis, standard visualisations, and custom KPI generation from Insights data.",
+  },
+  "advanced-analytics": {
+    description: "Advanced analytical techniques and methods for deeper Viva Insights data.",
+  },
+  "network-analysis": {
+    description:
+      "Organizational network analysis techniques to understand collaboration patterns and connectivity.",
+  },
+  "frontier-analytics": {
+    description: "Cutting-edge analytical approaches and frontier methods for workplace intelligence.",
+  },
+  "portable-audit-exporter": {
+    description:
+      "Export and analyze Microsoft 365 audit logs with a portable, ready-to-run toolkit for compliance and usage insights.",
+  },
+  "copilot-analytics": {
+    description: "Sample code and examples for analyzing Microsoft Copilot usage and impact data.",
   },
 };
 
@@ -490,17 +587,25 @@ const useStyles = makeStyles({
     lineHeight: "20px",
     textDecorationLine: "none",
     whiteSpace: "nowrap",
+    padding: "0 12px",
+    height: "48px",
     ':hover': {
-      color: "#0E1726",
+      backgroundColor: "#1F1F1F",
+      color: "#ffffff",
     },
   },
   navIconOnly: {
-    width: "28px",
-    height: "28px",
+    width: "48px",
+    height: "48px",
+    padding: "0",
+    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
-    ...shorthands.borderRadius("999px"),
+    color: "#242424",
+    backgroundColor: "transparent",
     ':hover': {
-      backgroundColor: "#F5F5F5",
+      backgroundColor: "#1F1F1F",
+      color: "#ffffff",
     },
   },
   hero: {
@@ -785,11 +890,14 @@ const useStyles = makeStyles({
   },
   section: {
     ...shorthands.padding("64px", "24px"),
+    scrollMarginTop: "64px",
     '@media (max-width: 1200px)': {
       ...shorthands.padding("64px", "24px"),
+      scrollMarginTop: "64px",
     },
     '@media (max-width: 600px)': {
       ...shorthands.padding("36px", "16px"),
+      scrollMarginTop: "36px",
     },
   },
   sectionTemplateBg: {
@@ -820,6 +928,29 @@ const useStyles = makeStyles({
       gap: "32px",
     },
   },
+  templateSectionContent: {
+    gap: "24px",
+  },
+  templateSectionDescription: {
+    maxWidth: "1008px",
+    whiteSpace: "nowrap",
+    '@media (max-width: 900px)': {
+      whiteSpace: "normal",
+    },
+  },
+  codeSectionDescription: {
+    maxWidth: "1008px",
+    whiteSpace: "nowrap",
+    '@media (max-width: 900px)': {
+      whiteSpace: "normal",
+    },
+  },
+  featuredSectionContent: {
+    gap: "24px",
+  },
+  codeSectionContent: {
+    gap: "24px",
+  },
   sectionTitleArea: {
     display: "flex",
     flexDirection: "column",
@@ -828,12 +959,13 @@ const useStyles = makeStyles({
   eyebrow: {
     width: "fit-content",
     margin: 0,
+    fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
     fontSize: "14px",
     lineHeight: "20px",
     fontWeight: 600,
-    letterSpacing: "0.02em",
+    letterSpacing: 0,
     textTransform: "uppercase",
-    backgroundImage: "linear-gradient(137deg, #764FF5 13%, #3F6CE9 43%, #20BBC6 100%)",
+    backgroundImage: "linear-gradient(137.22deg, #764FF5 14.49%, #3F6CE9 42.08%, #20BBC6 100%)",
     color: "transparent",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
@@ -854,11 +986,12 @@ const useStyles = makeStyles({
   },
   sectionHeading: {
     margin: 0,
+    fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
     fontSize: "32px",
     lineHeight: "40px",
     fontWeight: 600,
     color: "#0E1726",
-    letterSpacing: "-0.02em",
+    letterSpacing: 0,
     '@media (max-width: 600px)': {
       fontSize: "28px",
       lineHeight: "34px",
@@ -877,22 +1010,26 @@ const useStyles = makeStyles({
   },
   templateGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "24px",
+    gridTemplateColumns: "320px repeat(2, minmax(0, 1fr))",
+    gridTemplateRows: "repeat(2, 256px)",
+    gap: "20px",
     '@media (max-width: 900px)': {
       gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gridTemplateRows: "auto",
     },
     '@media (max-width: 600px)': {
       gridTemplateColumns: "1fr",
+      gridTemplateRows: "auto",
     },
   },
   templateCard: {
-    minHeight: "300px",
+    minHeight: "256px",
     display: "flex",
     flexDirection: "column",
-    gap: "24px",
+    justifyContent: "space-between",
+    gap: "16px",
     backgroundColor: "#ffffff",
-    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)",
+    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
@@ -903,47 +1040,36 @@ const useStyles = makeStyles({
     },
   },
   templateCardFeatured: {
-    gridColumn: "span 2",
-    flexDirection: "row",
-    alignItems: "stretch",
+    gridRow: "span 2",
+    minHeight: "532px",
+    gap: "16px",
     '@media (max-width: 900px)': {
-      gridColumn: "span 2",
+      gridRow: "span 1",
+      minHeight: "auto",
     },
     '@media (max-width: 600px)': {
-      gridColumn: "span 1",
-      flexDirection: "column",
+      minHeight: "auto",
     },
   },
   templateCardContent: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px",
+    gap: "4px",
     flex: 1,
     minWidth: 0,
   },
   templateCardImage: {
     width: "100%",
-    height: "92px",
+    height: "235px",
     objectFit: "cover",
     display: "block",
     backgroundColor: "#F5F5F5",
     ...shorthands.borderRadius("12px"),
   },
-  templateCardImageFeatured: {
-    width: "42%",
-    height: "auto",
-    minHeight: "268px",
-    alignSelf: "stretch",
-    '@media (max-width: 600px)': {
-      width: "100%",
-      minHeight: "180px",
-    },
-  },
   templateBody: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
-    gap: "16px",
+    gap: "22px",
     flex: 1,
   },
   statsDivider: {
@@ -962,11 +1088,11 @@ const useStyles = makeStyles({
   badge: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "6px",
-    fontSize: "14px",
-    lineHeight: "20px",
-    fontWeight: 400,
-    ...shorthands.padding("4px", "6px"),
+    minHeight: "24px",
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 600,
+    ...shorthands.padding("4px", "8px"),
     ...shorthands.borderRadius("100px"),
   },
   badgeGreen: {
@@ -981,6 +1107,22 @@ const useStyles = makeStyles({
     color: "#335CCC",
     backgroundColor: "#E5EEFF",
   },
+  badgeTeal: {
+    color: "#00666D",
+    backgroundColor: "#E5FEFF",
+  },
+  badgePurple: {
+    color: "#881798",
+    backgroundColor: "rgba(198, 177, 222, 0.2)",
+  },
+  badgeOrange: {
+    color: "#FF5C39",
+    backgroundColor: "#FFF4D8",
+  },
+  badgeRed: {
+    color: "#B10E1C",
+    backgroundColor: "#FDF3F4",
+  },
   templateTitle: {
     margin: 0,
     fontSize: "16px",
@@ -993,6 +1135,17 @@ const useStyles = makeStyles({
     fontSize: "14px",
     lineHeight: "18px",
     color: "#616161",
+    display: "-webkit-box",
+    WebkitLineClamp: "3",
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+  },
+  templateActionsRow: {
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: "16px",
+    marginTop: "auto",
   },
   statsRow: {
     display: "flex",
@@ -1005,83 +1158,90 @@ const useStyles = makeStyles({
     gap: "2px",
   },
   statValue: {
-    fontSize: "20px",
+    fontSize: "16px",
     lineHeight: "24px",
     fontWeight: 600,
-    color: "#0E1726",
+    color: "#000000",
   },
   statLabel: {
     fontSize: "12px",
     lineHeight: "16px",
-    color: "#616161",
+    color: "#707070",
   },
   codeGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gridTemplateRows: "1fr 1fr 1fr",
+    gridTemplateColumns: "repeat(4, 240px)",
+    gridAutoRows: "226px",
     gap: "20px",
+    '@media (max-width: 900px)': {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gridAutoRows: "auto",
+    },
     '@media (max-width: 600px)': {
       gridTemplateColumns: "1fr",
-      gridTemplateRows: "auto",
+      gridAutoRows: "auto",
     },
   },
   codeCard: {
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     gap: "16px",
+    minHeight: "100%",
     backgroundColor: "#ffffff",
-    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)",
+    boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("24px"),
+    ...shorthands.padding("20px"),
     boxSizing: "border-box",
     '@media (max-width: 600px)': {
-      flexDirection: "column",
-      alignItems: "flex-start",
+      minHeight: "auto",
       ...shorthands.padding("16px"),
       gap: "12px",
     },
   },
-  codeCardFeatured: {
-    gridRow: "span 2",
-    flexDirection: "column",
+  codeCardWide: {
+    gridColumn: "span 2",
+    flexDirection: "row",
+    gap: "8px",
+    padding: "20px",
     alignItems: "flex-start",
-    ...shorthands.padding("24px"),
-    gap: "16px",
+    '@media (max-width: 900px)': {
+      gridColumn: "span 2",
+      flexDirection: "row",
+    },
     '@media (max-width: 600px)': {
-      height: "auto",
+      gridColumn: "span 1",
+      flexDirection: "column",
+      gap: "16px",
+      padding: "16px",
+      alignItems: "stretch",
     },
   },
-  codeArt: {
+  codeCardSquare: {
+    gridColumn: "span 1",
+  },
+  codeCardImage: {
+    width: "100%",
+    height: "92px",
+    objectFit: "cover",
+    display: "block",
+    ...shorthands.borderRadius("12px"),
     flexShrink: 0,
-    width: "128px",
-    height: "128px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    ...shorthands.borderRadius("14px"),
-    '@media (max-width: 600px)': {
-      width: "80px",
-      height: "80px",
-    },
   },
-  codeArtFeatured: {
+  codeCardWideImage: {
     width: "128px",
     height: "128px",
-    '@media (max-width: 600px)': {
-      width: "96px",
-      height: "96px",
-    },
+    objectFit: "cover",
+    display: "block",
+    ...shorthands.borderRadius("12px"),
+    flexShrink: 0,
   },
   codeCardBody: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
-    gap: "12px",
+    gap: "8px",
     flex: 1,
     alignSelf: "stretch",
-  },
-  codeCardBodyFeatured: {
-    gap: "16px",
   },
   codeTitle: {
     margin: 0,
@@ -1095,6 +1255,36 @@ const useStyles = makeStyles({
     fontSize: "14px",
     lineHeight: "18px",
     color: "#616161",
+  },
+  codeActionsRow: {
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: "8px",
+    marginTop: "auto",
+  },
+  codeCardButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    minHeight: "32px",
+    backgroundColor: "#ffffff",
+    color: "#242424",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    textDecorationLine: "none",
+    ...shorthands.padding("5px", "12px"),
+    ...shorthands.borderRadius("4px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ':hover': {
+      backgroundColor: "#F7F7F7",
+    },
+  },
+  codeVoteBar: {
+    marginTop: "0",
+    flexShrink: 0,
   },
   researchGrid: {
     display: "grid",
@@ -1447,6 +1637,52 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("18px"),
     flexShrink: 0,
   },
+  templateViewAllLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    color: "#335CCC",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    textDecorationLine: "none",
+    whiteSpace: "nowrap",
+    ':hover': {
+      textDecorationLine: "none",
+    },
+  },
+  templateViewAllIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#335CCC",
+    width: "20px",
+    height: "20px",
+    flexShrink: 0,
+  },
+  templateCardButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    minHeight: "32px",
+    backgroundColor: "#ffffff",
+    color: "#242424",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
+    textDecorationLine: "none",
+    ...shorthands.padding("5px", "12px"),
+    ...shorthands.borderRadius("4px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ':hover': {
+      backgroundColor: "#F7F7F7",
+    },
+  },
+  templateVoteBar: {
+    marginTop: "0",
+    flexShrink: 0,
+  },
   chipRow: {
     display: "flex",
     flexWrap: "wrap",
@@ -1787,25 +2023,55 @@ const useStyles = makeStyles({
     display: "flex",
     gap: "20px",
     overflowX: "auto",
-    scrollSnapType: "x mandatory",
+    scrollSnapType: "none",
     scrollPaddingInline: "0",
-    ...shorthands.padding("0", "0", "20px", "0"),
+    marginLeft: "0",
+    marginRight: "0",
+    paddingTop: "12px",
+    paddingBottom: "24px",
+    paddingLeft: "0",
+    paddingRight: "24px",
     scrollbarWidth: "none",
     '::-webkit-scrollbar': {
       display: "none",
     },
+    '@media (min-width: 1009px)': {
+      marginLeft: "calc(50% - 50vw)",
+      marginRight: "calc(50% - 50vw)",
+      paddingRight: "calc((100vw - 1008px) / 2 + 24px)",
+    },
+    '@media (max-width: 600px)': {
+      marginLeft: "0",
+      marginRight: "0",
+      ...shorthands.padding("4px", "4px"),
+    },
+  },
+  featuredEdgeSpacer: {
+    flex: "0 0 max(0px, calc((100vw - 1008px) / 2))",
+    marginRight: "-20px",
+    pointerEvents: "none",
+    '@media (max-width: 1008px)': {
+      flexBasis: "0",
+      marginRight: "0",
+    },
   },
   featuredCard: {
     flex: "0 0 336px",
+    minHeight: "192px",
     scrollSnapAlign: "start",
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: "8px",
     backgroundColor: "#ffffff",
     boxShadow: "0px 2px 4px rgba(0,0,0,0.14), 0px 0px 2px rgba(0,0,0,0.12)",
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
+    cursor: "pointer",
+    transition: "box-shadow 0.2s ease-in-out",
+    ':hover': {
+      boxShadow: "0px 8px 24px rgba(0,0,0,0.22), 0px 2px 8px rgba(0,0,0,0.16)",
+    },
     '@media (max-width: 600px)': {
       flex: "0 0 82%",
     },
@@ -1848,7 +2114,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     flexWrap: "wrap",
     gap: "8px",
-    marginTop: "4px",
+    marginTop: "0",
   },
   filterPill: {
     display: "inline-flex",
@@ -1926,7 +2192,7 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "14px",
     lineHeight: "20px",
-    color: "#242424",
+    color: "#424242",
     display: "-webkit-box",
     WebkitLineClamp: "2",
     WebkitBoxOrient: "vertical",
@@ -1937,7 +2203,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: "4px",
+    marginTop: "auto",
   },
   featuredDate: {
     fontSize: "14px",
@@ -1964,6 +2230,11 @@ const useStyles = makeStyles({
   featuredNav: {
     display: "flex",
     gap: "8px",
+    justifyContent: "flex-end",
+    width: "100%",
+    '@media (max-width: 600px)': {
+      width: "100%",
+    },
   },
   featuredNavButton: {
     display: "inline-flex",
@@ -2004,6 +2275,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
   const [showContactDialog, setShowContactDialog] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
@@ -2039,6 +2311,11 @@ function App() {
     return researchOrder.map((id) => map.get(id)).filter(Boolean) as typeof research;
   }, []);
 
+  const orderedCodeResources = useMemo(() => {
+    const map = new Map(resources.map((item) => [item.id, item]));
+    return codeHomeOrder.map((id) => map.get(id)).filter(Boolean) as typeof resources;
+  }, []);
+
   const visibleResearchItems = useMemo(
     () => orderedResearch.filter((item) => item.kind === openResearchPanel),
     [orderedResearch, openResearchPanel],
@@ -2055,9 +2332,9 @@ function App() {
   const visibleResources = useMemo(
     () =>
       codeFilter === "Featured"
-        ? resources
-        : resources.filter((item) => item.tech.includes(codeFilter)),
-    [codeFilter],
+        ? orderedCodeResources
+        : orderedCodeResources.filter((item) => item.tech.includes(codeFilter)),
+    [codeFilter, orderedCodeResources],
   );
 
   const activeRoadmap = roadmapItems.find((item) => item.id === activeRoadmapTab) ?? roadmapItems[0];
@@ -2165,9 +2442,6 @@ function App() {
             <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
             <span>Viva Insights</span>
           </a>
-          <a className={styles.navLink} href={WHATS_COMING_URL} target="_blank" rel="noreferrer">
-            <span>Viva Roadmap</span>
-          </a>
           <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
             <span>Feedback</span>
           </a>
@@ -2175,9 +2449,11 @@ function App() {
             className={mergeClasses(styles.navLink, styles.navIconOnly)}
             onClick={() => setShowContactDialog(true)}
             aria-label="Contact us"
-            style={{ border: "none", background: "none", cursor: "pointer" }}
+            style={{ border: "none", cursor: "pointer" }}
           >
-            <PersonFeedback20Regular fontSize={16} />
+            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px" }}>
+              <PersonFeedback20Regular fontSize={16} />
+            </span>
           </button>
         </div>
       </nav>
@@ -2211,16 +2487,59 @@ function App() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <PersonFeedback20Regular style={{ fontSize: "32px", color: "#6264A7", marginBottom: "12px" }} />
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                backgroundColor: "#E8F3FF",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 12px",
+              }}
+            >
+              <PersonFeedback24Filled style={{ fontSize: "40px", color: "#335CCC" }} />
+            </div>
             <h3 style={{ margin: "0 0 12px", fontSize: "18px", fontWeight: 600, color: "#242424" }}>
               Contact Us
             </h3>
-            <p style={{ margin: "0 0 20px", fontSize: "14px", lineHeight: "20px", color: "#616161" }}>
-              For further questions and doubts — Please drop a mail to{" "}
-              <a href="mailto:CopilotAnalyticsLabs@microsoft.com" style={{ color: "#0078D4", textDecoration: "none" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "14px", color: "#616161", whiteSpace: "nowrap" }}>
+                For further questions and doubts — Please drop a mail to
+              </span>
+              <a href="mailto:CopilotAnalyticsLabs@microsoft.com" style={{ color: "#0078D4", textDecoration: "none", fontWeight: 600 }}>
                 CopilotAnalyticsLabs@microsoft.com
               </a>
-            </p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText("CopilotAnalyticsLabs@microsoft.com");
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#0078D4",
+                  padding: "0",
+                  width: "20px",
+                  height: "20px",
+                  title: "Copy email address",
+                }}
+                title="Copy email address"
+              >
+                <Copy16Regular style={{ fontSize: "16px" }} />
+              </button>
+            </div>
+            {copied && (
+              <p style={{ margin: "0 0 16px", fontSize: "12px", color: "#10A038", fontWeight: 600 }}>
+                Copied to clipboard!
+              </p>
+            )}
             <button
               onClick={() => setShowContactDialog(false)}
               style={{
@@ -2228,7 +2547,7 @@ function App() {
                 fontSize: "14px",
                 fontWeight: 600,
                 color: "#ffffff",
-                backgroundColor: "#0078D4",
+                backgroundColor: "#335CCC",
                 border: "none",
                 borderRadius: "6px",
                 cursor: "pointer",
@@ -2286,7 +2605,7 @@ function App() {
       </div>
 
       <section id="whats-new" className={mergeClasses(styles.section, styles.sectionWhatsNewBg)}>
-        <div className={styles.sectionContent}>
+        <div className={mergeClasses(styles.sectionContent, styles.featuredSectionContent)}>
           <div className={styles.sectionTitleArea}>
             <p className={mergeClasses(styles.eyebrow, styles.eyebrowFeatured)}>Featured</p>
             <div className={styles.sectionHeadingRow}>
@@ -2320,7 +2639,7 @@ function App() {
                     {featuredPillLabel[kind]}
                     <span className={mergeClasses(styles.filterPillDot, active && styles.filterPillDotActive)} />
                     <span className={mergeClasses(styles.filterPillCount, active && styles.filterPillCountActive)}>
-                      {featuredCounts.get(kind)}
+                      {(featuredCounts.get(kind) ?? 0) > 0 ? `${featuredCounts.get(kind)} new` : "0 new"}
                     </span>
                   </button>
                 );
@@ -2331,10 +2650,11 @@ function App() {
           {visibleFeatured.length > 0 ? (
             <>
               <div className={styles.featuredRow} ref={featuredRowRef}>
+                <div className={styles.featuredEdgeSpacer} aria-hidden="true" />
                 {visibleFeatured.map((item) => {
                   const chip = featuredChipByKind[item.kind];
                   return (
-                    <article key={item.id} className={styles.featuredCard}>
+                    <article key={item.id} className={styles.featuredCard} role="button" onClick={() => { window.open(item.url, "_blank"); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { window.open(item.url, "_blank"); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); } }} tabIndex={0}>
                       <div className={styles.featuredChips}>
                         <span className={styles.featuredTag} style={{ backgroundColor: chip.bg, color: chip.fg }}>
                           <chip.Icon fontSize={16} style={{ color: chip.iconColor }} />
@@ -2345,13 +2665,13 @@ function App() {
                           href={item.url}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`Open ${item.title}`}
-                          onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
+                          aria-label={`Open ${formatCardTitle(item.title)}`}
+                          onClick={(e) => { e.stopPropagation(); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); }}
                         >
-                          <Open16Regular fontSize={16} />
+                          <Open16Filled fontSize={16} />
                         </a>
                       </div>
-                      <h3 className={styles.featuredTitle}>{item.title}</h3>
+                      <h3 className={styles.featuredTitle}>{formatCardTitle(item.title)}</h3>
                       <p className={styles.featuredDescription}>{item.description}</p>
                       <div className={styles.featuredFooter}>
                         <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
@@ -2378,18 +2698,18 @@ function App() {
       </section>
 
       <section id="templates" className={mergeClasses(styles.section, styles.sectionTemplateBg)}>
-        <div className={styles.sectionContent}>
+        <div className={mergeClasses(styles.sectionContent, styles.templateSectionContent)}>
           <div className={styles.sectionTitleArea}>
             <p className={styles.eyebrow}>Template library</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Pick a template, start building</h2>
-              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
+              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/templates`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-templates" })}>
                 View all templates
-                <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
+                <span className={styles.templateViewAllIcon}><ChevronRight20Filled fontSize={20} /></span>
               </a>
             </div>
-            <p className={styles.sectionDescription}>
-              Production-ready templates for dashboards across adoption, usage, impact, and business value, combining Viva Insights with broader organizational signals.
+            <p className={mergeClasses(styles.sectionDescription, styles.templateSectionDescription)}>
+              Step-by-step templates to build dashboards across adoption, usage, impact, and business value, using data sources beyond Viva.
             </p>
           </div>
 
@@ -2402,7 +2722,7 @@ function App() {
                 aria-pressed={templateFilter === cat}
                 onClick={() => setTemplateFilter(cat)}
               >
-                {cat}
+                {templateFilterLabelHome[cat]}
               </button>
             ))}
           </div>
@@ -2414,15 +2734,16 @@ function App() {
             {visibleTemplates.map((item) => {
               const meta = templateMeta[item.id] ?? {};
               const isFeatured = Boolean(meta.featured);
+              const copyOverride = templateHomeCopyOverrides[item.id] ?? {};
+              const templateTitle = copyOverride.title ?? item.title;
+              const templateDescription = copyOverride.description ?? item.description;
 
               return (
                 <article
                   key={item.id}
                   className={mergeClasses(styles.templateCard, isFeatured && styles.templateCardFeatured)}
                 >
-                  {!isFeatured && item.image ? (
-                    <img className={styles.templateCardImage} src={item.image} alt="" />
-                  ) : null}
+                  {isFeatured && item.image ? <img className={styles.templateCardImage} src={item.image} alt="" /> : null}
 
                   <div className={styles.templateCardContent}>
                     {meta.badges?.length ? (
@@ -2432,7 +2753,11 @@ function App() {
                             key={badge.text}
                             className={mergeClasses(
                               styles.badge,
-                              badge.tone === "green" ? styles.badgeGreen : styles.badgeRose,
+                              badge.tone === "green" && styles.badgeGreen,
+                              badge.tone === "teal" && styles.badgeTeal,
+                              badge.tone === "purple" && styles.badgePurple,
+                              badge.tone === "orange" && styles.badgeOrange,
+                              badge.tone === "red" && styles.badgeRed,
                             )}
                           >
                             {badge.text}
@@ -2443,13 +2768,12 @@ function App() {
 
                     <div className={styles.templateBody}>
                       <div className={styles.templateCardContent}>
-                        <h3 className={styles.templateTitle}>{item.title}</h3>
-                        <p className={styles.templateDescription}>{item.description}</p>
+                        <h3 className={styles.templateTitle}>{templateTitle}</h3>
+                        <p className={styles.templateDescription}>{templateDescription}</p>
                       </div>
 
                       {meta.stats?.length ? (
                         <>
-                          <div className={styles.statsDivider} />
                           <div className={styles.statsRow}>
                             {meta.stats.map((stat) => {
                               let value = stat.value;
@@ -2472,22 +2796,16 @@ function App() {
                         </>
                       ) : null}
 
-                      <div>
-                        <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}>
+                      <div className={styles.templateActionsRow}>
+                        <a className={styles.templateCardButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.id })}>
                           View template
+                          <Open16Filled fontSize={12} />
                         </a>
+                        <VoteBar cardId={item.id} className={styles.templateVoteBar} />
                       </div>
-                      <VoteBar cardId={item.id} />
                     </div>
                   </div>
 
-                  {isFeatured && item.image ? (
-                    <img
-                      className={mergeClasses(styles.templateCardImage, styles.templateCardImageFeatured)}
-                      src={item.image}
-                      alt=""
-                    />
-                  ) : null}
                 </article>
               );
             })}
@@ -2497,18 +2815,18 @@ function App() {
       </section>
 
       <section id="sample-code" className={mergeClasses(styles.section, styles.sectionCodeBg)}>
-        <div className={styles.sectionContent}>
+        <div className={mergeClasses(styles.sectionContent, styles.codeSectionContent)}>
           <div className={styles.sectionTitleArea}>
             <p className={styles.eyebrow}>Sample code</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>Grab the code, make it yours</h2>
-              <a className={styles.viewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
+              <a className={styles.templateViewAllLink} href={`${import.meta.env.BASE_URL}#/codes`} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.TabClick, { tab: "view-all-codes" })}>
                 View all codes
-                <span className={`${styles.viewAllArrow} viewAllArrow`}><ArrowRight16Regular fontSize={12} /></span>
+                <ChevronRight20Filled fontSize={20} />
               </a>
             </div>
-            <p className={styles.sectionDescription}>
-              Reusable scripts, prompt libraries, and analytical methods for Python, R, and Power BI - adaptable to your organization's data.
+            <p className={mergeClasses(styles.sectionDescription, styles.codeSectionDescription)}>
+              Runnable scripts, prompt libraries, and analytical methods in Python, R, and Power BI, adapt them to your org's data.
             </p>
           </div>
 
@@ -2531,31 +2849,27 @@ function App() {
           ) : (
           <div className={styles.codeGrid}>
             {visibleResources.map((item) => {
-              const Icon = item.icon ?? DocumentBulletList24Regular;
               const meta = resourceMeta[item.id];
-              const isFeatured = Boolean(meta?.featured);
+              const isWide = Boolean(meta?.wide);
+              const description = codeHomeCopyOverrides[item.id]?.description ?? item.description;
 
               return (
-                <article key={item.id} className={mergeClasses(styles.codeCard, isFeatured && styles.codeCardFeatured)}>
-                  <div
-                    className={mergeClasses(styles.codeArt, isFeatured && styles.codeArtFeatured)}
-                  >
-                    {item.image ? (
-                      <img src={item.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                    ) : (
-                      <Icon />
-                    )}
-                  </div>
+                <article key={item.id} className={mergeClasses(styles.codeCard, isWide ? styles.codeCardWide : styles.codeCardSquare)}>
+                  {isWide && item.image ? <img src={item.image} alt="" className={styles.codeCardWideImage} /> : null}
 
-                  <div className={mergeClasses(styles.codeCardBody, isFeatured && styles.codeCardBodyFeatured)}>
+                  <div className={styles.codeCardBody}>
                     {meta?.badges?.length ? (
-                      <div className={mergeClasses(styles.badgeRow, isFeatured && styles.badgeRowFeatured)}>
+                      <div className={styles.badgeRow}>
                         {meta.badges.map((badge) => (
                           <span
                             key={badge.text}
                             className={mergeClasses(
                               styles.badge,
-                              badge.tone === "green" ? styles.badgeGreen : styles.badgeBlue,
+                              badge.tone === "green" && styles.badgeGreen,
+                              badge.tone === "teal" && styles.badgeTeal,
+                              badge.tone === "purple" && styles.badgePurple,
+                              badge.tone === "orange" && styles.badgeOrange,
+                              badge.tone === "red" && styles.badgeRed,
                             )}
                           >
                             {badge.text}
@@ -2565,16 +2879,17 @@ function App() {
                     ) : null}
 
                     <div className={styles.templateCardContent}>
-                      <h3 className={styles.codeTitle}>{item.title}</h3>
-                      <p className={styles.codeDescription}>{item.description}</p>
+                      <h3 className={styles.codeTitle}>{formatCardTitle(item.title)}</h3>
+                      <p className={styles.codeDescription}>{description}</p>
                     </div>
 
-                    <div>
-                      <a className={styles.secondaryButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.CodeViewClick, { resource: item.id })}>
+                    <div className={styles.codeActionsRow}>
+                      <a className={styles.codeCardButton} href={item.url} target="_blank" rel="noreferrer" onClick={() => logClick(TelemetryEvents.CodeViewClick, { resource: item.id })}>
                         View code
+                        <Open16Filled fontSize={12} />
                       </a>
+                      <VoteBar cardId={item.id} className={styles.codeVoteBar} />
                     </div>
-                    <VoteBar cardId={item.id} />
                   </div>
                 </article>
               );
@@ -2664,7 +2979,7 @@ function App() {
                       rel="noreferrer"
                       onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
                     >
-                      <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{item.title}</h3>
+                      <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{formatCardTitle(item.title)}</h3>
                       <span className={styles.researchItemArrow}>
                         <ArrowRight16Regular fontSize={16} />
                       </span>
@@ -2714,7 +3029,7 @@ function App() {
                 <div className={styles.roadmapCardIcon}>
                   <activeRoadmap.icon />
                 </div>
-                <h3 className={styles.roadmapTitle}>{detail}</h3>
+                <h3 className={styles.roadmapTitle}>{formatCardTitle(detail)}</h3>
               </article>
             ))}
           </div>

@@ -9,7 +9,7 @@ import {
 } from "@fluentui/react-icons";
 
 export interface TemplateItem {
-  id: string;
+    title: "Work trend index report 2026",
   title: string;
   description: string;
   url: string;
@@ -276,6 +276,20 @@ export const resources: ResourceItem[] = [
     addedOn: "2026-06-18",
     tech: ["Power BI", "AI-assisted"],
     domain: ["Impact & ROI", "Copilot & Agents", "Advanced / ML"],
+    collections: ["Export"],
+  },
+  {
+    id: "portable-audit-exporter",
+    title: "Portable Audit Exporter",
+    description:
+      "Portable exporter utilities for Purview audit data - parse, normalize, and prepare audit logs for downstream analytics and dashboarding.",
+    url: "https://microsoft.github.io/viva-insights-sample-code/frontier-analytics-prompt-audit-parsing/",
+    icon: DocumentBulletList24Regular,
+    category: "Code",
+    image: `${base}images/code-portable-audit-exporter.png`,
+    addedOn: "2026-06-22",
+    tech: ["Power BI", "AI-assisted"],
+    domain: ["Copilot & Agents", "Impact & ROI"],
     collections: ["Export"],
   },
   {
