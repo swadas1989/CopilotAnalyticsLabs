@@ -1879,21 +1879,19 @@ const useStyles = makeStyles({
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
-    minHeight: "600px",
     backgroundColor: "#FFFFFF",
     ...shorthands.padding("24px", "40px"),
     ...shorthands.borderRadius("12px"),
     boxShadow: "0 0 2px rgba(0,0,0,0.10), 0 6px 20px rgba(0,0,0,0.05)",
     '@media (max-width: 900px)': {
       ...shorthands.padding("24px", "24px"),
-      minHeight: "500px",
     },
   },
   researchItem: {
     display: "flex",
     flexDirection: "column",
     gap: "11px",
-    ...shorthands.padding("24px", "0"),
+    ...shorthands.padding("12px", "0"),
     ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
     ':last-child': {
       ...shorthands.borderBottom("none"),
