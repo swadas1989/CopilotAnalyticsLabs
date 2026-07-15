@@ -1883,7 +1883,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     flex: 1,
     minWidth: 0,
-    minHeight: "475px",
+    minHeight: "535px",
     backgroundColor: "#FFFFFF",
     ...shorthands.padding("24px", "40px"),
     ...shorthands.borderRadius("12px"),
@@ -1898,7 +1898,7 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "stretch",
     gap: "16px",
-    ...shorthands.padding("12px", "0"),
+    ...shorthands.padding("24px", "0"),
     ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
   },
   researchItemMain: {
