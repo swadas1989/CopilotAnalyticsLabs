@@ -1170,7 +1170,7 @@ const useStyles = makeStyles({
   },
   codeGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 240px)",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
     gridAutoRows: "226px",
     gap: "20px",
     '@media (max-width: 900px)': {
