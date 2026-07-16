@@ -2086,7 +2086,6 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
-    cursor: "pointer",
     transition: "box-shadow 0.2s ease-in-out",
     ':hover': {
       boxShadow: "0px 8px 24px rgba(0,0,0,0.22), 0px 2px 8px rgba(0,0,0,0.16)",
@@ -2120,12 +2119,34 @@ const useStyles = makeStyles({
     justifyContent: "center",
     width: "20px",
     height: "20px",
+    position: "relative",
     flexShrink: 0,
     color: "#335CCC",
     textDecorationLine: "none",
     cursor: "pointer",
+    ...shorthands.borderRadius("10px"),
+    zIndex: 0,
+    '& > svg': {
+      position: "relative",
+      zIndex: 1,
+    },
+    '::before': {
+      content: '""',
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      width: "48px",
+      height: "48px",
+      transform: "translate(-50%, -50%)",
+      ...shorthands.borderRadius("24px"),
+      pointerEvents: "none",
+      zIndex: -1,
+    },
     ':hover': {
       color: "#2A4CB0",
+    },
+    ':hover::before': {
+      backgroundColor: "#E9F0FF",
     },
   },
   filterGroup: {
@@ -2673,7 +2694,7 @@ function App() {
                 {visibleFeatured.map((item) => {
                   const chip = featuredChipByKind[item.kind];
                   return (
-                    <article key={item.id} className={styles.featuredCard} role="button" onClick={() => { window.open(item.url, "_blank"); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { window.open(item.url, "_blank"); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); } }} tabIndex={0}>
+                    <article key={item.id} className={styles.featuredCard}>
                       <div className={styles.featuredChips}>
                         <span className={styles.featuredTag} style={{ backgroundColor: chip.bg, color: chip.fg }}>
                           <chip.Icon fontSize={16} style={{ color: chip.iconColor }} />
