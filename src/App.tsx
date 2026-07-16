@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { makeStyles, mergeClasses, shorthands, Tooltip } from "@fluentui/react-components";
 import {
   ArrowRight16Regular,
   Book20Filled,
@@ -1813,7 +1813,7 @@ const useStyles = makeStyles({
     flexDirection: "row",
     alignItems: "stretch",
     gap: "12px",
-    ...shorthands.padding("16px", "0px", "16px", "16px"),
+    ...shorthands.padding("20px", "0px", "20px", "16px"),
     ...shorthands.border("none"),
     backgroundColor: "transparent",
     cursor: "pointer",
@@ -1829,7 +1829,7 @@ const useStyles = makeStyles({
   },
   researchAccordionHeaderUnselected: {
     ':hover': {
-      backgroundColor: "rgba(255, 255, 255, 0.35)",
+      backgroundColor: "rgba(255, 255, 255, 0.5)",
     },
   },
   researchAccordionAccent: {
@@ -2076,7 +2076,7 @@ const useStyles = makeStyles({
   },
   featuredCard: {
     flex: "0 0 336px",
-    minHeight: "192px",
+    minHeight: "212px",
     scrollSnapAlign: "start",
     display: "flex",
     flexDirection: "column",
@@ -2234,7 +2234,7 @@ const useStyles = makeStyles({
     lineHeight: "20px",
     color: "#424242",
     display: "-webkit-box",
-    WebkitLineClamp: "2",
+    WebkitLineClamp: "3",
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
     flex: 1,
@@ -2307,6 +2307,47 @@ export function MicrosoftLogoWordmark() {
         Microsoft
       </span>
     </div>
+  );
+}
+
+function FeaturedDescription({ text, className }: { text: string; className: string }) {
+  const nodeRef = useRef<HTMLParagraphElement | null>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  const measure = useCallback(() => {
+    const el = nodeRef.current;
+    if (el) {
+      setIsTruncated(el.scrollHeight - el.clientHeight > 1);
+    }
+  }, []);
+
+  const setRef = useCallback(
+    (el: HTMLParagraphElement | null) => {
+      nodeRef.current = el;
+      if (el) measure();
+    },
+    [measure],
+  );
+
+  useEffect(() => {
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
+
+  const paragraph = (
+    <p ref={setRef} className={className}>
+      {text}
+    </p>
+  );
+
+  if (!isTruncated) {
+    return paragraph;
+  }
+
+  return (
+    <Tooltip content={text} relationship="description" showDelay={2000} withArrow>
+      {paragraph}
+    </Tooltip>
   );
 }
 
@@ -2712,7 +2753,7 @@ function App() {
                         </a>
                       </div>
                       <h3 className={styles.featuredTitle}>{formatCardTitle(item.title)}</h3>
-                      <p className={styles.featuredDescription}>{item.description}</p>
+                      <FeaturedDescription text={item.description} className={styles.featuredDescription} />
                       <div className={styles.featuredFooter}>
                         <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
                         <VoteBar cardId={item.sourceId} />
