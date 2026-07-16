@@ -1153,7 +1153,7 @@ const useStyles = makeStyles({
   },
   templateActionsRow: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
     gap: "16px",
     marginTop: "auto",
@@ -1269,7 +1269,7 @@ const useStyles = makeStyles({
   },
   codeActionsRow: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
     gap: "8px",
     marginTop: "auto",
@@ -1911,8 +1911,7 @@ const useStyles = makeStyles({
   },
   researchItem: {
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: "column",
     alignItems: "stretch",
     gap: "16px",
     ...shorthands.padding("24px", "0"),
@@ -1955,19 +1954,30 @@ const useStyles = makeStyles({
     fontWeight: 600,
     color: "#000000",
   },
-  researchItemAside: {
+  researchItemFooter: {
     display: "flex",
-    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    flexShrink: 0,
-    gap: "12px",
+    gap: "16px",
   },
-  researchItemOpen: {
+  researchCardButton: {
     display: "inline-flex",
-    color: "#335CCC",
-    flexShrink: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    minHeight: "32px",
+    backgroundColor: "#ffffff",
+    color: "#242424",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
     textDecorationLine: "none",
+    ...shorthands.padding("5px", "12px"),
+    ...shorthands.borderRadius("4px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
+    ':hover': {
+      backgroundColor: "#F7F7F7",
+    },
   },
   researchViewAllLink: {
     display: "inline-flex",
@@ -2137,10 +2147,6 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("16px"),
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
-    transition: "box-shadow 0.2s ease-in-out",
-    ':hover': {
-      boxShadow: "0px 8px 24px rgba(0,0,0,0.22), 0px 2px 8px rgba(0,0,0,0.16)",
-    },
     '@media (max-width: 600px)': {
       flex: "0 0 82%",
     },
@@ -2164,40 +2170,23 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius("100px"),
     boxSizing: "border-box",
   },
-  featuredOpen: {
+  featuredCardButton: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "20px",
-    height: "20px",
-    position: "relative",
-    flexShrink: 0,
-    color: "#335CCC",
+    gap: "6px",
+    minHeight: "32px",
+    backgroundColor: "#ffffff",
+    color: "#242424",
+    fontSize: "14px",
+    lineHeight: "20px",
+    fontWeight: 600,
     textDecorationLine: "none",
-    cursor: "pointer",
-    ...shorthands.borderRadius("10px"),
-    zIndex: 0,
-    '& > svg': {
-      position: "relative",
-      zIndex: 1,
-    },
-    '::before': {
-      content: '""',
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      width: "48px",
-      height: "48px",
-      transform: "translate(-50%, -50%)",
-      ...shorthands.borderRadius("24px"),
-      pointerEvents: "none",
-      zIndex: -1,
-    },
+    ...shorthands.padding("5px", "12px"),
+    ...shorthands.borderRadius("4px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
     ':hover': {
-      color: "#2A4CB0",
-    },
-    ':hover::before': {
-      backgroundColor: "#E9F0FF",
+      backgroundColor: "#F7F7F7",
     },
   },
   filterGroup: {
@@ -2295,11 +2284,13 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: "auto",
+    paddingTop: "16px",
   },
   featuredDate: {
-    fontSize: "14px",
-    lineHeight: "20px",
+    fontSize: "12px",
+    lineHeight: "16px",
     color: "#707070",
+    whiteSpace: "nowrap",
   },
   featuredArrow: {
     display: "inline-flex",
@@ -2785,6 +2776,12 @@ function App() {
                 <div className={styles.featuredEdgeSpacer} aria-hidden="true" />
                 {visibleFeatured.map((item) => {
                   const chip = featuredChipByKind[item.kind];
+                  const ctaLabel = {
+                    Template: "View template",
+                    Code: "View code",
+                    Research: "View report",
+                    Playbook: "View playbook",
+                  }[item.kind];
                   return (
                     <article key={item.id} className={styles.featuredCard}>
                       <div className={styles.featuredChips}>
@@ -2792,22 +2789,22 @@ function App() {
                           <chip.Icon fontSize={16} style={{ color: chip.iconColor }} />
                           {chip.label}
                         </span>
-                        <a
-                          className={styles.featuredOpen}
-                          href={item.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Open ${formatCardTitle(item.title)}`}
-                          onClick={(e) => { e.stopPropagation(); logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId }); }}
-                        >
-                          <Open16Filled fontSize={16} />
-                        </a>
+                        <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
                       </div>
                       <h3 className={styles.featuredTitle}>{formatCardTitle(item.title)}</h3>
                       <FeaturedDescription text={item.description} className={styles.featuredDescription} />
                       <div className={styles.featuredFooter}>
-                        <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
-                        <VoteBar cardId={item.sourceId} />
+                        <a
+                          className={styles.featuredCardButton}
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => logClick(TelemetryEvents.TemplateViewClick, { template: item.sourceId })}
+                        >
+                          {ctaLabel}
+                          <Open16Filled fontSize={12} />
+                        </a>
+                        <VoteBar cardId={item.sourceId} variant="inline" />
                       </div>
                     </article>
                   );
@@ -2940,7 +2937,7 @@ function App() {
                           View template
                           <Open16Filled fontSize={12} />
                         </a>
-                        <VoteBar cardId={item.id} className={styles.templateVoteBar} />
+                        <VoteBar cardId={item.id} variant="inline" className={styles.templateVoteBar} />
                       </div>
                     </div>
                   </div>
@@ -3034,7 +3031,7 @@ function App() {
                         View code
                         <Open16Filled fontSize={12} />
                       </a>
-                      <VoteBar cardId={item.id} className={styles.codeVoteBar} />
+                      <VoteBar cardId={item.id} variant="inline" className={styles.codeVoteBar} />
                     </div>
                   </div>
                 </article>
@@ -3121,16 +3118,16 @@ function App() {
                     </a>
                     <p className={styles.researchItemSubtext}>{item.description}</p>
                   </div>
-                  <div className={styles.researchItemAside}>
+                  <div className={styles.researchItemFooter}>
                     <a
-                      className={styles.researchItemOpen}
+                      className={styles.researchCardButton}
                       href={item.url}
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`Open ${item.title}`}
                       onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
                     >
-                      <Open16Filled fontSize={16} />
+                      {item.kind === "Playbook" ? "View playbook" : "View report"}
+                      <Open16Filled fontSize={12} />
                     </a>
                     <VoteBar cardId={item.id} variant="inline" />
                   </div>

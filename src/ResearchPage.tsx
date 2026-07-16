@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
-import { ArrowRight16Regular } from "@fluentui/react-icons";
+import { ChevronLeft20Filled, Open16Filled } from "@fluentui/react-icons";
 import { MicrosoftLogoWordmark } from "./App";
 import {
   research,
@@ -81,27 +81,23 @@ const useStyles = makeStyles({
   },
   breadcrumb: {
     margin: 0,
-    fontSize: "13px",
-    fontWeight: 600,
-    letterSpacing: "0.04em",
     display: "flex",
     alignItems: "center",
-    gap: "8px",
     marginBottom: "0",
   },
   breadcrumbLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
     color: "#335CCC",
+    fontSize: "14px",
+    fontWeight: 600,
+    lineHeight: "20px",
     textDecoration: "none",
     cursor: "pointer",
     ':hover': {
       textDecoration: "underline",
     },
-  },
-  breadcrumbCurrent: {
-    color: "#616161",
-  },
-  breadcrumbSeparator: {
-    color: "#616161",
   },
   eyebrow: {
     margin: 0,
@@ -279,22 +275,31 @@ const useStyles = makeStyles({
   cardButton: {
     display: "inline-flex",
     alignItems: "center",
+    justifyContent: "center",
     gap: "6px",
-    alignSelf: "flex-start",
-    fontSize: "13px",
+    minHeight: "32px",
+    backgroundColor: "#ffffff",
+    color: "#242424",
+    fontSize: "14px",
+    lineHeight: "20px",
     fontWeight: 600,
-    color: "#335CCC",
     textDecorationLine: "none",
-    ...shorthands.padding("8px", "16px"),
-    ...shorthands.borderRadius("8px"),
-    ...shorthands.border("1px", "solid", "#D1D9F0"),
-    backgroundColor: "#F5F8FF",
+    ...shorthands.padding("5px", "12px"),
+    ...shorthands.borderRadius("4px"),
+    ...shorthands.border("1px", "solid", "#D1D1D1"),
     ':hover': {
-      backgroundColor: "#E9F0FF",
+      backgroundColor: "#F7F7F7",
     },
   },
   voteBar: {
     marginTop: "12px",
+  },
+  cardFooter: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px",
+    marginTop: "auto",
   },
   empty: {
     ...shorthands.padding("48px", "0"),
@@ -374,9 +379,10 @@ export default function ResearchPage() {
       <header className={styles.hero}>
         <div className={styles.container}>
           <nav className={styles.breadcrumb}>
-            <a className={styles.breadcrumbLink} href={`${import.meta.env.BASE_URL}#/`}>Copilot analytics labs</a>
-            <span className={styles.breadcrumbSeparator}>&gt;</span>
-            <span className={styles.breadcrumbCurrent}>Research & Playbooks</span>
+            <a className={styles.breadcrumbLink} href={`${import.meta.env.BASE_URL}#/`}>
+              <ChevronLeft20Filled />
+              Back to Labs
+            </a>
           </nav>
           <h1 className={styles.title}>Browse all research and playbooks</h1>
           <p className={styles.description}>
@@ -456,17 +462,19 @@ export default function ResearchPage() {
                           </div>
                           <h3 className={styles.cardTitle}>{item.title}</h3>
                           <p className={styles.cardDescription}>{item.description}</p>
-                          <a
-                            className={styles.cardButton}
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
-                          >
-                            {item.kind === "Playbook" ? "View playbook" : "View report"}
-                            <ArrowRight16Regular fontSize={14} />
-                          </a>
-                          <VoteBar cardId={item.id} className={styles.voteBar} />
+                          <div className={styles.cardFooter}>
+                            <a
+                              className={styles.cardButton}
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
+                            >
+                              {item.kind === "Playbook" ? "View playbook" : "View report"}
+                              <Open16Filled fontSize={12} />
+                            </a>
+                            <VoteBar cardId={item.id} variant="inline" />
+                          </div>
                         </div>
                       </article>
                     ))}
