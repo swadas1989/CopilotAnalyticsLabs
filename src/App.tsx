@@ -2,25 +2,31 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { makeStyles, mergeClasses, shorthands, Tooltip } from "@fluentui/react-components";
 import {
   ArrowRight16Regular,
+  ArrowTrendingText20Filled,
+  ArrowTrendingText20Regular,
   Book20Filled,
   BookTemplate20Filled,
   BookCompass20Filled,
+  ChartMultiple20Filled,
+  ChartMultiple20Regular,
   ChevronLeft20Regular,
   ChevronRight20Filled,
   ChevronRight20Regular,
   Code20Filled,
   Copy16Regular,
-  DataBarVerticalAscending24Regular,
-  DataTrending24Regular,
   DismissRegular,
-  DocumentBulletList24Regular,
   Eye16Regular,
+  FlowSparkle20Regular,
   Info20Regular,
   Microscope20Filled,
   Open16Filled,
+  Open16Regular,
   PersonFeedback20Regular,
   PersonFeedback24Filled,
-  Sparkle24Regular,
+  PersonGuest20Filled,
+  PersonGuest20Regular,
+  Sparkle20Filled,
+  Sparkle20Regular,
   Star16Filled,
   WrenchScrewdriver20Filled,
   MountainLocationTop20Filled,
@@ -390,7 +396,8 @@ interface RoadmapItem {
   id: string;
   title: string;
   description: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ fontSize?: number; className?: string; style?: React.CSSProperties }>;
+  iconActive: React.ComponentType<{ fontSize?: number; className?: string; style?: React.CSSProperties }>;
   details?: string[];
 }
 
@@ -400,7 +407,8 @@ const roadmapItems: RoadmapItem[] = [
     title: "Agent Analytics",
     description:
       "Comprehensive analytics for AI agents — dashboards, metrics, lifecycle management, and augmented capacity insights.",
-    icon: DataTrending24Regular,
+    icon: ChartMultiple20Regular,
+    iconActive: ChartMultiple20Filled,
     details: [
       "Agent 365 Dashboard",
       "Agent metrics in advanced reporting",
@@ -413,7 +421,8 @@ const roadmapItems: RoadmapItem[] = [
     title: "Value and ROI",
     description:
       "Quantify and communicate the business value and return on investment of AI across your organization.",
-    icon: DataBarVerticalAscending24Regular,
+    icon: ArrowTrendingText20Regular,
+    iconActive: ArrowTrendingText20Filled,
     details: [
       "Copilot credits & consumption metrics",
       "Task & intent analytics",
@@ -423,10 +432,11 @@ const roadmapItems: RoadmapItem[] = [
   },
   {
     id: "insights-agent",
-    title: "Insights Agent",
+    title: "Insights agent",
     description:
       "AI-powered agent that surfaces proactive insights and recommendations from your analytics data.",
-    icon: Sparkle24Regular,
+    icon: Sparkle20Regular,
+    iconActive: Sparkle20Filled,
     details: [
       "Insights Agent — General Availability",
       "Intelligent summaries",
@@ -438,7 +448,8 @@ const roadmapItems: RoadmapItem[] = [
     title: "Trust, Access and Foundation",
     description:
       "Foundational capabilities for security, governance, access control, and trust across the analytics platform.",
-    icon: DocumentBulletList24Regular,
+    icon: PersonGuest20Regular,
+    iconActive: PersonGuest20Filled,
     details: [
       "Identified user-level export",
       "Programmatic export via Fabric",
@@ -1371,7 +1382,7 @@ const useStyles = makeStyles({
   },
   sectionRoadmapBg: {
     background:
-      "linear-gradient(113deg, rgba(228,243,255,0.7) 0%, rgba(255,255,255,1) 40%, rgba(240,231,255,0.9) 100%)",
+      "linear-gradient(137.22deg, rgba(118,79,245,0.04) 14.49%, rgba(63,108,233,0.04) 42.08%, rgba(32,187,198,0.04) 100%)",
   },
   roadmapGrid: {
     display: "grid",
@@ -1432,13 +1443,19 @@ const useStyles = makeStyles({
     display: "flex",
     gap: "24px",
     flexWrap: "wrap",
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    '@media (max-width: 600px)': {
+      justifyContent: "flex-start",
+    },
   },
   roadmapLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
     color: "#335CCC",
     fontSize: "14px",
     lineHeight: "20px",
-    fontWeight: 500,
+    fontWeight: 600,
     textDecorationLine: "none",
     ':hover': {
       textDecorationLine: "underline",
@@ -1974,46 +1991,68 @@ const useStyles = makeStyles({
     lineHeight: "16px",
     color: "#616161",
   },
-  roadmapTabs: {
+  roadmapSectionContent: {
+    gap: "24px",
+  },
+  roadmapTabBar: {
     display: "flex",
-    flexWrap: "wrap",
-    gap: "4px",
-    ...shorthands.borderBottom("1px", "solid", "#E0E0E0"),
+    alignItems: "stretch",
+    backgroundColor: "#ffffff",
+    ...shorthands.borderRadius("8px"),
+    overflowX: "auto",
+    scrollbarWidth: "none",
+    '::-webkit-scrollbar': {
+      display: "none",
+    },
   },
   roadmapTab: {
+    position: "relative",
     display: "inline-flex",
     alignItems: "center",
+    justifyContent: "center",
     gap: "8px",
+    flexShrink: 0,
+    whiteSpace: "nowrap",
     backgroundColor: "transparent",
-    color: "#424242",
+    color: "#242424",
     fontSize: "14px",
     lineHeight: "20px",
+    fontWeight: 400,
     fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
     cursor: "pointer",
-    ...shorthands.padding("10px", "14px"),
+    ...shorthands.padding("12px", "16px"),
     ...shorthands.border("none"),
-    ...shorthands.borderBottom("2px", "solid", "transparent"),
-    marginBottom: "-1px",
     ':hover': {
       color: "#0E1726",
     },
+    '::after': {
+      content: '""',
+      position: "absolute",
+      left: "12px",
+      right: "12px",
+      bottom: 0,
+      height: "3px",
+      ...shorthands.borderRadius("9999px"),
+      backgroundColor: "transparent",
+    },
   },
   roadmapTabActive: {
-    color: "#0E1726",
+    color: "#242424",
     fontWeight: 600,
-    ...shorthands.borderBottom("2px", "solid", "#335CCC"),
+    '::after': {
+      backgroundColor: "#335CCC",
+    },
   },
   roadmapTabDescription: {
     margin: 0,
-    fontSize: "14px",
-    lineHeight: "20px",
-    color: "#424242",
-    maxWidth: "760px",
+    fontSize: "16px",
+    lineHeight: "22px",
+    color: "#242424",
   },
   roadmapDetailGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "16px",
+    gap: "24px",
     '@media (max-width: 900px)': {
       gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     },
@@ -2024,11 +2063,23 @@ const useStyles = makeStyles({
   roadmapDetailCard: {
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: "16px",
+    minHeight: "148px",
     backgroundColor: "#ffffff",
     boxShadow: "0 0 2px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
     ...shorthands.borderRadius("16px"),
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("24px"),
+    boxSizing: "border-box",
+  },
+  roadmapCardIconBox: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "36px",
+    height: "36px",
+    backgroundColor: "#ffffff",
+    ...shorthands.border("1px", "solid", "#E0E0E0"),
+    ...shorthands.borderRadius("5px"),
     boxSizing: "border-box",
   },
   sectionWhatsNewBg: {
@@ -3101,31 +3152,40 @@ function App() {
       </section>
 
       <section id="product-roadmap" className={mergeClasses(styles.section, styles.sectionRoadmapBg)}>
-        <div className={styles.sectionContent}>
+        <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: "absolute" }}>
+          <defs>
+            <linearGradient id="roadmapFlowGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3F6CE9" />
+              <stop offset="100%" stopColor="#764FF5" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className={mergeClasses(styles.sectionContent, styles.roadmapSectionContent)}>
           <div className={styles.sectionTitleArea}>
-            <p className={styles.eyebrow}>Product roadmap</p>
+            <p className={mergeClasses(styles.eyebrow, styles.eyebrowFeatured)}>Product roadmap</p>
             <div className={styles.sectionHeadingRow}>
               <h2 className={styles.sectionHeading}>What's next for Copilot Analytics</h2>
             </div>
-            <p className={styles.sectionDescription}>
-              Upcoming capabilities and investments shaping the future of AI-powered analytics.
-            </p>
           </div>
 
-          <div className={styles.roadmapTabs} role="tablist" aria-label="Roadmap categories">
-            {roadmapItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={activeRoadmapTab === item.id}
-                className={mergeClasses(styles.roadmapTab, activeRoadmapTab === item.id && styles.roadmapTabActive)}
-                onClick={() => { setActiveRoadmapTab(item.id); logClick(TelemetryEvents.TabClick, { tab: `roadmap-${item.id}` }); }}
-              >
-                <item.icon />
-                {item.title}
-              </button>
-            ))}
+          <div className={styles.roadmapTabBar} role="tablist" aria-label="Roadmap categories">
+            {roadmapItems.map((item) => {
+              const active = activeRoadmapTab === item.id;
+              const TabIcon = active ? item.iconActive : item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  className={mergeClasses(styles.roadmapTab, active && styles.roadmapTabActive)}
+                  onClick={() => { setActiveRoadmapTab(item.id); logClick(TelemetryEvents.TabClick, { tab: `roadmap-${item.id}` }); }}
+                >
+                  <TabIcon fontSize={20} style={active ? { color: "#335CCC" } : undefined} />
+                  {item.title}
+                </button>
+              );
+            })}
           </div>
 
           <p className={styles.roadmapTabDescription}>{activeRoadmap.description}</p>
@@ -3133,20 +3193,22 @@ function App() {
           <div className={styles.roadmapDetailGrid}>
             {(activeRoadmap.details ?? []).map((detail) => (
               <article key={detail} className={styles.roadmapDetailCard}>
-                <div className={styles.roadmapCardIcon}>
-                  <activeRoadmap.icon />
+                <div className={styles.roadmapCardIconBox}>
+                  <FlowSparkle20Regular className="roadmap-flow-icon" fontSize={20} />
                 </div>
-                <h3 className={styles.roadmapTitle}>{formatCardTitle(detail)}</h3>
+                <h3 className={styles.roadmapTitle}>{detail}</h3>
               </article>
             ))}
           </div>
 
           <div className={styles.roadmapLinks}>
             <a className={styles.roadmapLink} href="https://www.microsoft.com/en-us/microsoft-365/roadmap?filters=Microsoft%20Viva" target="_blank" rel="noreferrer">
-              For detailed roadmap — click here ↗
+              See detailed roadmap
+              <Open16Regular fontSize={16} />
             </a>
             <a className={styles.roadmapLink} href="https://forms.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR0To00bktq1Ilw6hJ9BCmj5UODhQNTBPUkI2NUlRQU9VUzI0WkNPUTJSSi4u" target="_blank" rel="noreferrer">
-              Product roadmap feedback ↗
+              Share feedback
+              <Open16Regular fontSize={16} />
             </a>
           </div>
         </div>
