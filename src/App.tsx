@@ -1429,7 +1429,7 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "16px",
     lineHeight: "24px",
-    fontWeight: 600,
+    fontWeight: 400,
     color: "#000000",
   },
   roadmapDescription: {
