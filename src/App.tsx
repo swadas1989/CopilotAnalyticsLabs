@@ -2083,6 +2083,12 @@ const useStyles = makeStyles({
     ...shorthands.padding("24px"),
     boxSizing: "border-box",
   },
+  roadmapDetailCardWide: {
+    gridColumn: "span 2",
+    '@media (max-width: 600px)': {
+      gridColumn: "auto",
+    },
+  },
   roadmapCardIconBox: {
     display: "flex",
     alignItems: "center",
@@ -3194,7 +3200,7 @@ function App() {
 
           <div className={styles.roadmapDetailGrid}>
             {(activeRoadmap.details ?? []).map((detail) => (
-              <article key={detail} className={styles.roadmapDetailCard}>
+              <article key={detail} className={mergeClasses(styles.roadmapDetailCard, detail.length > 60 && styles.roadmapDetailCardWide)}>
                 <div className={styles.roadmapCardIconBox}>
                   <FlowSparkle20Regular className="roadmap-flow-icon" fontSize={20} />
                 </div>
