@@ -110,7 +110,7 @@ const base = import.meta.env.BASE_URL;
 export const templates: TemplateItem[] = [
   {
     id: "aio-dashboard",
-    title: "AI in One Dashboard",
+    title: "All in One Dashboard",
     description:
       "Comprehensive Copilot and Agent analytics covering adoption, usage, impact, and ROI — all in a single Power BI dashboard.",
     url: "https://github.com/microsoft/AI-in-One-Dashboard#-dashboard-preview",

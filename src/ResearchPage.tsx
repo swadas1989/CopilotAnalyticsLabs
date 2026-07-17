@@ -264,6 +264,9 @@ const useStyles = makeStyles({
     lineHeight: "22px",
     fontWeight: 600,
     color: "#0E1726",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   cardDescription: {
     margin: 0,

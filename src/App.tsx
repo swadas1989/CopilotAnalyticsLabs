@@ -128,13 +128,6 @@ function formatRelativeDate(iso?: string): string {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
-function formatCardTitle(value: string): string {
-  const stripped = value.replace(/\b(Microsoft|Viva)\s+/gi, "").trim();
-  if (!stripped) return "";
-  const lower = stripped.toLowerCase();
-  return `${lower.charAt(0).toUpperCase()}${lower.slice(1)}`;
-}
-
 // New items grouped by type, newest first — only those within each kind's window.
 function buildFeaturedItems(): FeaturedItem[] {
   const byDateDesc = (a: { addedOn?: string }, b: { addedOn?: string }) =>
@@ -1140,6 +1133,9 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#000000",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   templateDescription: {
     margin: 0,
@@ -1260,6 +1256,9 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#000000",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   codeDescription: {
     margin: 0,
@@ -1953,6 +1952,9 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#000000",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   researchItemFooter: {
     display: "flex",
@@ -2267,6 +2269,9 @@ const useStyles = makeStyles({
     lineHeight: "24px",
     fontWeight: 600,
     color: "#000000",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   featuredDescription: {
     margin: 0,
@@ -2791,7 +2796,7 @@ function App() {
                         </span>
                         <span className={styles.featuredDate}>{formatRelativeDate(item.addedOn)}</span>
                       </div>
-                      <h3 className={styles.featuredTitle}>{formatCardTitle(item.title)}</h3>
+                      <h3 className={styles.featuredTitle}>{item.title}</h3>
                       <FeaturedDescription text={item.description} className={styles.featuredDescription} />
                       <div className={styles.featuredFooter}>
                         <a
@@ -3022,7 +3027,7 @@ function App() {
                     ) : null}
 
                     <div className={styles.templateCardContent}>
-                      <h3 className={styles.codeTitle}>{formatCardTitle(item.title)}</h3>
+                      <h3 className={styles.codeTitle}>{item.title}</h3>
                       <p className={styles.codeDescription}>{description}</p>
                     </div>
 
@@ -3114,7 +3119,7 @@ function App() {
                       rel="noreferrer"
                       onClick={() => logClick(TelemetryEvents.ResearchViewClick, { research: item.id })}
                     >
-                      <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{formatCardTitle(item.title)}</h3>
+                      <h3 className={mergeClasses(styles.researchItemTitle, "research-item-title")}>{item.title}</h3>
                     </a>
                     <p className={styles.researchItemSubtext}>{item.description}</p>
                   </div>
