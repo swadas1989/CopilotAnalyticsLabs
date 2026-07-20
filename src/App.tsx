@@ -2290,40 +2290,95 @@ function App() {
     featuredRowRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
   };
 
+  const tabsShellRef = useRef<HTMLDivElement>(null);
+  const activeSectionRef = useRef<(typeof sectionTabs)[number]["id"]>("whats-new");
+  const suppressSpyRef = useRef(false);
+  const suppressTimerRef = useRef<number | undefined>(undefined);
+  const settleTimerRef = useRef<number | undefined>(undefined);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => {
-            // Prefer the element closer to the top of the viewport
-            return a.boundingClientRect.top - b.boundingClientRect.top;
-          })[0];
+    const ids = sectionTabs.map((tab) => tab.id);
+    let ticking = false;
 
-        if (visible?.target.id) {
-          setActiveTab(visible.target.id as (typeof sectionTabs)[number]["id"]);
-          logClick(TelemetryEvents.SectionView, { section: visible.target.id });
+    const computeActive = () => {
+      ticking = false;
+      if (suppressSpyRef.current) return;
+
+      const tabsEl = tabsShellRef.current;
+      const stickyTop = tabsEl ? parseFloat(getComputedStyle(tabsEl).top) || 48 : 48;
+      const barHeight = tabsEl?.offsetHeight ?? 48;
+      // Reference line sits just below the sticky header + tabs bar. A section
+      // is "active" once its top has scrolled above this line.
+      const line = stickyTop + barHeight + 12;
+
+      const doc = document.documentElement;
+      const atBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
+
+      let currentId: (typeof sectionTabs)[number]["id"] = ids[0];
+      if (atBottom) {
+        // Ensure the final section can activate even if it is too short to
+        // reach the reference line.
+        currentId = ids[ids.length - 1];
+      } else {
+        // Sections are in document order, so the last one whose top is above
+        // the line is the current section. This is monotonic and never
+        // flip-flops between neighbours.
+        for (const id of ids) {
+          const element = document.getElementById(id);
+          if (!element) continue;
+          if (element.getBoundingClientRect().top <= line) {
+            currentId = id;
+          } else {
+            break;
+          }
         }
-      },
-      {
-        rootMargin: "-10% 0px -60% 0px",
-        threshold: [0.05, 0.2, 0.35, 0.5],
-      },
-    );
-
-    sectionTabs.forEach(({ id }) => {
-      const element = document.getElementById(id);
-      if (element) {
-        observer.observe(element);
       }
-    });
 
-    return () => observer.disconnect();
+      if (currentId !== activeSectionRef.current) {
+        activeSectionRef.current = currentId;
+        setActiveTab(currentId);
+        logClick(TelemetryEvents.SectionView, { section: currentId });
+      }
+    };
+
+    const onScroll = () => {
+      // While a click-driven smooth scroll is in flight, keep the clicked tab
+      // active and release the spy only once the scroll settles.
+      if (suppressSpyRef.current) {
+        window.clearTimeout(settleTimerRef.current);
+        settleTimerRef.current = window.setTimeout(() => {
+          suppressSpyRef.current = false;
+        }, 120);
+      }
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(computeActive);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    computeActive();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   const scrollToSection = (sectionId: (typeof sectionTabs)[number]["id"]) => {
+    activeSectionRef.current = sectionId;
     setActiveTab(sectionId);
     logClick(TelemetryEvents.TabClick, { tab: sectionId });
+    // Suppress scroll-spy so the clicked tab stays active through the smooth
+    // scroll instead of flickering across intermediate sections. Suppression is
+    // lifted when the scroll settles (see onScroll); this timer is only a cap
+    // in case no scroll movement occurs (e.g. the target is already in view).
+    suppressSpyRef.current = true;
+    window.clearTimeout(suppressTimerRef.current);
+    suppressTimerRef.current = window.setTimeout(() => {
+      suppressSpyRef.current = false;
+    }, 2000);
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -2356,7 +2411,7 @@ function App() {
         </div>
       </header>
 
-      <div className={styles.tabsShell}>
+      <div className={styles.tabsShell} ref={tabsShellRef}>
         <div className={styles.tabsList} role="tablist" aria-label="Sections">
           {sectionTabs.map((tab) => (
             <button
