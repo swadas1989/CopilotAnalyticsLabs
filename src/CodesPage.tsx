@@ -224,17 +224,30 @@ const useStyles = makeStyles({
   tag: {
     display: "inline-flex",
     alignItems: "center",
-    fontSize: "11px",
+    minHeight: "24px",
+    fontSize: "12px",
     lineHeight: "16px",
     fontWeight: 600,
-    ...shorthands.padding("2px", "8px"),
-    ...shorthands.borderRadius("999px"),
+    ...shorthands.padding("4px", "8px"),
+    ...shorthands.borderRadius("100px"),
     color: "#3B4A66",
     backgroundColor: "#EEF2FF",
   },
-  tagTech: {
-    color: "#7A3EA6",
-    backgroundColor: "#F5EAFE",
+  tagRed: {
+    color: "#B10E1C",
+    backgroundColor: "#FDF3F4",
+  },
+  tagOrange: {
+    color: "#FF5C39",
+    backgroundColor: "#FFF4D8",
+  },
+  tagPurple: {
+    color: "#881798",
+    backgroundColor: "rgba(198, 177, 222, 0.2)",
+  },
+  tagTeal: {
+    color: "#00666D",
+    backgroundColor: "#E5FEFF",
   },
   cardTitle: {
     margin: 0,
@@ -412,7 +425,16 @@ export default function CodesPage() {
                           <div className={styles.cardContent}>
                             <div className={styles.tagRow}>
                               {item.tech.map((tag) => (
-                                <span key={tag} className={mergeClasses(styles.tag, styles.tagTech)}>
+                                <span
+                                  key={tag}
+                                  className={mergeClasses(
+                                    styles.tag,
+                                    tag === "Python" && styles.tagRed,
+                                    tag === "R" && styles.tagOrange,
+                                    tag === "Power BI" && styles.tagPurple,
+                                    tag === "AI-assisted" && styles.tagTeal,
+                                  )}
+                                >
                                   {tag}
                                 </span>
                               ))}
