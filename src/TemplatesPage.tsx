@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { makeStyles, mergeClasses, shorthands } from "@fluentui/react-components";
 import { ChevronLeft20Filled, Open16Filled } from "@fluentui/react-icons";
-import { MicrosoftLogoWordmark } from "./App";
 import {
   templates,
   templateTypeFilters,
@@ -12,9 +11,6 @@ import type { TemplateTypeFilter, TemplatePageImpactFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 import { VoteBar } from "./VoteBar";
 
-const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
-const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
-
 const useStyles = makeStyles({
   page: {
     minHeight: "100vh",
@@ -23,33 +19,6 @@ const useStyles = makeStyles({
     backgroundColor: "#F8F9FC",
     fontFamily: '"Segoe UI", system-ui, sans-serif',
     color: "#242424",
-  },
-  nav: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...shorthands.padding("16px", "48px"),
-    backgroundColor: "#ffffff",
-    ...shorthands.borderBottom("1px", "solid", "#EDEDED"),
-    '@media (max-width: 600px)': {
-      ...shorthands.padding("14px", "16px"),
-    },
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  separator: {
-    width: "1px",
-    height: "20px",
-    backgroundColor: "#D1D1D1",
-  },
-  brandTitle: {
-    fontSize: "14px",
-    fontWeight: 600,
-    color: "#242424",
-    whiteSpace: "nowrap",
   },
   backLink: {
     display: "inline-flex",
@@ -76,7 +45,7 @@ const useStyles = makeStyles({
   },
   container: {
     width: "100%",
-    maxWidth: "1200px",
+    maxWidth: "1024px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -310,34 +279,6 @@ const useStyles = makeStyles({
     fontSize: "14px",
     color: "#616161",
   },
-  footer: {
-    backgroundColor: "#ffffff",
-    ...shorthands.borderTop("1px", "solid", "#EDEDED"),
-    ...shorthands.padding("32px", "48px"),
-    '@media (max-width: 600px)': {
-      ...shorthands.padding("24px", "16px"),
-    },
-  },
-  footerContent: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-    maxWidth: "1200px",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  footerLinks: {
-    display: "flex",
-    gap: "24px",
-  },
-  footerLink: {
-    fontSize: "13px",
-    color: "#616161",
-    textDecorationLine: "none",
-    ':hover': {
-      textDecorationLine: "underline",
-    },
-  },
 });
 
 export default function TemplatesPage() {
@@ -381,14 +322,6 @@ export default function TemplatesPage() {
 
   return (
     <div className={styles.page}>
-      <nav className={styles.nav}>
-        <div className={styles.brand}>
-          <MicrosoftLogoWordmark />
-          <div className={styles.separator} />
-          <span className={styles.brandTitle}>Copilot Analytics Labs</span>
-        </div>
-      </nav>
-
       <header className={styles.hero}>
         <div className={styles.container}>
           <nav className={styles.breadcrumb}>
@@ -493,24 +426,6 @@ export default function TemplatesPage() {
           )}
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.brand}>
-            <MicrosoftLogoWordmark />
-            <div className={styles.separator} />
-            <span className={styles.brandTitle}>Copilot Analytics Labs</span>
-          </div>
-          <div className={styles.footerLinks}>
-            <a className={styles.footerLink} href={TERMS_URL} target="_blank" rel="noreferrer">
-              Terms and Conditions
-            </a>
-            <a className={styles.footerLink} href={PRIVACY_URL} target="_blank" rel="noreferrer">
-              Privacy Statement
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

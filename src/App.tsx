@@ -13,16 +13,11 @@ import {
   ChevronRight20Filled,
   ChevronRight20Regular,
   Code20Filled,
-  Copy16Regular,
-  DismissRegular,
   Eye16Regular,
   FlowSparkle20Regular,
-  Info20Regular,
   Microscope20Filled,
   Open16Filled,
   Open16Regular,
-  PersonFeedback20Regular,
-  PersonFeedback24Filled,
   PersonGuest20Filled,
   PersonGuest20Regular,
   Sparkle20Filled,
@@ -35,11 +30,6 @@ import { research, resources, templates, templateImpactFilters, codeHomeTechFilt
 import type { TemplateImpactFilter, CodeHomeTechFilter } from "./data";
 import { logClick, logPageView, TelemetryEvents } from "./telemetry";
 import { VoteBar } from "./VoteBar";
-
-const VIVA_INSIGHTS_URL = "https://analysis.insights.cloud.microsoft/";
-const FEEDBACK_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR0To00bktq1Ilw6hJ9BCmj5UNTg1QzM4UUs1SzNFM08yUFhVTlJDSDlWUC4u";
-const TERMS_URL = "https://www.microsoft.com/en-us/legal/terms-of-use";
-const PRIVACY_URL = "https://privacy.microsoft.com/en-us/privacystatement";
 
 
 const sectionTabs = [
@@ -463,155 +453,6 @@ const useStyles = makeStyles({
     color: "#242424",
     fontFamily: '"Segoe UI", "Segoe UI Web (West European)", system-ui, sans-serif',
   },
-  disclaimerBar: {
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "8px",
-    minHeight: "48px",
-    ...shorthands.padding("4px", "36px"),
-    backgroundColor: "#F5F5F5",
-    ...shorthands.borderTop("1px", "solid", "#D1D1D1"),
-    '@media (max-width: 600px)': {
-      ...shorthands.padding("8px", "16px"),
-    },
-  },
-  disclaimerIcon: {
-    flexShrink: 0,
-    color: "#616161",
-    fontSize: "20px",
-  },
-  disclaimerTextWrap: {
-    display: "block",
-    flexGrow: 1,
-    minWidth: 0,
-  },
-  disclaimerText: {
-    display: "inline",
-    fontSize: "14px",
-    lineHeight: "20px",
-    fontWeight: 400,
-    color: "#000000",
-  },
-  disclaimerLink: {
-    display: "inline",
-    marginLeft: "4px",
-    fontSize: "14px",
-    lineHeight: "20px",
-    fontWeight: 400,
-    color: "#335CCC",
-    textDecorationLine: "underline",
-    whiteSpace: "normal",
-    ':hover': {
-      color: "#2A4CB0",
-    },
-  },
-  disclaimerDismiss: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    width: "24px",
-    height: "24px",
-    ...shorthands.padding("2px"),
-    ...shorthands.border("none"),
-    ...shorthands.borderRadius("4px"),
-    backgroundColor: "transparent",
-    color: "#424242",
-    cursor: "pointer",
-    ':hover': {
-      backgroundColor: "#EBEBEB",
-    },
-  },
-  nav: {
-    position: "sticky",
-    top: "0",
-    zIndex: 100,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "48px",
-    backgroundColor: "#ffffff",
-    ...shorthands.padding("0", "56px"),
-    boxShadow: "0 1px 0 rgba(0, 0, 0, 0.08)",
-    '@media (max-width: 1200px)': {
-      ...shorthands.padding("0", "80px"),
-    },
-    '@media (max-width: 600px)': {
-      height: "auto",
-      flexDirection: "column",
-      alignItems: "stretch",
-      ...shorthands.padding("8px", "16px"),
-      gap: "4px",
-    },
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    minHeight: "48px",
-    color: "#424242",
-    ...shorthands.padding("0", "8px", "1px"),
-  },
-  separator: {
-    width: "1px",
-    height: "16px",
-    backgroundColor: "#C8C8C8",
-    flexShrink: 0,
-  },
-  brandTitle: {
-    fontSize: "14px",
-    lineHeight: "20px",
-    fontWeight: 600,
-    color: "#424242",
-    whiteSpace: "nowrap",
-  },
-  navLinks: {
-    display: "flex",
-    alignItems: "center",
-    gap: "16px",
-    minHeight: "48px",
-    ...shorthands.padding("0", "40px"),
-    '@media (max-width: 600px)': {
-      ...shorthands.padding("0"),
-      justifyContent: "flex-start",
-      overflowX: "auto",
-      gap: "12px",
-      minHeight: "36px",
-    },
-  },
-  navLink: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    color: "#242424",
-    fontSize: "14px",
-    lineHeight: "20px",
-    textDecorationLine: "none",
-    whiteSpace: "nowrap",
-    padding: "0 12px",
-    height: "48px",
-    ':hover': {
-      backgroundColor: "#1F1F1F",
-      color: "#ffffff",
-    },
-  },
-  navIconOnly: {
-    width: "48px",
-    height: "48px",
-    padding: "0",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#242424",
-    backgroundColor: "transparent",
-    ':hover': {
-      backgroundColor: "#1F1F1F",
-      color: "#ffffff",
-    },
-  },
   hero: {
     position: "relative",
     minHeight: "auto",
@@ -640,7 +481,7 @@ const useStyles = makeStyles({
     position: "relative",
     zIndex: 1,
     width: "100%",
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     marginLeft: "auto",
     marginRight: "auto",
     display: "flex",
@@ -849,7 +690,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     gap: "9px",
     width: "100%",
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     marginLeft: "auto",
     marginRight: "auto",
     ...shorthands.padding("4px", "0", "0"),
@@ -922,7 +763,7 @@ const useStyles = makeStyles({
   },
   sectionContent: {
     width: "100%",
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     marginLeft: "auto",
     marginRight: "auto",
     display: "flex",
@@ -936,14 +777,14 @@ const useStyles = makeStyles({
     gap: "24px",
   },
   templateSectionDescription: {
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     whiteSpace: "nowrap",
     '@media (max-width: 900px)': {
       whiteSpace: "normal",
     },
   },
   codeSectionDescription: {
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     whiteSpace: "nowrap",
     '@media (max-width: 900px)': {
       whiteSpace: "normal",
@@ -1519,54 +1360,6 @@ const useStyles = makeStyles({
     lineHeight: "20px",
     color: "#424242",
   },
-  footer: {
-    backgroundColor: "#ffffff",
-    boxShadow: "0 -1px 0 rgba(0,0,0,0.08)",
-    ...shorthands.padding("24px", "24px"),
-    '@media (max-width: 1200px)': {
-      ...shorthands.padding("24px", "24px"),
-    },
-    '@media (max-width: 600px)': {
-      ...shorthands.padding("24px", "16px"),
-    },
-  },
-  footerContent: {
-    width: "100%",
-    maxWidth: "1008px",
-    marginLeft: "auto",
-    marginRight: "auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  footerBrand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    color: "#424242",
-    flexWrap: "wrap",
-  },
-  footerDisclaimer: {
-    margin: 0,
-    fontSize: "12px",
-    lineHeight: "16px",
-    color: "#616161",
-    maxWidth: "1120px",
-  },
-  footerLinks: {
-    display: "flex",
-    gap: "16px",
-    flexWrap: "wrap",
-  },
-  footerLink: {
-    color: "#335CCC",
-    fontSize: "12px",
-    lineHeight: "16px",
-    textDecorationLine: "none",
-    ':hover': {
-      textDecorationLine: "underline",
-    },
-  },
   heroValuesRow: {
     width: "100%",
     maxWidth: "812px",
@@ -1780,7 +1573,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "stretch",
     width: "100%",
-    maxWidth: "1008px",
+    maxWidth: "1024px",
     marginLeft: "auto",
     marginRight: "auto",
     '@media (max-width: 900px)': {
@@ -2123,10 +1916,10 @@ const useStyles = makeStyles({
     '::-webkit-scrollbar': {
       display: "none",
     },
-    '@media (min-width: 1009px)': {
+    '@media (min-width: 1025px)': {
       marginLeft: "calc(50% - 50vw)",
       marginRight: "calc(50% - 50vw)",
-      paddingRight: "calc((100vw - 1008px) / 2 + 24px)",
+      paddingRight: "calc((100vw - 1024px) / 2 + 24px)",
     },
     '@media (max-width: 600px)': {
       marginLeft: "0",
@@ -2135,10 +1928,10 @@ const useStyles = makeStyles({
     },
   },
   featuredEdgeSpacer: {
-    flex: "0 0 max(0px, calc((100vw - 1008px) / 2))",
+    flex: "0 0 max(0px, calc((100vw - 1024px) / 2))",
     marginRight: "-20px",
     pointerEvents: "none",
-    '@media (max-width: 1008px)': {
+    '@media (max-width: 1024px)': {
       flexBasis: "0",
       marginRight: "0",
     },
@@ -2408,9 +2201,6 @@ function App() {
   const styles = useStyles();
   const [activeTab, setActiveTab] = useState<(typeof sectionTabs)[number]["id"]>("whats-new");
   const [ghStats, setGhStats] = useState<{ stars: string; forks: string; watchers: string }>({ stars: "—", forks: "—", watchers: "—" });
-  const [showContactDialog, setShowContactDialog] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [templateFilter, setTemplateFilter] = useState<TemplateImpactFilter>("Featured");
   const [codeFilter, setCodeFilter] = useState<CodeHomeTechFilter>("Featured");
   const [activeRoadmapTab, setActiveRoadmapTab] = useState<string>(roadmapItems[0].id);
@@ -2539,160 +2329,6 @@ function App() {
 
   return (
     <div className={styles.page}>
-      {showDisclaimer && (
-        <div className={styles.disclaimerBar} role="status">
-          <Info20Regular className={styles.disclaimerIcon} aria-hidden="true" />
-          <div className={styles.disclaimerTextWrap}>
-            <span className={styles.disclaimerText}>
-              The materials on this page are provided as-is, without warranty of any kind, including merchantability or fitness for a particular purpose. Microsoft will not provide any support for these materials.
-            </span>
-            <a
-              className={styles.disclaimerLink}
-              href={FEEDBACK_URL}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Learn more
-            </a>
-          </div>
-          <button
-            type="button"
-            className={styles.disclaimerDismiss}
-            onClick={() => setShowDisclaimer(false)}
-            aria-label="Dismiss disclaimer"
-          >
-            <DismissRegular fontSize={16} />
-          </button>
-        </div>
-      )}
-      <nav className={styles.nav}>
-        <div className={styles.brand}>
-          <MicrosoftLogoWordmark />
-          <div className={styles.separator} />
-          <span className={styles.brandTitle}>Copilot Analytics Labs</span>
-        </div>
-
-        <div className={styles.navLinks}>
-          <a className={styles.navLink} href={VIVA_INSIGHTS_URL} target="_blank" rel="noreferrer">
-            <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
-            <span>Viva Insights</span>
-          </a>
-          <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
-            <span>Feedback</span>
-          </a>
-          <button
-            className={mergeClasses(styles.navLink, styles.navIconOnly)}
-            onClick={() => setShowContactDialog(true)}
-            aria-label="Contact us"
-            style={{ border: "none", cursor: "pointer" }}
-          >
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px" }}>
-              <PersonFeedback20Regular fontSize={16} />
-            </span>
-          </button>
-        </div>
-      </nav>
-
-      {showContactDialog && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.4)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={() => setShowContactDialog(false)}
-        >
-          <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "12px",
-              padding: "32px",
-              maxWidth: "420px",
-              width: "90%",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-              textAlign: "center",
-              fontFamily: '"Segoe UI", system-ui, sans-serif',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                width: "64px",
-                height: "64px",
-                borderRadius: "50%",
-                backgroundColor: "#E8F3FF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 12px",
-              }}
-            >
-              <PersonFeedback24Filled style={{ fontSize: "40px", color: "#335CCC" }} />
-            </div>
-            <h3 style={{ margin: "0 0 12px", fontSize: "18px", fontWeight: 600, color: "#242424" }}>
-              Contact Us
-            </h3>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "14px", color: "#616161", whiteSpace: "nowrap" }}>
-                For further questions and doubts — Please drop a mail to
-              </span>
-              <a href="mailto:CopilotAnalyticsLabs@microsoft.com" style={{ color: "#0078D4", textDecoration: "none", fontWeight: 600 }}>
-                CopilotAnalyticsLabs@microsoft.com
-              </a>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText("CopilotAnalyticsLabs@microsoft.com");
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#0078D4",
-                  padding: "0",
-                  width: "20px",
-                  height: "20px",
-                }}
-                title="Copy email address"
-              >
-                <Copy16Regular style={{ fontSize: "16px" }} />
-              </button>
-            </div>
-            {copied && (
-              <p style={{ margin: "0 0 16px", fontSize: "12px", color: "#10A038", fontWeight: 600 }}>
-                Copied to clipboard!
-              </p>
-            )}
-            <button
-              onClick={() => setShowContactDialog(false)}
-              style={{
-                padding: "8px 24px",
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#ffffff",
-                backgroundColor: "#335CCC",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
       <header className={styles.hero}>
         <div className={styles.heroRibbon} />
         <div className={styles.heroContent}>
@@ -3221,29 +2857,6 @@ function App() {
           </div>
         </div>
       </section>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerBrand}>
-            <MicrosoftLogoWordmark />
-            <div className={styles.separator} />
-            <span className={styles.brandTitle}>Copilot Analytics Labs</span>
-          </div>
-
-          <p className={styles.footerDisclaimer}>
-            Disclaimer: The materials on this page are provided as-is, without warranty of any kind, including merchantability or fitness for a particular purpose. Microsoft will not provide any support for these materials.
-          </p>
-
-          <div className={styles.footerLinks}>
-            <a className={styles.footerLink} href={TERMS_URL} target="_blank" rel="noreferrer">
-              Terms and Conditions
-            </a>
-            <a className={styles.footerLink} href={PRIVACY_URL} target="_blank" rel="noreferrer">
-              Privacy Statement
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
