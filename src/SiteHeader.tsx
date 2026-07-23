@@ -118,7 +118,7 @@ export function SiteHeader() {
         <div className={styles.navLinks}>
           <a className={styles.navLink} href={VIVA_INSIGHTS_URL} target="_blank" rel="noreferrer">
             <img src={`${import.meta.env.BASE_URL}images/VI.svg`} alt="" width="20" height="20" aria-hidden="true" />
-            <span>Viva Insights</span>
+            <span>Insights</span>
           </a>
           <a className={styles.navLink} href={FEEDBACK_URL} target="_blank" rel="noreferrer">
             <span>Feedback</span>
