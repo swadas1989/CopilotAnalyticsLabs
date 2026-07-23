@@ -326,6 +326,7 @@ const codeHomeCopyOverrides: Record<string, { description?: string }> = {
 };
 
 const researchOrder = [
+  "agent-assisted-hours",
   "adoption-playbook",
   "getting-started-custom-analysis",
   "work-trend-index-2026",
@@ -334,6 +335,10 @@ const researchOrder = [
 ];
 
 const researchTags: Record<string, { text: string; tone: string }[]> = {
+  "agent-assisted-hours": [
+    { text: "Business value", tone: "blue" },
+    { text: "Org wide", tone: "purple" },
+  ],
   "adoption-playbook": [
     { text: "Adoption", tone: "green" },
     { text: "Org wide", tone: "purple" },
